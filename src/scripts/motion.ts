@@ -15,7 +15,9 @@ const io = new IntersectionObserver(
   },
   { rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
 );
-document.querySelectorAll('[data-reveal]').forEach((el) => io.observe(el));
+document.querySelectorAll<HTMLElement>('[data-reveal]').forEach((el) => {
+  if (el.getBoundingClientRect().top >= window.innerHeight) { el.classList.add('pending'); io.observe(el); }
+});
 
 /* 2. Header: border once scrolled, hide on scroll down, show on scroll up */
 const header = document.querySelector<HTMLElement>('[data-header]');

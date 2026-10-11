@@ -1,0 +1,76 @@
+---
+// Vibe Coding Playground grid (home + About):
+// row 1 — two equal landscape cards; row 2 — a wide card beside a tall phone card,
+// both the same height (column widths follow the videos' aspect ratios).
+import type { Card } from '../data/site';
+interface Props { cards: Card[] }
+const { cards } = Astro.props;
+const rows = [cards.slice(0, 2), cards.slice(2, 4)];
+---
+<div class="pg">
+  {rows.map((row, r) => (
+    <div class:list={['row', r === 0 ? 'even' : 'mixed']} data-stagger>
+      {row.map((card, i) => {
+        const Tag = card.href ? 'a' : 'div';
+        const linkProps = card.href ? { href: card.href, ...(card.external ? { target: '_blank', rel: 'noopener' } : {}) } : {};
+        const shape = r === 0 ? 'land' : i === 0 ? 'wide' : 'tall';
+        return (
+          <Tag class:list={['item', shape]} {...linkProps} data-reveal>
+            <div class="media">
+              <video data-autoplay muted loop playsinline preload="metadata" poster={card.poster} aria-hidden="true">
+                <source src={card.media} type="video/mp4" />
+              </video>
+              {card.href && (
+                <span class="go" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="18" height="18"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M7 17 17 7M9 7h8v8"/></svg>
+                </span>
+              )}
+            </div>
+            <h3 class="title">{card.title}<span class="stack"> I {card.tags.join(', ')}</span></h3>
+          </Tag>
+        );
+      })}
+    </div>
+  ))}
+</div>
+
+<style>
+  .pg { display: flex; flex-direction: column; gap: clamp(32px, 4vw, 56px); }
+  .row { display: grid; gap: clamp(32px, 4vw, 56px) clamp(20px, 2.5vw, 40px); }
+  .row.even { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* 16:9 beside 9:16 → widths in the ratio 16/9 : 9/16 give both cards the same height */
+  .row.mixed { grid-template-columns: minmax(0, 1.7778fr) minmax(0, 0.5625fr); }
+
+  .item { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .media {
+    position: relative; overflow: hidden; border-radius: var(--radius-m);
+    background: var(--img-bg); isolation: isolate;
+    transition: box-shadow var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-out);
+  }
+  .media video { width: 100%; height: 100%; object-fit: cover; transition: transform var(--dur-3) var(--ease-out); }
+  .land .media { aspect-ratio: 16 / 10; }
+  .wide .media { aspect-ratio: 16 / 9; }
+  .tall .media { aspect-ratio: 9 / 16; }
+
+  .title { font-size: var(--fs-small); letter-spacing: 0; line-height: 1.4; }
+  .stack { color: var(--muted); }
+
+  .go {
+    position: absolute; right: 14px; top: 14px; display: grid; place-items: center;
+    width: 40px; height: 40px; border-radius: 50%; background: var(--surface); color: var(--ink);
+    opacity: 0; transform: translate(-6px, 6px) scale(.8);
+    transition: opacity var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-spring);
+  }
+  @media (hover: hover) {
+    a.item:hover .media { box-shadow: var(--shadow-2); transform: translateY(-4px); }
+    a.item:hover .media video { transform: scale(1.035); }
+    a.item:hover .go { opacity: 1; transform: none; }
+  }
+  a.item:active .media { transform: scale(.985); }
+
+  /* Phone: one column; the tall phone clip is capped so it doesn't fill several screens */
+  @media (max-width: 809px) {
+    .row.even, .row.mixed { grid-template-columns: minmax(0, 1fr); }
+    .tall .media { max-width: 300px; }
+  }
+</style>

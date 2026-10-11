@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import WorkCard from '../components/WorkCard.astro';
+import Playground from '../components/Playground.astro';
 import type { Card } from '../data/site';
 
 const portrait = 'https://framerusercontent.com/images/HrjNI7nBQccnAXOc28S5vpTvl3M.gif?width=4284&height=5712';
@@ -20,7 +20,7 @@ const ai: Card[] = [
   { href: 'https://claude.ai/artifact/SaEd5mY6mwmdF3vhb9MxYj', title: 'Starside Campfire', tags: ['Claude Code'], media: '/assets/playground/starside-campfire.mp4', poster: '/assets/playground/starside-campfire-poster.webp', external: true },
   { href: 'https://claude.ai/artifact/3dckUjhQNJqaanGR9j84z1', title: 'Drape Room', tags: ['Claude Code'], media: '/assets/playground/drape-room.mp4', poster: '/assets/playground/drape-room-poster.webp', external: true },
   { href: 'https://claude.ai/artifact/KNTBxFwJAWEQS9NViyKjzk', title: 'Twenty Years in the Windy City', tags: ['Claude Code'], media: '/assets/playground/windy-city.mp4', poster: '/assets/playground/windy-city-poster.webp', external: true },
-  { href: '', title: 'Sent', tags: ['Claude Code', 'React'], media: '/assets/playground/sent.mp4', poster: '/assets/playground/sent-poster.webp', fit: 'contain' },
+  { href: '', title: 'Sent', tags: ['Claude Code', 'React'], media: '/assets/playground/sent.mp4', poster: '/assets/playground/sent-poster.webp' },
 ];
 
 const hobbies = [
@@ -77,9 +77,7 @@ const hobbies = [
 
   <section class="section container">
     <h2 class="section-title" data-reveal>I Like Making Cool Things With AI…</h2>
-    <div class="grid two" data-stagger>
-      {ai.map((c) => <WorkCard card={c} size="md" />)}
-    </div>
+    <Playground cards={ai} />
   </section>
 
   <section class="section container">

@@ -130,9 +130,10 @@ p { margin: 0; }
    ------------------------------------------------------------------ */
 
 /* Appear on scroll (Framer "Appear" effect): fade + rise.
-   JS adds .is-in via IntersectionObserver; without JS nothing is hidden. */
-.js [data-reveal] { opacity: 0; transform: translateY(24px); }
-.js [data-reveal].is-in {
+   Nothing animates on first open: only elements below the fold at load get .pending,
+   then fade in as they scroll into view. Without JS nothing is hidden. */
+[data-reveal].pending { opacity: 0; transform: translateY(24px); }
+[data-reveal].pending.is-in {
   opacity: 1; transform: none;
   transition: opacity var(--dur-3) var(--ease-out), transform var(--dur-3) var(--ease-out);
   transition-delay: calc(var(--stagger, 0) * 90ms);
@@ -146,5 +147,5 @@ p { margin: 0; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
-  .js [data-reveal] { opacity: 1; transform: none; }
+  [data-reveal].pending { opacity: 1; transform: none; }
 }

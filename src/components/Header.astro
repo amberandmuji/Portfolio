@@ -51,12 +51,10 @@ const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 
   .links { display: flex; gap: clamp(24px, 2.6vw, 40px); }
   .link { position: relative; display: inline-block; padding: 6px 0; font-size: 1rem; letter-spacing: -0.01em; color: rgb(115 115 115); transition: color var(--dur-2) var(--ease-out); }
-  /* Hover: text darkens and lifts slightly; an underline draws in from the left */
+  /* Hover: text darkens and lifts slightly */
   .link .label { display: inline-block; transition: transform var(--dur-2) var(--ease-spring); }
-  .link::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1.5px; border-radius: 2px; background: currentColor; transform: scaleX(0); transform-origin: right; transition: transform var(--dur-2) var(--ease-out); }
   .link:hover, .link:focus-visible { color: var(--ink); }
   .link:hover .label { transform: translateY(-2px); }
-  .link:hover::after, .link:focus-visible::after { transform: scaleX(1); transform-origin: left; }
   .link.active { color: var(--ink); }
 
   .burger { display: none; position: relative; width: 44px; height: 44px; border: 0; background: transparent; border-radius: 12px; cursor: pointer; }

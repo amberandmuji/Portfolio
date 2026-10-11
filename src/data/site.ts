@@ -78,7 +78,7 @@ export const playground: Card[] = [
     href: '',
     title: 'Sent',
     tags: ['Claude Code', 'React'],
-    media: '/assets/playground/sent.mp4', poster: '/assets/playground/sent-poster.webp', fit: 'contain',
+    media: '/assets/playground/sent.mp4', poster: '/assets/playground/sent-poster.webp',
   },
 ];
 
