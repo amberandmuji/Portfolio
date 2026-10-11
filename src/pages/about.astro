@@ -1,0 +1,128 @@
+---
+import Base from '../layouts/Base.astro';
+import WorkCard from '../components/WorkCard.astro';
+import type { Card } from '../data/site';
+
+const portrait = 'https://framerusercontent.com/images/HrjNI7nBQccnAXOc28S5vpTvl3M.gif?width=4284&height=5712';
+
+const experience = [
+  { role: 'UIUX Designer', org: 'Primary Care Coalition (PCC)', dates: '08/2025 – 05/2026' },
+  { role: 'UIUX Designer', org: 'BLIVE GLOBAL, LLC', dates: '06/2025 – 12/2025' },
+  { role: 'UX Design Intern', org: 'Shepherd Money', dates: '05/2023 – 08/2023' },
+];
+const education = [
+  { role: 'MS in Human-Computer Interaction (HCIM)', org: 'University of Maryland' },
+  { role: 'Exchange Program in Information Science', org: 'University of Illinois Urbana-Champaign' },
+  { role: 'BS in Electrical Engineering', org: 'National Yang Ming Chiao Tung University' },
+];
+
+const ai: Card[] = [
+  { href: 'https://claude.ai/artifact/SaEd5mY6mwmdF3vhb9MxYj', title: 'Starside Campfire', tags: ['Claude Code'], media: 'https://framerusercontent.com/assets/QDrWMFZZU6O0EB1oBKPYYH7mw.mp4', external: true },
+  { href: 'https://claude.ai/artifact/3dckUjhQNJqaanGR9j84z1', title: 'Drape Room', tags: ['Claude Code'], media: 'https://framerusercontent.com/assets/92FtNxyoesWP8EwOd1VBHby5dU.mp4', external: true },
+  { href: 'https://claude.ai/artifact/KNTBxFwJAWEQS9NViyKjzk', title: 'Twenty Years in the Windy City', tags: ['Claude Code'], media: 'https://framerusercontent.com/assets/hzpen90eOn7DjtpZhuHYWHppAag.mp4', external: true },
+  { href: '', title: 'Sent', tags: ['Claude Code', 'React'], media: 'https://framerusercontent.com/assets/LLFUNbfD4NxHQXcoqQxIorRa7F0.mp4' },
+];
+
+const hobbies = [
+  { label: 'Espresso and Matcha', src: 'https://framerusercontent.com/images/ksAol3aTQLXJkxhMMmGteScUj2s.jpg?width=1206&height=1924' },
+  { label: 'Bouldering', src: 'https://framerusercontent.com/images/B7x4n3UL4w5mq0JLMf7Jbw0eJ1g.jpg?width=4284&height=5712' },
+  { label: 'Dance', src: 'https://framerusercontent.com/images/f5kJL9HJopKh1g11S0npqCpvDIo.jpg?width=1206&height=1548' },
+  { label: 'Music festivals', src: 'https://framerusercontent.com/images/FsyTPFZgrGyXDQSbv74WywvnHIw.jpg?width=708&height=892' },
+  { label: 'Standup Comedy', src: 'https://framerusercontent.com/images/3GopeX65xqxUvPZ0NTnix4C5QQY.jpg?width=3780&height=4758' },
+  { label: 'Play with My Doggy', src: 'https://framerusercontent.com/images/oY6sDY82AFg87EvvGeJwC9FQ0.jpg?width=1365&height=2048' },
+  { label: 'Reading', src: 'https://framerusercontent.com/images/yCzigap7Xo3AVIu5O8emxhvOrwM.png?width=456&height=684' },
+  { label: 'Movies', src: 'https://framerusercontent.com/images/2fuSJEn7gOwMEaxPcN606ORanKo.png?width=724&height=1134' },
+];
+---
+<Base title="About — Amber's portfolio">
+  <section class="intro container">
+    <div class="portrait" data-reveal>
+      <img src={portrait} alt="Amber" width="720" height="960" />
+    </div>
+    <div class="text">
+      <h1 data-reveal>Hi! I'm Amber</h1>
+      <div class="bio" data-stagger>
+        <p data-reveal>
+          I'm a UX designer who turns user research and data into decisions that move the needle, with experience spanning
+          B2B and B2C across fintech and healthcare. My electrical engineering background gives me the technical fluency to
+          pick up new tools fast and work closely with engineering teams.
+        </p>
+        <p data-reveal>
+          My path into design began in an HCI lab, where I enjoyed solving the problem behind the code and saw my tools
+          change how people worked. Now I use AI agent tools to prototype and build frontend faster.
+        </p>
+        <p data-reveal>Based in Chicago and open to product design and design engineering roles!</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section container cv">
+    <div data-reveal>
+      <h2 class="eyebrow">Experience</h2>
+      <ul>
+        {experience.map((e) => (
+          <li><strong>{e.role}</strong><span>{e.org}, {e.dates}</span></li>
+        ))}
+      </ul>
+    </div>
+    <div data-reveal>
+      <h2 class="eyebrow">Education</h2>
+      <ul>
+        {education.map((e) => (
+          <li><strong>{e.role}</strong><span>{e.org}</span></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section container">
+    <h2 class="section-title" data-reveal>I Like Making Cool Things With AI…</h2>
+    <div class="grid two" data-stagger>
+      {ai.map((c) => <WorkCard card={c} size="md" />)}
+    </div>
+  </section>
+
+  <section class="section container">
+    <h2 class="section-title" data-reveal>Outside of work, I enjoy…</h2>
+    <div class="hobbies" data-stagger>
+      {hobbies.map((h, i) => (
+        <figure class="hobby" data-reveal style={`--tilt:${i % 2 ? 2 : -2}deg`}>
+          <img src={h.src} alt={h.label} loading="lazy" decoding="async" />
+          <figcaption>{h.label}</figcaption>
+        </figure>
+      ))}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .intro { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(28px, 5vw, 72px); align-items: center; padding-block: clamp(48px, 8vw, 112px) 24px; }
+  .portrait { border-radius: var(--radius-l); overflow: hidden; aspect-ratio: 3 / 4; background: var(--surface-2); box-shadow: var(--shadow-1); }
+  .portrait img { width: 100%; height: 100%; object-fit: cover; }
+  h1 { font-size: clamp(40px, 6vw, 72px); letter-spacing: -0.04em; }
+  .bio { display: flex; flex-direction: column; gap: 16px; margin-top: 24px; font-size: clamp(17px, 1.5vw, 19px); color: var(--ink-2); }
+
+  .cv { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 5vw, 72px); }
+  .cv ul { list-style: none; margin: 18px 0 0; padding: 0; }
+  .cv li { display: flex; flex-direction: column; padding: 16px 0; border-top: 1px solid var(--line); transition: padding-left var(--dur-2) var(--ease-out); }
+  .cv li:hover { padding-left: 8px; }
+  .cv li span { color: var(--muted); font-size: 15px; }
+
+  .grid { display: grid; gap: clamp(28px, 3.5vw, 48px) clamp(20px, 2.5vw, 32px); }
+  .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  .hobbies { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(14px, 2vw, 24px); }
+  .hobby { margin: 0; }
+  .hobby img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: var(--radius-m); background: var(--surface-2); transition: transform var(--dur-2) var(--ease-spring), box-shadow var(--dur-2); }
+  .hobby figcaption { margin-top: 10px; font-weight: 600; font-size: 15px; }
+  @media (hover: hover) { .hobby:hover img { transform: rotate(var(--tilt)) scale(1.03); box-shadow: var(--shadow-2); } }
+
+  /* Tablet (810–1199) */
+  @media (max-width: 1199px) { .hobbies { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  /* Phone (< 810) */
+  @media (max-width: 809px) {
+    .intro, .cv, .grid.two { grid-template-columns: 1fr; }
+    .portrait { max-width: 420px; }
+    .hobbies { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+</style>

@@ -1,0 +1,19 @@
+{
+  "name": "amberliang-site",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "pull-assets": "node scripts/pull-assets.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "astro": "^7.3.8"
+  },
+  "type": "module",
+  "private": true
+}

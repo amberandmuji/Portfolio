@@ -1,0 +1,222 @@
+---
+// "Make yourself a drink!" — rebuilt from the Framer footer embed.
+const ingredients = [
+  { id: 'ice', label: 'Ice', color: '#dff1f7' },
+  { id: 'milk', label: 'Milk', color: '#fbf7ee' },
+  { id: 'oat', label: 'Oat milk', color: '#efe2c6' },
+  { id: 'matcha', label: 'Matcha', color: '#7aa14a' },
+  { id: 'hojicha', label: 'Hojicha', color: '#9a6a43' },
+  { id: 'honey', label: 'Honey', color: '#f2b84b' },
+  { id: 'strawberry', label: 'Strawberry', color: '#ea7a8c' },
+  { id: 'mango', label: 'Mango', color: '#f6b33f' },
+  { id: 'boba', label: 'Boba', color: '#3b2a22' },
+  { id: 'foam', label: 'Cold foam', color: '#fffdf8' },
+];
+---
+<section class="game container" aria-labelledby="game-title" data-reveal>
+  <div class="panel">
+    <div class="copy">
+      <h2 id="game-title">Make yourself a drink!</h2>
+      <p class="sub">Tap ingredients to pour them in, then serve it.</p>
+
+      <div class="chips" role="group" aria-label="Ingredients">
+        {ingredients.map((g) => (
+          <button class="chip" type="button" data-add={g.id} style={`--c:${g.color}`}>
+            <span class="swatch" aria-hidden="true"></span>{g.label}
+          </button>
+        ))}
+      </div>
+
+      <div class="actions">
+        <button class="btn primary" type="button" data-serve disabled>Serve it</button>
+        <button class="btn" type="button" data-undo disabled>Undo</button>
+        <button class="btn ghost" type="button" data-reset disabled>Start over</button>
+      </div>
+      <p class="status" aria-live="polite" data-status>Your cup is empty.</p>
+    </div>
+
+    <div class="stage">
+      <div class="cup-wrap" data-cup-wrap>
+        <div class="straw" aria-hidden="true"></div>
+        <div class="cup" aria-hidden="true">
+          <div class="liquid" data-liquid></div>
+          <div class="boba" data-boba></div>
+          <div class="ice" data-ice></div>
+          <div class="foam" data-foam></div>
+          <div class="shine"></div>
+        </div>
+        <div class="served" data-served hidden>
+          <span class="eyebrow">Order up</span>
+          <strong data-drink-name></strong>
+          <button class="btn" type="button" data-again>Make another</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script define:vars={{ ingredients }}>
+  const root = document.getElementById('game-title').closest('.game');
+  const $ = (s) => root.querySelector(s);
+  const colors = Object.fromEntries(ingredients.map((g) => [g.id, g.color]));
+  const labels = Object.fromEntries(ingredients.map((g) => [g.id, g.label]));
+  const LIQUIDS = ['milk', 'oat', 'matcha', 'hojicha', 'honey', 'strawberry', 'mango'];
+  const MAX = 9;
+  let cup = [];
+
+  const liquidEl = $('[data-liquid]'), bobaEl = $('[data-boba]'), iceEl = $('[data-ice]'), foamEl = $('[data-foam]');
+  const status = $('[data-status]');
+
+  function render(lastAdded) {
+    const liquids = cup.filter((c) => LIQUIDS.includes(c));
+    liquidEl.innerHTML = '';
+    liquids.forEach((id, i) => {
+      const layer = document.createElement('div');
+      layer.className = 'layer' + (i === liquids.length - 1 && lastAdded === id ? ' pour' : '');
+      layer.style.background = colors[id];
+      liquidEl.appendChild(layer);
+    });
+
+    const boba = cup.filter((c) => c === 'boba').length;
+    bobaEl.innerHTML = Array.from({ length: Math.min(boba * 7, 21) }, (_, i) =>
+      `<i style="--x:${(i * 37) % 88}%;--y:${Math.floor(i / 7) * 14}px;--d:${i * 25}ms"></i>`).join('');
+
+    const ice = cup.filter((c) => c === 'ice').length;
+    iceEl.innerHTML = Array.from({ length: Math.min(ice * 3, 9) }, (_, i) =>
+      `<i style="--x:${10 + ((i * 29) % 62)}%;--y:${20 + ((i * 17) % 50)}%;--r:${(i * 23) % 40 - 20}deg;--d:${i * 40}ms"></i>`).join('');
+
+    foamEl.classList.toggle('on', cup.includes('foam'));
+
+    const n = cup.length;
+    $('[data-serve]').disabled = n === 0;
+    $('[data-undo]').disabled = n === 0;
+    $('[data-reset]').disabled = n === 0;
+    root.querySelectorAll('[data-add]').forEach((b) => (b.disabled = n >= MAX));
+    status.textContent = n === 0 ? 'Your cup is empty.'
+      : n >= MAX ? 'Your cup is full — serve it!'
+      : `In your cup: ${[...new Set(cup)].map((c) => labels[c].toLowerCase()).join(', ')}.`;
+  }
+
+  function nameDrink() {
+    const has = (x) => cup.includes(x);
+    const liquids = cup.filter((c) => LIQUIDS.includes(c));
+    if (!liquids.length) {
+      if (has('boba')) return 'Just boba? Bold choice.';
+      if (has('ice')) return 'A cup of ice. Very hydrating.';
+      return 'A cloud of cold foam';
+    }
+    const fruit = ['strawberry', 'mango'].filter(has).map((f) => f[0].toUpperCase() + f.slice(1));
+    const tea = has('matcha') && has('hojicha') ? 'Matcha-Hojicha' : has('matcha') ? 'Matcha' : has('hojicha') ? 'Hojicha' : '';
+    const milk = has('oat') ? 'Oat ' : '';
+    const isLatte = has('milk') || has('oat');
+    let base = tea
+      ? `${milk}${tea}${isLatte ? ' Latte' : ''}`
+      : isLatte ? `${fruit.length ? '' : 'Plain '}${milk || ''}Milk` : 'Mystery Brew';
+    if (!tea && !isLatte && fruit.length) base = `${fruit.join('-')} Juice`;
+    else if (fruit.length) base = `${fruit.join('-')} ${base}`;
+    if (has('honey')) base = `Honey ${base}`;
+    if (has('ice')) base = `Iced ${base}`;
+    const extras = [has('boba') && 'Boba', has('foam') && 'Cold Foam'].filter(Boolean);
+    return extras.length ? `${base} with ${extras.join(' & ')}` : base;
+  }
+
+  root.addEventListener('click', (e) => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    if (b.dataset.add) {
+      if (cup.length >= MAX) return;
+      cup.push(b.dataset.add);
+      b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop');
+      render(b.dataset.add);
+    } else if ('undo' in b.dataset) { cup.pop(); render(); }
+    else if ('reset' in b.dataset) { cup = []; render(); }
+    else if ('serve' in b.dataset) {
+      $('[data-drink-name]').textContent = nameDrink();
+      $('[data-cup-wrap]').classList.add('is-served');
+      $('[data-served]').hidden = false;
+      status.textContent = 'Served! Enjoy.';
+    } else if ('again' in b.dataset) {
+      cup = [];
+      $('[data-cup-wrap]').classList.remove('is-served');
+      $('[data-served]').hidden = true;
+      render();
+    }
+  });
+</script>
+
+<style>
+  .game { margin-top: var(--section-gap); }
+  .panel {
+    display: grid; grid-template-columns: 1.15fr 1fr; gap: clamp(24px, 4vw, 56px); align-items: center;
+    background: var(--accent-soft); border-radius: calc(var(--radius-l) + 8px); padding: clamp(24px, 4vw, 56px);
+  }
+  h2 { font-size: clamp(28px, 3.4vw, 40px); }
+  .sub { color: var(--ink-2); margin-top: 8px; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px 9px 10px; border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent); background: var(--surface);
+    cursor: pointer; font-weight: 500; font-size: 15px;
+    transition: transform var(--dur-1) var(--ease-out), box-shadow var(--dur-1);
+  }
+  .chip:hover:not(:disabled) { transform: translateY(-2px); box-shadow: var(--shadow-1); }
+  .chip:active:not(:disabled) { transform: scale(.95); }
+  .chip:disabled { opacity: .45; cursor: not-allowed; }
+  .chip.pop { animation: pop 380ms var(--ease-spring); }
+  @keyframes pop { 40% { transform: scale(1.12); } }
+  .swatch { width: 18px; height: 18px; border-radius: 50%; background: var(--c); box-shadow: inset 0 0 0 1px rgb(0 0 0 / .12); }
+
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+  .btn {
+    padding: 11px 18px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface);
+    font-weight: 600; font-size: 15px; cursor: pointer; transition: transform var(--dur-1) var(--ease-out), background var(--dur-1), opacity var(--dur-1);
+  }
+  .btn:hover:not(:disabled) { transform: translateY(-1px); }
+  .btn:active:not(:disabled) { transform: scale(.96); }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+  .btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .btn.ghost { background: transparent; }
+  .status { margin-top: 14px; font-size: 14.5px; color: var(--ink-2); min-height: 1.6em; }
+
+  /* Cup */
+  .stage { display: grid; place-items: center; min-height: 360px; padding-bottom: 110px; }
+  .cup-wrap { position: relative; width: 190px; height: 300px; transition: transform 700ms var(--ease-out); }
+  .cup {
+    position: absolute; inset: 30px 0 0 0; overflow: hidden;
+    clip-path: polygon(0 0, 100% 0, 88% 100%, 12% 100%);
+    background: rgb(255 255 255 / .55);
+    border-radius: 6px 6px 22px 22px;
+  }
+  .cup::before { content: ''; position: absolute; inset: 0; border: 3px solid rgb(255 255 255 / .9); clip-path: inherit; pointer-events: none; z-index: 5; }
+  .shine { position: absolute; left: 16%; top: 6%; width: 9%; height: 70%; border-radius: 99px; background: linear-gradient(rgb(255 255 255 / .7), rgb(255 255 255 / 0)); z-index: 6; }
+  .liquid { position: absolute; inset: auto 0 0 0; display: flex; flex-direction: column-reverse; }
+  .liquid :global(.layer) { height: 26px; transition: height 500ms var(--ease-out); }
+  .liquid :global(.layer.pour) { animation: pour 600ms var(--ease-out); }
+  @keyframes pour { from { height: 0; filter: brightness(1.1); } }
+  .boba { position: absolute; inset: auto 12% 4px 12%; height: 50px; z-index: 2; }
+  .boba :global(i) { position: absolute; left: var(--x); bottom: var(--y); width: 15px; height: 15px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #6b5245, #2a1c16); animation: drop 520ms var(--ease-spring) both; animation-delay: var(--d); }
+  @keyframes drop { from { transform: translateY(-220px); opacity: 0; } }
+  .ice { position: absolute; inset: 0; z-index: 3; }
+  .ice :global(i) { position: absolute; left: var(--x); top: var(--y); width: 34px; height: 30px; border-radius: 7px; background: rgb(255 255 255 / .55); box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / .9); transform: rotate(var(--r)); animation: plunk 600ms var(--ease-spring) both; animation-delay: var(--d); }
+  @keyframes plunk { from { transform: translateY(-240px) rotate(0); opacity: 0; } }
+  .foam { position: absolute; left: 0; right: 0; top: 0; height: 0; background: #fffdf8; z-index: 4; transition: height 600ms var(--ease-out); box-shadow: 0 4px 0 rgb(0 0 0 / .03); }
+  .foam.on { height: 34px; }
+  .straw { position: absolute; left: 58%; top: 0; width: 12px; height: 210px; border-radius: 6px; background: repeating-linear-gradient(180deg, var(--accent) 0 14px, #fff 14px 22px); transform: rotate(12deg); transform-origin: bottom; z-index: 0; }
+
+  .cup-wrap.is-served { transform: translateY(-14px) rotate(-3deg); }
+  .served {
+    position: absolute; left: 50%; bottom: -12px; transform: translate(-50%, 100%);
+    width: max-content; max-width: 260px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px;
+    background: var(--surface); border-radius: var(--radius-m); padding: 14px 18px; box-shadow: var(--shadow-2);
+    animation: served-in 520ms var(--ease-spring) both;
+  }
+  .served[hidden] { display: none; }
+  .served strong { font-size: 18px; line-height: 1.3; }
+  @keyframes served-in { from { opacity: 0; transform: translate(-50%, 120%) scale(.9); } }
+
+  @media (max-width: 809px) {
+    .panel { grid-template-columns: 1fr; }
+    .stage { order: -1; min-height: 340px; padding-bottom: 120px; }
+  }
+</style>

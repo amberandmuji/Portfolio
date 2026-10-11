@@ -1,0 +1,77 @@
+---
+import { nav, site } from '../data/site';
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+---
+<header class="hdr" data-header>
+  <div class="container hdr-in">
+    <a href="/" class="brand" aria-label={`${site.name} — home`}>
+      <span class="dot" aria-hidden="true"></span>{site.name}
+    </a>
+
+    <nav class="links" aria-label="Main">
+      {nav.map((n) => (
+        <a
+          href={n.href}
+          class:list={['link', { active: path === n.href }]}
+          {...(n.external ? { target: '_blank', rel: 'noopener' } : {})}
+        >{n.label}</a>
+      ))}
+    </nav>
+
+    <button class="burger" aria-expanded="false" aria-controls="menu" data-menu-toggle>
+      <span class="sr">Menu</span>
+      <span class="bar"></span><span class="bar"></span>
+    </button>
+  </div>
+
+  <div class="menu" id="menu" data-menu hidden>
+    <h4 class="sr">Menu</h4>
+    {nav.map((n, i) => (
+      <a href={n.href} style={`--i:${i}`} {...(n.external ? { target: '_blank', rel: 'noopener' } : {})}>{n.label}</a>
+    ))}
+  </div>
+</header>
+
+<style>
+  .hdr {
+    position: sticky; top: 0; z-index: 50;
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    backdrop-filter: saturate(1.4) blur(14px);
+    -webkit-backdrop-filter: saturate(1.4) blur(14px);
+    border-bottom: 1px solid transparent;
+    transition: transform var(--dur-2) var(--ease-out), border-color var(--dur-2);
+  }
+  .hdr.scrolled { border-bottom-color: var(--line); }
+  .hdr.hide { transform: translateY(-100%); }
+  .hdr-in { display: flex; align-items: center; justify-content: space-between; height: 72px; }
+
+  .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; letter-spacing: -0.01em; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); transition: transform var(--dur-2) var(--ease-spring); }
+  .brand:hover .dot { transform: scale(1.6); }
+
+  .links { display: flex; gap: 6px; }
+  .link { position: relative; padding: 8px 14px; border-radius: 999px; font-weight: 500; font-size: 15.5px; color: var(--ink-2); transition: color var(--dur-1), background var(--dur-1); }
+  .link:hover { color: var(--ink); background: var(--surface-2); }
+  .link.active { color: var(--ink); }
+  .link.active::after { content: ''; position: absolute; left: 50%; bottom: 3px; width: 4px; height: 4px; margin-left: -2px; border-radius: 50%; background: var(--accent); }
+
+  .burger { display: none; position: relative; width: 44px; height: 44px; border: 0; background: transparent; border-radius: 12px; cursor: pointer; }
+  .bar { position: absolute; left: 12px; right: 12px; height: 2px; border-radius: 2px; background: var(--ink); transition: transform var(--dur-2) var(--ease-out), top var(--dur-2) var(--ease-out); }
+  .bar:nth-of-type(1) { top: 17px; } .bar:nth-of-type(2) { top: 25px; }
+  .burger[aria-expanded='true'] .bar:nth-of-type(1) { top: 21px; transform: rotate(45deg); }
+  .burger[aria-expanded='true'] .bar:nth-of-type(2) { top: 21px; transform: rotate(-45deg); }
+
+  .menu { display: flex; flex-direction: column; gap: 4px; padding: 8px var(--gutter) 24px; }
+  .menu[hidden] { display: none; }
+  .menu a { font-size: 28px; font-weight: 600; padding: 10px 0; border-bottom: 1px solid var(--line); animation: menu-in var(--dur-2) var(--ease-out) both; animation-delay: calc(var(--i) * 60ms); }
+  @keyframes menu-in { from { opacity: 0; transform: translateY(-8px); } }
+
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  /* Phone breakpoint (Framer: < 810) */
+  @media (max-width: 809px) {
+    .links { display: none; }
+    .burger { display: block; }
+    .hdr-in { height: 64px; }
+  }
+</style>

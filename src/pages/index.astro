@@ -1,0 +1,90 @@
+---
+import Base from '../layouts/Base.astro';
+import WorkCard from '../components/WorkCard.astro';
+import MatchaGame from '../components/MatchaGame.astro';
+import { selectedWorks, playground, passion, testimonials } from '../data/site';
+---
+<Base>
+  <section class="hero container">
+    <h1 class="hello">
+      <span class="line"><span class="w" style="--i:0">Hello!</span></span>
+      <span class="line"><span class="w" style="--i:1">I'm</span> <span class="w name" style="--i:2">Amber</span></span>
+    </h1>
+    <p class="intro">
+      Product Designer with an engineering background, shipping across B2B and B2C including fintech and healthcare with
+      data-driven design and AI tools.
+    </p>
+    <a href="#projects" class="scroll-cue" aria-label="Scroll to work">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M6 13l6 6 6-6"/></svg>
+    </a>
+  </section>
+
+  <section id="projects" class="section container">
+    <h2 class="section-title" data-reveal>Selected Works</h2>
+    <div class="grid two" data-stagger>
+      {selectedWorks.map((c) => <WorkCard card={c} />)}
+    </div>
+  </section>
+
+  <section class="section container">
+    <h2 class="section-title" data-reveal>Vibe Coding Playground</h2>
+    <div class="grid two" data-stagger>
+      {playground.map((c) => <WorkCard card={c} size="md" />)}
+    </div>
+  </section>
+
+  <section class="section container">
+    <h2 class="section-title" data-reveal>Passion Projects</h2>
+    <div class="grid two" data-stagger>
+      {passion.map((c) => <WorkCard card={c} size="md" />)}
+    </div>
+  </section>
+
+  <section class="section container">
+    <h2 class="section-title" data-reveal>What other people said about me</h2>
+    <div class="grid two" data-stagger>
+      {testimonials.map((t) => (
+        <figure class="quote lift" data-reveal>
+          <blockquote>{t.quote}</blockquote>
+          <figcaption>
+            <img src={t.photo} alt="" width="56" height="56" loading="lazy" />
+            <span><strong>{t.name}</strong><span class="role">{t.role}</span></span>
+          </figcaption>
+        </figure>
+      ))}
+    </div>
+  </section>
+
+  <MatchaGame />
+</Base>
+
+<style>
+  .hero { padding-block: clamp(64px, 12vw, 160px) clamp(40px, 7vw, 96px); position: relative; }
+  .hello { font-size: clamp(52px, 9vw, 120px); line-height: 1; letter-spacing: -0.045em; font-weight: 700; display: flex; flex-direction: column; gap: .06em; }
+  .line { display: block; overflow: hidden; padding-bottom: .08em; }
+  .w { display: inline-block; animation: rise 900ms var(--ease-out) both; animation-delay: calc(120ms + var(--i) * 110ms); }
+  .name { color: var(--accent); }
+  @keyframes rise { from { transform: translateY(105%); opacity: 0; } }
+  .wave { display: inline-block; font-size: .7em; transform-origin: 70% 75%; animation: wave 2.2s ease-in-out 1.1s 2, rise 900ms var(--ease-out) 200ms both; }
+  @keyframes wave { 0%, 60%, 100% { transform: rotate(0); } 10%, 30% { transform: rotate(16deg); } 20%, 40% { transform: rotate(-8deg); } }
+  .intro { max-width: 640px; margin-top: clamp(24px, 3vw, 36px); font-size: clamp(18px, 1.7vw, 22px); color: var(--ink-2); line-height: 1.55; animation: fade 900ms var(--ease-out) 520ms both; }
+  @keyframes fade { from { opacity: 0; transform: translateY(12px); } }
+  .scroll-cue { display: inline-grid; place-items: center; width: 44px; height: 44px; margin-top: 40px; border-radius: 50%; border: 1px solid var(--line); color: var(--ink-2); animation: fade 900ms var(--ease-out) 800ms both, bob 2.4s ease-in-out 1.8s infinite; }
+  @keyframes bob { 50% { transform: translateY(6px); } }
+
+  .grid { display: grid; gap: clamp(28px, 3.5vw, 48px) clamp(20px, 2.5vw, 32px); }
+  .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  .quote { margin: 0; display: flex; flex-direction: column; justify-content: space-between; gap: 24px; padding: clamp(22px, 3vw, 32px); border-radius: var(--radius-l); background: var(--surface); border: 1px solid var(--line); }
+  blockquote { margin: 0; font-size: 16px; line-height: 1.65; color: var(--ink-2); }
+  blockquote::before { content: '“'; display: block; font-size: 56px; line-height: .6; color: var(--accent); margin-bottom: 8px; }
+  figcaption { display: flex; align-items: center; gap: 14px; }
+  figcaption img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; background: var(--surface-2); }
+  figcaption > span { display: flex; flex-direction: column; line-height: 1.3; }
+  .role { color: var(--muted); font-size: 14px; }
+
+  /* Phone (Framer < 810) */
+  @media (max-width: 809px) {
+    .grid.two { grid-template-columns: 1fr; }
+  }
+</style>
