@@ -7,7 +7,7 @@ const linkProps = card.href ? { href: card.href, ...(card.external ? { target: '
 const [name, metric] = card.title.split(' I ');
 ---
 <Tag class:list={['card', size]} {...linkProps} data-reveal>
-  <div class="media">
+  <div class:list={['media', { contain: card.fit === 'contain' }]}>
     {card.media ? (
       <video data-autoplay muted loop playsinline preload="metadata" poster={card.poster} aria-hidden="true">
         <source src={card.media} type="video/mp4" />
@@ -36,6 +36,9 @@ const [name, metric] = card.title.split(' I ');
     transition: box-shadow var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-out);
   }
   .md .media { aspect-ratio: 4 / 3; }
+  /* Portrait clips (e.g. a phone recording) sit whole on a soft backdrop instead of being cropped */
+  .media.contain { background: var(--slate-1); }
+  .media.contain video, .media.contain img { object-fit: contain; }
   .media video, .media img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--dur-3) var(--ease-out); }
   .go {
     position: absolute; right: 14px; top: 14px; display: grid; place-items: center;

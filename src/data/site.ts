@@ -19,7 +19,7 @@ export const nav = [
   { label: 'Resume', href: site.resume, external: true },
 ];
 
-export type Card = { href: string; title: string; tags: string[]; media?: string; poster?: string; alt?: string; external?: boolean };
+export type Card = { href: string; title: string; tags: string[]; media?: string; poster?: string; alt?: string; fit?: 'cover' | 'contain'; external?: boolean };
 
 export const selectedWorks: Card[] = [
   {
@@ -57,28 +57,28 @@ export const playground: Card[] = [
     href: 'https://amberandmuji.github.io/portfolio-apps/starside-campfire/',
     title: 'Starside Campfire',
     tags: ['Claude Code'],
-    media: 'https://framerusercontent.com/assets/zX50upwzkIQ5ciAP0xz3NgsOQ.mp4',
+    media: '/assets/playground/starside-campfire.mp4', poster: '/assets/playground/starside-campfire-poster.webp',
     external: true,
   },
   {
     href: 'https://amberandmuji.github.io/portfolio-apps/drape-room/',
     title: 'Drape Room',
     tags: ['Claude Code'],
-    media: 'https://framerusercontent.com/assets/YqtuR1cPAAZWstF19JUaLxi0Aw.mp4',
+    media: '/assets/playground/drape-room.mp4', poster: '/assets/playground/drape-room-poster.webp',
     external: true,
   },
   {
     href: 'https://amberandmuji.github.io/portfolio-apps/hsinchu-wind/',
     title: 'Twenty Years in the Windy City',
     tags: ['Claude Code'],
-    media: 'https://framerusercontent.com/assets/8NvRmpkyh6hJ1h1DKHR5gKeu0.mp4',
+    media: '/assets/playground/windy-city.mp4', poster: '/assets/playground/windy-city-poster.webp',
     external: true,
   },
   {
     href: '',
     title: 'Sent',
     tags: ['Claude Code', 'React'],
-    media: 'https://framerusercontent.com/assets/LLFUNbfD4NxHQXcoqQxIorRa7F0.mp4',
+    media: '/assets/playground/sent.mp4', poster: '/assets/playground/sent-poster.webp', fit: 'contain',
   },
 ];
 
