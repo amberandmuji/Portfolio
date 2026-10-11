@@ -83,7 +83,7 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; scroll-padding-top: 96px; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 80px; }
 @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
 body {
   margin: 0;
@@ -138,6 +138,19 @@ p { margin: 0; }
   transition: opacity var(--dur-3) var(--ease-out), transform var(--dur-3) var(--ease-out);
   transition-delay: calc(var(--stagger, 0) * 90ms);
 }
+
+/* Cursor label ("View case study", "Try it out!") — replaces the pointer over [data-cursor]
+   on mouse/trackpad devices; touch devices never see it. */
+.cursor-label {
+  position: fixed; left: 0; top: 0; z-index: 100; pointer-events: none;
+  padding: 8px 14px; border-radius: 999px; background: var(--ink); color: var(--surface);
+  font-size: 0.875rem; letter-spacing: -0.01em; line-height: 1.2; white-space: nowrap;
+  opacity: 0; transform: translate3d(var(--cx, 0), var(--cy, 0), 0) translate(-50%, -50%) scale(.6);
+  transition: opacity 200ms var(--ease-out), transform 260ms var(--ease-spring);
+  will-change: transform;
+}
+.cursor-label.on { opacity: 1; transform: translate3d(var(--cx, 0), var(--cy, 0), 0) translate(-50%, -50%) scale(1); }
+@media (hover: hover) and (pointer: fine) { .has-cursor-label [data-cursor] { cursor: none; } }
 
 /* Hover lift for cards */
 .lift { transition: transform var(--dur-2) var(--ease-out), box-shadow var(--dur-2) var(--ease-out); }

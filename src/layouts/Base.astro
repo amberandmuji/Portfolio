@@ -47,6 +47,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       <slot />
     </main>
     <Footer />
+    <div class="cursor-label" data-cursor-label aria-hidden="true"></div>
     <script>
       import '../scripts/motion.ts';
     </script>

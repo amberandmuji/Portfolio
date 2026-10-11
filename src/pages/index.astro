@@ -15,15 +15,12 @@ import { selectedWorks, playground, passion, testimonials } from '../data/site';
       Product Designer with an engineering background, shipping across B2B and B2C including fintech and healthcare with
       data-driven design and AI tools.
     </p>
-    <a href="#projects" class="scroll-cue" aria-label="Scroll to work">
-      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M6 13l6 6 6-6"/></svg>
-    </a>
   </section>
 
   <section id="projects" class="section container">
     <h2 class="section-title" data-reveal>Selected Works</h2>
     <div class="grid two" data-stagger>
-      {selectedWorks.map((c) => <WorkCard card={c} />)}
+      {selectedWorks.map((c) => <WorkCard card={c} cursor="View case study" />)}
     </div>
   </section>
 
@@ -63,8 +60,6 @@ import { selectedWorks, playground, passion, testimonials } from '../data/site';
   .line { display: block; overflow: hidden; padding-bottom: .08em; }
   .w { display: inline-block; }
   .intro { max-width: 640px; margin-top: 20px; }
-  .scroll-cue { display: inline-grid; place-items: center; width: 44px; height: 44px; margin-top: 40px; border-radius: 50%; border: 1px solid var(--line); color: var(--ink-2); transition: color var(--dur-1), border-color var(--dur-1); }
-  .scroll-cue:hover { color: var(--ink); border-color: var(--muted); }
 
   .grid { display: grid; gap: clamp(28px, 3.5vw, 48px) clamp(20px, 2.5vw, 32px); }
   .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }

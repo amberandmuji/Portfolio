@@ -55,7 +55,7 @@ const d = entry.data;
   .container { position: relative; }
 
   /* Sticky section nav (desktop), horizontal scroller (tablet/phone) */
-  .toc { position: sticky; top: 84px; z-index: 10; display: flex; gap: 4px; width: max-content; max-width: 100%; margin: 0 auto 28px; padding: 5px; border-radius: 999px; background: color-mix(in srgb, var(--surface) 85%, transparent); backdrop-filter: blur(12px); border: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; transition: top var(--dur-2) var(--ease-out); }
+  .toc { position: sticky; top: 76px; z-index: 10; display: flex; gap: 4px; width: max-content; max-width: 100%; margin: 0 auto 28px; padding: 5px; border-radius: 999px; background: color-mix(in srgb, var(--surface) 85%, transparent); backdrop-filter: blur(12px); border: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; transition: top var(--dur-2) var(--ease-out); }
   .toc a { padding: 6px 14px; border-radius: 999px; font-size: var(--fs-body); color: rgb(51 51 51); white-space: nowrap; transition: background var(--dur-1), color var(--dur-1); }
   .toc a:hover { color: var(--ink); }
   .toc a:global(.on) { background: var(--nav-selected); color: var(--surface); }
@@ -75,7 +75,7 @@ const d = entry.data;
   .arrow { position: absolute; right: clamp(24px, 4vw, 40px); bottom: clamp(24px, 4vw, 40px); font-size: 28px; transition: transform var(--dur-2) var(--ease-spring); }
   .next:hover .arrow { transform: translateX(6px); }
 
-  @media (max-width: 809px) { .toc { top: 72px; } }
+  @media (max-width: 809px) { .toc { top: 64px; } }
 </style>
 
 <style is:global>

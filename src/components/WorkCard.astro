@@ -1,12 +1,12 @@
 ---
 import type { Card } from '../data/site';
-interface Props { card: Card; size?: 'lg' | 'md' }
-const { card, size = 'lg' } = Astro.props;
+interface Props { card: Card; size?: 'lg' | 'md'; cursor?: string }
+const { card, size = 'lg', cursor } = Astro.props;
 const Tag = card.href ? 'a' : 'div';
 const linkProps = card.href ? { href: card.href, ...(card.external ? { target: '_blank', rel: 'noopener' } : {}) } : {};
 const [name, metric] = card.title.split(' I ');
 ---
-<Tag class:list={['card', size]} {...linkProps} data-reveal>
+<Tag class:list={['card', size]} {...linkProps} data-cursor={card.href ? cursor : undefined} data-reveal>
   <div class:list={['media', { contain: card.fit === 'contain' }]}>
     {card.media ? (
       <video data-autoplay muted loop playsinline preload="metadata" poster={card.poster} aria-hidden="true">
@@ -15,7 +15,7 @@ const [name, metric] = card.title.split(' I ');
     ) : (
       <img src={card.poster} alt={card.alt ?? ''} loading="lazy" decoding="async" />
     )}
-    {card.href && (
+    {card.href && !cursor && (
       <span class="go" aria-hidden="true">
         <svg viewBox="0 0 24 24" width="18" height="18"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M7 17 17 7M9 7h8v8"/></svg>
       </span>

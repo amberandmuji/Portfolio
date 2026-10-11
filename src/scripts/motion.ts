@@ -99,3 +99,31 @@ if (tocLinks.length) {
   }, { rootMargin: '-40% 0px -55% 0px' });
   map.forEach((_, el) => tio.observe(el));
 }
+
+/* 7. Cursor label: a pill that follows the pointer over [data-cursor] (mouse/trackpad only) */
+const label = document.querySelector<HTMLElement>('[data-cursor-label]');
+if (label && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+  document.documentElement.classList.add('has-cursor-label');
+  let current: Element | null = null;
+  const place = (e: PointerEvent) => {
+    label.style.setProperty('--cx', `${e.clientX}px`);
+    label.style.setProperty('--cy', `${e.clientY}px`);
+  };
+  document.addEventListener('pointermove', (e) => {
+    const target = (e.target as Element).closest('[data-cursor]');
+    if (target !== current) {
+      current = target;
+      if (target) {
+        label.textContent = target.getAttribute('data-cursor');
+        if (!label.classList.contains('on')) {
+          // jump into place before fading in, so it doesn't fly across the screen
+          label.style.transition = 'none'; place(e); void label.offsetWidth; label.style.transition = '';
+        }
+      }
+      label.classList.toggle('on', !!target);
+    }
+    if (target) place(e);
+  }, { passive: true });
+  document.addEventListener('pointerleave', () => { current = null; label.classList.remove('on'); });
+  window.addEventListener('blur', () => { current = null; label.classList.remove('on'); });
+}
