@@ -3,9 +3,9 @@ import { nav, site } from '../data/site';
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 ---
 <header class="hdr" data-header>
-  <div class="container hdr-in">
+  <div class="hdr-in">
     <a href="/" class="brand" aria-label={`${site.name} — home`}>
-      <span class="dot" aria-hidden="true"></span>{site.name}
+      {site.name}
     </a>
 
     <nav class="links" aria-label="Main">
@@ -14,7 +14,7 @@ const path = Astro.url.pathname.replace(/\/$/, '') || '/';
           href={n.href}
           class:list={['link', { active: path === n.href }]}
           {...(n.external ? { target: '_blank', rel: 'noopener' } : {})}
-        >{n.label}</a>
+        ><span class="label">{n.label}</span></a>
       ))}
     </nav>
 
@@ -43,18 +43,21 @@ const path = Astro.url.pathname.replace(/\/$/, '') || '/';
   }
   .hdr.scrolled { border-bottom-color: var(--line); }
   .hdr.hide { transform: translateY(-100%); }
-  .hdr-in { display: flex; align-items: center; justify-content: space-between; height: 72px; }
+  /* Full-width bar: name on the far left, links on the far right */
+  .hdr-in { display: flex; align-items: center; justify-content: space-between; height: 80px; padding-inline: clamp(16px, 2.5vw, 48px); }
 
-  .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 500; font-size: 1.125rem; letter-spacing: -0.02em; font-variation-settings: 'opsz' 32; }
-  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); transition: transform var(--dur-2) var(--ease-spring); }
-  .brand:hover .dot { transform: scale(1.6); }
+  .brand { font-size: 1.25rem; letter-spacing: -0.02em; color: rgb(77 77 77); transition: color var(--dur-2) var(--ease-out); }
+  .brand:hover { color: var(--ink); }
 
-  .links { display: flex; gap: 6px; }
-  /* Framer link style "Menu-Navigation": rgb(11,12,14), hover 80% */
-  .links { padding: 4px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); }
-  .link { position: relative; padding: 6px 16px; border-radius: 999px; font-size: var(--fs-body); color: rgb(11 12 14); transition: color var(--dur-1), background var(--dur-2) var(--ease-out); }
-  .link:hover { color: rgb(11 12 14 / .8); background: var(--surface-2); }
-  .link.active { color: var(--surface); background: var(--nav-selected); }
+  .links { display: flex; gap: clamp(24px, 2.6vw, 40px); }
+  .link { position: relative; display: inline-block; padding: 6px 0; font-size: 1rem; letter-spacing: -0.01em; color: rgb(115 115 115); transition: color var(--dur-2) var(--ease-out); }
+  /* Hover: text darkens and lifts slightly; an underline draws in from the left */
+  .link .label { display: inline-block; transition: transform var(--dur-2) var(--ease-spring); }
+  .link::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1.5px; border-radius: 2px; background: currentColor; transform: scaleX(0); transform-origin: right; transition: transform var(--dur-2) var(--ease-out); }
+  .link:hover, .link:focus-visible { color: var(--ink); }
+  .link:hover .label { transform: translateY(-2px); }
+  .link:hover::after, .link:focus-visible::after { transform: scaleX(1); transform-origin: left; }
+  .link.active { color: var(--ink); }
 
   .burger { display: none; position: relative; width: 44px; height: 44px; border: 0; background: transparent; border-radius: 12px; cursor: pointer; }
   .bar { position: absolute; left: 12px; right: 12px; height: 2px; border-radius: 2px; background: var(--ink); transition: transform var(--dur-2) var(--ease-out), top var(--dur-2) var(--ease-out); }

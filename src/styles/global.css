@@ -29,7 +29,8 @@
   --link-hover: #0088ff;
 
   --surface-2: rgb(243 243 243);
-  --tag-bg: var(--surface);
+  --tag-bg: rgb(237 237 237);
+  --tag-ink: rgb(77 77 77);
 
   --radius-s: 10px;
   --radius-m: 16px;
@@ -121,8 +122,8 @@ p { margin: 0; }
 .section-title { font-size: var(--fs-section); letter-spacing: -0.04em; line-height: 1.4; margin-bottom: clamp(20px, 2.5vw, 40px); }
 .eyebrow { font-size: 0.8125rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
 
-.tags { display: flex; flex-wrap: wrap; gap: 6px; }
-.tag { font-size: var(--fs-tag); letter-spacing: var(--ls-tag); line-height: 1.5; font-weight: 500; padding: 3px 12px; border-radius: 999px; background: var(--tag-bg); border: 1px solid var(--line); color: var(--ink); white-space: nowrap; }
+.tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag { font-size: var(--fs-tag); letter-spacing: var(--ls-tag); line-height: 1.5; font-weight: 400; padding: 6px 20px; border-radius: 999px; background: var(--tag-bg); color: var(--tag-ink); white-space: nowrap; }
 
 /* ------------------------------------------------------------------
    Micro-animations
