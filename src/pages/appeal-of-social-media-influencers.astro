@@ -1,0 +1,95 @@
+---
+import Case from '../layouts/Case.astro';
+import { selectedWorks } from '../data/site';
+const F = 'https://framerusercontent.com';
+const next = selectedWorks.find((c) => c.href === '/budget-dashboard')!;
+// Simple line icons for the labels whose icons are Framer code components on the live site
+const icon = {
+  people: 'M16 19v-1a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v1M9.5 10a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM21 19v-1a4 4 0 0 0-3-3.87M15.5 3.13a3.5 3.5 0 0 1 0 6.75',
+  chat: 'M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12Z',
+  chart: 'M4 20V10M10 20V4M16 20v-8M22 20H2',
+  layers: 'm12 3 9 5-9 5-9-5 9-5ZM3 13l9 5 9-5',
+  heart: 'M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.3 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10Z',
+};
+---
+<Case
+  title="Why Audiences Trust Influencers"
+  hero={`${F}/images/3GelbFnJAJUD8dK3shAK8cgWGEw.png?width=2882&height=1525`}
+  heroBg="rgb(255 255 255)"
+  heading="I explored and analyzed user behaviors through structured interviews and data synthesis, uncovering key insights into why audiences favor social media influencers."
+  meta={[
+    [{ label: 'Skills', value: 'Interview, data analysis, affinity diagram' }, { label: 'My role', value: 'UX Researcher' }],
+    [{ label: 'Timeline', value: '07.2022 - 12.2022' }, { label: 'Tool', value: 'Zoom, Teams, Miro, Notion' }],
+  ]}
+  next={next}
+  nextLayout="half"
+>
+  <section class="cs-c cs-sec">
+    <h2 class="cs-h">Introduction</h2>
+    <h3 class="cs-h dim" style="margin-top:10px">"Why We’re Hooked on Social Media Influencers?"</h3>
+    <p class="cs-p" style="margin-top:84px">Social media platforms like Instagram, YouTube, and TikTok have transformed content consumption, allowing diverse influencers—from amateurs to professionals—to create authentic, engaging content that resonates with audiences more deeply than traditional media. This study explores why audiences prefer social media influencers (SMIs) over traditional media, revealing three primary appeals: diverse content, authentic presentation, and a strong sense of closeness with audiences. Through interviews with 45 regular SMI consumers, we uncover how these factors foster lasting engagement and emotional connection, positioning SMIs as pivotal in the evolving media landscape.</p>
+    <p class="accent-label" style="margin-top:34px">Objective</p>
+    <p style="margin-top:8px">Understand the unique factors contributing to SMIs' appeal</p>
+    <p class="accent-label" style="margin-top:39px">Key metrics</p>
+    <p style="margin-top:21px">Published to CHI2023, whole paper available here:<br /><a class="plain-link" href="https://dl.acm.org/doi/10.1145/3544548.3580898" target="_blank" rel="noopener">https://dl.acm.org/doi/10.1145/3544548.3580898</a></p>
+  </section>
+
+  <section class="cs-c cs-sec">
+    <h2 class="cs-h">Methodology</h2>
+    <div class="cs-cols three">
+      {[
+        { i: icon.people, t: 'Participants', p: 'The study engaged 45 individuals, with diverse age and occupational backgrounds, who regularly consume SMI content.' },
+        { i: icon.chat, t: 'Data Collection', p: 'Semi-structured interviews were conducted, allowing participants to express their views and experiences with SMI content versus traditional media.' },
+        { i: icon.chart, t: 'Analysis Approach', p: 'A constructivist grounded theory approach was used, systematically coding interview transcripts to identify patterns in audience preferences.' },
+      ].map((m) => (
+        <div>
+          <p class="label"><span class="cs-icon" style="width:32px;height:24px"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d={m.i} fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg></span>{m.t}</p>
+          <p>{m.p}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="cs-c cs-sec">
+    <h2 class="cs-h">Findings</h2>
+    <div class="cs-group">
+      <p class="label"><span class="cs-icon"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d={icon.layers} fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg></span>Content Appeal</p>
+      <ul class="cs-bullets">
+        <li>Variety and Richness: Participants valued the wide range of topics and personalized content SMIs offer, which they often felt was missing in traditional media.</li>
+        <li>Specialized and Niche Content: Unlike traditional media, SMIs often cover specific interests (e.g., product tutorials, lifestyle tips), resonating deeply with viewers.</li>
+      </ul>
+    </div>
+    <div class="cs-group">
+      <p class="label"><span class="cs-icon"><img src={`${F}/images/NeAo4l48uTIY2e6RhmNWKzhEd8.png?width=128&height=128`} alt="" width="32" height="32" loading="lazy" /></span>Presentation Style</p>
+      <ul class="cs-bullets">
+        <li>Authenticity: SMIs' informal, unfiltered style made their content feel relatable and genuine to audiences.</li>
+        <li>Liveliness and Creativity: Freed from traditional constraints, SMIs often present content in an engaging, sometimes humorous manner, making even complex topics more accessible.</li>
+      </ul>
+    </div>
+    <div class="cs-group">
+      <p class="label"><span class="cs-icon"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d={icon.heart} fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg></span>Closeness to Audience</p>
+      <ul class="cs-bullets">
+        <li>Similarity and Attainability: Viewers often perceived SMIs as "normal" individuals with shared experiences, making them feel relatable.</li>
+        <li>Interactivity and Feedback: Unlike traditional media, SMIs frequently engage directly with their audience through comments and live interactions, fostering a sense of community and personal connection.</li>
+      </ul>
+    </div>
+    <div class="cs-media"><img src={`${F}/images/QVMfWJ4EEB5mtLW693lDvRRkXs.png?width=1783&height=1009`} alt="" width="1783" height="1009" loading="lazy" /></div>
+  </section>
+
+  <section class="cs-c cs-sec">
+    <h2 class="cs-h">Implications for Media and Marketing</h2>
+    <div class="cs-items tight" style="margin-top:68px">
+      <div><p>For Brands</p><p>Understanding the closeness appeal can guide brand collaborations, aligning products with SMIs who naturally resonate with the target audience.</p></div>
+      <div><p>For Content Creators</p><p>Emphasizing authenticity and interaction can enhance trust, fostering long-term audience engagement.</p></div>
+      <div><p>For Traditional Media</p><p>Incorporating some of SMIs' appealing aspects—like interactivity and authenticity—could help traditional media remain competitive.</p></div>
+    </div>
+  </section>
+
+  <section class="cs-c cs-sec">
+    <h2 class="cs-h">Limitations and Future Research</h2>
+    <div class="cs-items tight" style="margin-top:44px">
+      <div><p>Scope Limitations</p><p>This study is geographically and demographically limited, focusing on SMI consumers in a specific region.</p></div>
+      <div><p>Future Research Directions</p><p>Future studies could explore SMIs' appeal across diverse regions and examine differences between micro- and macro-influencers' appeal in various demographics.</p></div>
+    </div>
+  </section>
+</Case>

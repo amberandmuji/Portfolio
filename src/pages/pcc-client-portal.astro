@@ -1,0 +1,187 @@
+---
+import Case from '../layouts/Case.astro';
+import { selectedWorks } from '../data/site';
+const F = 'https://framerusercontent.com';
+const next = selectedWorks.find((c) => c.href === '/home-page-redesign')!;
+---
+<Case
+  title="Automated Partner File Portal"
+  hero={`${F}/images/AgHls0gT2VPCTNdqY4s2CMVYEuI.png?width=2882&height=1525`}
+  heading="Automating Partner File Access: A Self-Service Client Portal Cutting Manual Work by 12%"
+  meta={[
+    [{ label: 'Product', value: 'B2B web app' }, { label: 'Skills', value: 'Product design, Stakeholder management, User research & testing' }],
+    [{ label: 'Role', value: 'Product Designer' }, { label: 'Team', value: 'UX Team, Operation Team, Development Team, and other Program Team directors' }],
+  ]}
+  toc={[
+    { label: 'Overview', id: 'overview' },
+    { label: 'Outcome', id: 'outcome' },
+    { label: 'Context', id: 'context' },
+    { label: 'Process', id: 'process' },
+    { label: 'Final Design', id: 'final-design' },
+    { label: 'Reflection', id: 'reflection' },
+  ]}
+  next={next}
+>
+  <section class="cs-c cs-sec" id="outcome">
+    <h2 class="cs-h">Outcome</h2>
+    <div class="cs-metrics">
+      <div><b data-count="12" data-suffix="%">12%</b><span>Manual User Provisioning Reduced</span></div>
+      <div><b data-count="34" data-suffix="%">34%</b><span>Task Completion Time Reduced</span></div>
+      <div><b data-count="80" data-suffix="%">80%</b><span>Key Feature Adoption Rate</span></div>
+    </div>
+  </section>
+
+  <section class="cs-c cs-sec" id="context">
+    <h2 class="cs-h">What's Primary Care Coalition?</h2>
+    <p class="cs-p">Primary Care Coalition (PCC) is a Maryland nonprofit that improves healthcare access for underserved residents of Montgomery County through programs like Montgomery Cares and Care for Kids. It supports a network of partner clinics, hospitals, and funders, which means constantly exchanging files and data with external partners, the workflow this project set out to improve.</p>
+    <div class="cs-media flat"><img src={`${F}/images/02HwiEQlz83dLWHXNPQgr7Q9Kq4.png?width=1454&height=536`} alt="" width="1454" height="536" loading="lazy" /></div>
+  </section>
+
+  <section class="cs-c cs-sec">
+    <h2 class="cs-h">Problem</h2>
+    <p class="cs-statement">Insurance and program coordinators spent hours every week manually managing access and chasing files, and external partners regularly overwrote critical data.</p>
+  </section>
+
+  <section class="cs-c cs-sec">
+    <h2 class="cs-h">Unique Challenge</h2>
+    <p class="cs-statement">Integrate within existing SharePoint ecosystem while complying with HIPAA and other healthcare data access regulations.</p>
+  </section>
+
+  <section class="cs-sec" id="process">
+    <div class="cs-c">
+      <h2 class="cs-h">Process</h2>
+      <div class="cs-sub">
+        <h3 class="cs-h">Research: Identifying the Access Problem</h3>
+        <p class="cs-p">I conduct 6 stakeholder interviews across Operations and 5 Program teams, which revealed 2 persona and 3 main pain points for the current workflow:</p>
+      </div>
+    </div>
+    <div class="cs-w cs-research">
+      <div class="cs-personas">
+        <div class="cs-persona blue">
+          <p class="who">Target User 1</p>
+          <h4>Program Coordinator<br />(Internal Staff)</h4>
+          <img src={`${F}/images/bqnHhR7rYyZkWe476k4ok5Rju0A.png?width=624&height=624`} alt="" loading="lazy" />
+          <p class="task">Task</p>
+          <p>Send files to partners, collect their data, and update internal records</p>
+        </div>
+        <div class="cs-persona amber">
+          <p class="who">Target User 2</p>
+          <h4>Hospital Staff<br />(External Partner)</h4>
+          <img src={`${F}/images/O54ij97qmAGDJBeEbazUA9Yk.png?width=624&height=624`} alt="" loading="lazy" />
+          <p class="task">Task</p>
+          <p>Request PCC data for administrative filings and return files</p>
+        </div>
+      </div>
+      <div class="cs-insights">
+        <h4>Research Insights</h4>
+        <ol>
+          <li><b>Manual links drain staff time</b><span>Internal staff spend hours emailing hand-made access links that partners lose in their inboxes.</span></li>
+          <li><b>Default security locks partners out.</b><span>SharePoint's private-environment settings frequently block external partners from reaching their files.</span></li>
+          <li><b>No data isolation puts files at risk.</b><span>Without strict separation, partners accidentally overwrite critical documents and break version control.</span></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="cs-sub">
+    <div class="cs-c">
+      <h3 class="cs-h">Ideation: An Automated Shared Space</h3>
+      <p class="cs-p">I proposed building a shared space as client portal, replacing manual link creation with a persistent, permission-based area partners could return to.</p>
+    </div>
+    <div class="cs-w cs-media"><img src={`${F}/images/YfwtxNiWP6nvHQgCnWKhUCWQs.png?width=1858&height=1211`} alt="" width="1858" height="1211" loading="lazy" /></div>
+  </section>
+
+  <section class="cs-sub">
+    <div class="cs-c">
+      <h3 class="cs-h">Finding the Middle Ground Within Constraints</h3>
+      <p class="cs-p">I proposed a third-party portal for full flexibility, but healthcare data regulations required SharePoint unless we built a compliant data center. After exploring alternatives with the operations and development teams, I pivoted to an MVP using SharePoint's supported features, while development evaluates a new platform for the next launch.</p>
+    </div>
+    <div class="cs-w cs-media"><img src={`${F}/images/Qgv6OQt4CUaFfKQyvqgcfRN8lk.png?width=1575&height=772`} alt="" width="1575" height="772" loading="lazy" /></div>
+  </section>
+
+  <section class="cs-sub">
+    <div class="cs-c">
+      <h3 class="cs-h">Placing the Shared Space Within Healthcare Data Constraints</h3>
+      <p class="cs-p">Initially we planned to put the centralized hub inside PCC's internal SharePoint structure, but the need to limit healthcare data access permissions led us to work with stakeholders and pivot the scope to a separate, secure portal focused solely on external partner access.</p>
+    </div>
+    <div class="cs-w cs-media"><img src={`${F}/images/diTIwvtewLxsk28aRhKUnvAYfLc.png?width=1822&height=900`} alt="" width="1822" height="900" loading="lazy" /></div>
+  </section>
+
+  <section class="cs-sub">
+    <div class="cs-c">
+      <h3 class="cs-h">Designing the Information Architecture</h3>
+      <p class="cs-p">I designed a central portal that surfaces public files first, then routes each partner to their own isolated site for partner-specific data, more setup upfront, but far less maintenance, and it closes the manual-access gap research uncovered.</p>
+    </div>
+    <div class="cs-w cs-media cs-pair ratio">
+      <img src={`${F}/images/4fwvdibNlKz6bzrr3T6O2Y7sxU.png?width=833&height=1075`} alt="" width="833" height="1075" loading="lazy" />
+      <img src={`${F}/images/cSWjHHnSH2GhI3TZVbaK8FpqV0.png?width=802&height=1075`} alt="" width="802" height="1075" loading="lazy" />
+    </div>
+  </section>
+
+  <section class="cs-sub">
+    <div class="cs-c">
+      <h3 class="cs-h">Organizing Menu by Task, Not Department</h3>
+      <p class="cs-p">For the internal staff view, I chose to organize menu items by task type, like "Central Distribution" and "Master Inbox", rather than by internal department structure.</p>
+    </div>
+    <div class="cs-w cs-media"><img src={`${F}/images/6ReAD1qFpftMVOo2vkEJeEGQ2ns.png?width=1701&height=926`} alt="" width="1701" height="926" loading="lazy" /></div>
+  </section>
+
+  <section class="cs-sub">
+    <div class="cs-c">
+      <h3 class="cs-h">User Testing and Iteration</h3>
+      <p class="cs-p">I built mid-fidelity Figma wireframes, used Claude to make them clickable, and ran 5 moderated usability sessions with internal healthcare staff, iterating on the design and validating the concept with the legal team before handoff.</p>
+      <h4 class="cs-statement" style="margin-top:40px">Finding 1: The Portal Entrance Needed Role-Based Views to Prevent Cross-Partner Exposure</h4>
+    </div>
+    <div class="cs-w cs-media" style="margin-top:16px"><img src={`${F}/images/vQ02lZIBL96qStB9fNKrUBiaCtE.png?width=2057&height=1013`} alt="" width="2057" height="1013" loading="lazy" /></div>
+    <div class="cs-c"><h4 class="cs-statement" style="margin-top:60px">Finding 2: Program Managers wanted self-serve subfolder structures instead of one-size-fits-all sections</h4></div>
+    <div class="cs-w cs-media" style="margin-top:16px"><img src={`${F}/images/xDqMdFHKTipcbP8mtj1IZxqlKA.png?width=2057&height=803`} alt="" width="2057" height="803" loading="lazy" /></div>
+  </section>
+
+  <section class="cs-sec" id="final-design">
+    <div class="cs-c"><h2 class="cs-h">Final Design: A Centralized Client Portal</h2></div>
+    <div class="cs-w cs-media" style="margin-top:56px"><img class="shadow" src={`${F}/images/H6iHBLyWVFv81gyCyj21lBvBSs.png?width=2890&height=1350`} alt="" width="2890" height="1350" loading="lazy" /></div>
+
+    {[
+      { tone: 'blue', view: 'Internal View', name: 'Client Portal Home Screen', lead: 'One dashboard for PCC staff: partner sites, files distributed, uploads received, and alerts, with push and review in a click.', video: 'M6L5iGx6fvPgNV69Vl4vRP3w', solved: 'Staff wasted hours hunting for files and links scattered across inboxes,  now everything lives in one view.' },
+      { tone: 'blue', view: 'Internal View', name: 'Send files to partners', lead: "Drop a batch in the Central Library; a Power Automate flow routes each file to the right partner's read-only From PCC folder and emails them.", video: 'eyIwjjQk8OdN4HxL2zrQpDCCPM', solved: 'Staff manually added users and sent files one by one, automation replaces the repetitive provisioning work.' },
+      { tone: 'blue', view: 'Internal View', name: 'Receive files from partners', lead: 'New uploads trigger a notification card to responsive staff in the Master Inbox, so staff process every submission from one place instead of 20 sites.', video: 'dL4vTVBNilKp1ddCyezeIHryXs', solved: 'Incoming files were lost across email and scattered folders, a single inbox catches every submission.' },
+      { tone: 'blue', view: 'Internal View', name: 'Partner list directory', lead: 'Every partner gets its own site with inheritance broken, so none can see another, each listed with its permission group setting.', video: 'pe6gyP21ZpGEQ7BplWTHvhiv0', solved: "Partners were locked out by SharePoint's default permissions, isolated sites give each one reliable, scoped access." },
+      { tone: 'amber', view: 'External View', name: 'What partners see: their space only', lead: `Separate read-only "From PCC" and Upload folders keep partner data private and PCC's originals safe from overwrites.`, video: 'T4NJDP43vSudH3DGohZE3smwaE', solved: '' },
+    ].map((f) => (
+      <div class="cs-w cs-card">
+        <div class="cs-feature-head"><span class:list={['cs-pill', f.tone]}>{f.view}</span><span>{f.name}</span></div>
+        <p class="cs-feature-lead">{f.lead}</p>
+        <video data-autoplay muted loop playsinline preload="metadata"><source src={`${F}/assets/${f.video}.mp4`} type="video/mp4" /></video>
+        {f.solved
+          ? <p class="cs-solved">Problem solved: {f.solved}</p>
+          : <p class="cs-solved">Problem solved: Partners kept overwriting critical shared files, read-only <em>From PCC</em> access prevents accidental edits.</p>}
+      </div>
+    ))}
+  </section>
+
+  <section class="cs-c cs-sec">
+    <h2 class="cs-h">Impact</h2>
+    <p class="cs-p">I chose three metrics that map directly to the problems research uncovered, so each number shows whether a specific pain point was solved.</p>
+    <div class="cs-items tight" style="margin-top:52px">
+      <div><h4>12% Manual User Provisioning Reduced</h4><p>Staff spent about 1 hour of every 8-hour day sending email access links, roughly 12% of their workload. Automation cut that to about 10 minutes, freeing up around 50 minutes daily.</p></div>
+      <div><h4>34% Task Completion Time Reduced</h4><p>Sending and receiving files is the portal's core job, so speed was the clearest signal. In usability testing, I timed pushing one file to multiple partners and compared it with the email sending flow.</p></div>
+      <div><h4>80% Key Feature Adoption Rate</h4><p>A portal only helps if people use it. 4 of 5 testers completed the push and pull files flow without help, though they were already familiar with SharePoint, so adoption may be lower for newer users.</p></div>
+    </div>
+  </section>
+
+  <section class="cs-c cs-sec" id="reflection">
+    <h2 class="cs-h">Reflections</h2>
+    <div class="cs-cols">
+      <div><p>Establish a Technical Contingency Plan Earlier</p><p>Instead of waiting for environment permissions, I would proactively initiate secondary research and platform-independent wireframing to further minimize the impact of technical roadblocks.</p></div>
+      <div><p>Formalize Design-to-Development Handoff</p><p>I would integrate engineering-aligned documentation within the design system from the start to more seamlessly bridge the gap between prototypes and the final implementation environment.</p></div>
+    </div>
+  </section>
+
+  <section class="cs-c cs-sec">
+    <h2 class="cs-h">Next Steps</h2>
+    <div class="cs-cols">
+      <div><p>Validating with External Partners</p><p>So far, usability testing has only covered internal PCC staff, the next step is validating the portal's public/private link model and folder navigation directly with external partner organizations.</p></div>
+      <div><p>Sorting Incoming Uploads</p><p>As partners upload files through the portal, the system needs a way to sort and route incoming content (e.g., by program or file type) rather than leaving everything in a single undifferentiated inbox even if it's assigned by responsive staff.</p></div>
+    </div>
+  </section>
+</Case>

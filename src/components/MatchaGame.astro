@@ -13,11 +13,29 @@ const ingredients = [
   { id: 'foam', label: 'Cold foam', color: '#fffdf8' },
 ];
 ---
-<section class="game container" aria-labelledby="game-title" data-reveal>
+<section class="game" aria-labelledby="game-title" data-reveal>
   <div class="panel">
+    <div class="stage">
+      <div class="cup-wrap" data-cup-wrap>
+        <div class="cup" aria-hidden="true">
+          <div class="liquid" data-liquid></div>
+          <div class="boba" data-boba></div>
+          <div class="ice" data-ice></div>
+          <div class="foam" data-foam></div>
+          <div class="shine"></div>
+        </div>
+        <div class="saucer" aria-hidden="true"></div>
+        <div class="served" data-served hidden>
+          <span class="eyebrow">Order up</span>
+          <strong data-drink-name></strong>
+          <button class="btn" type="button" data-again>Make another</button>
+        </div>
+      </div>
+    </div>
+
     <div class="copy">
-      <h2 id="game-title" class="t-section">Make yourself a drink!</h2>
-      <p class="sub t-bio">Tap ingredients to pour them in, then serve it.</p>
+      <h2 id="game-title">Make yourself a drink!</h2>
+      <p class="sub">Tap ingredients to pour them in, then serve it.</p>
 
       <div class="chips" role="group" aria-label="Ingredients">
         {ingredients.map((g) => (
@@ -30,27 +48,9 @@ const ingredients = [
       <div class="actions">
         <button class="btn primary" type="button" data-serve disabled>Serve it</button>
         <button class="btn" type="button" data-undo disabled>Undo</button>
-        <button class="btn ghost" type="button" data-reset disabled>Start over</button>
+        <button class="btn" type="button" data-reset disabled>Start over</button>
       </div>
       <p class="status" aria-live="polite" data-status>Your cup is empty.</p>
-    </div>
-
-    <div class="stage">
-      <div class="cup-wrap" data-cup-wrap>
-        <div class="straw" aria-hidden="true"></div>
-        <div class="cup" aria-hidden="true">
-          <div class="liquid" data-liquid></div>
-          <div class="boba" data-boba></div>
-          <div class="ice" data-ice></div>
-          <div class="foam" data-foam></div>
-          <div class="shine"></div>
-        </div>
-        <div class="served" data-served hidden>
-          <span class="eyebrow">Order up</span>
-          <strong data-drink-name></strong>
-          <button class="btn" type="button" data-again>Make another</button>
-        </div>
-      </div>
     </div>
   </div>
 </section>
@@ -145,77 +145,79 @@ const ingredients = [
 </script>
 
 <style>
-  .game { margin-top: var(--section-gap); }
-  .panel {
-    display: grid; grid-template-columns: 1.15fr 1fr; gap: clamp(24px, 4vw, 56px); align-items: center;
-    background: color-mix(in srgb, var(--green-soft) 45%, var(--surface)); border-radius: calc(var(--radius-l) + 8px); padding: clamp(24px, 4vw, 56px);
-  }
-  .sub { margin-top: 4px; }
+  /* Full-width grey band directly above the footer, as on the Framer site */
+  .game { margin-top: 100px; background: var(--footer-bg); padding: 60px var(--edge); }
+  .panel { display: flex; align-items: center; justify-content: center; gap: clamp(32px, 4vw, 56px); max-width: 860px; margin-inline: auto; }
+  .copy { max-width: 460px; }
+  h2 { font-size: 1.25rem; line-height: 1.4; color: rgb(43 40 35); }
+  .sub { margin-top: 2px; font-size: 0.8125rem; color: var(--muted); }
 
-  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
   .chip {
-    display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px 9px 10px; border-radius: 999px;
-    border: 1px solid var(--line); background: var(--surface);
-    cursor: pointer; font-weight: 500; font-size: var(--fs-tag); letter-spacing: var(--ls-tag);
-    transition: transform var(--dur-1) var(--ease-out), box-shadow var(--dur-1);
+    display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 14px 0 10px; border-radius: 999px;
+    border: 1px solid rgb(12 12 14 / .12); background: rgb(12 12 14 / .03);
+    cursor: pointer; font-size: 0.875rem; letter-spacing: 0; color: rgb(43 40 35);
+    transition: transform var(--dur-1) var(--ease-out), background var(--dur-1), border-color var(--dur-1);
   }
-  .chip:hover:not(:disabled) { transform: translateY(-2px); box-shadow: var(--shadow-1); }
+  .chip:hover:not(:disabled) { background: var(--surface); border-color: rgb(12 12 14 / .2); transform: translateY(-1px); }
   .chip:active:not(:disabled) { transform: scale(.95); }
   .chip:disabled { opacity: .45; cursor: not-allowed; }
   .chip.pop { animation: pop 380ms var(--ease-spring); }
-  @keyframes pop { 40% { transform: scale(1.12); } }
-  .swatch { width: 18px; height: 18px; border-radius: 50%; background: var(--c); box-shadow: inset 0 0 0 1px rgb(0 0 0 / .12); }
+  @keyframes pop { 40% { transform: scale(1.1); } }
+  .swatch { width: 14px; height: 14px; border-radius: 50%; background: var(--c); box-shadow: inset 0 0 0 1px rgb(0 0 0 / .14); }
 
-  .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
   .btn {
-    padding: 11px 18px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface);
-    font-weight: 500; font-size: var(--fs-tag); cursor: pointer; transition: transform var(--dur-1) var(--ease-out), background var(--dur-1), opacity var(--dur-1);
+    height: 36px; padding: 0 16px; border-radius: 999px; border: 1px solid rgb(12 12 14 / .1); background: transparent;
+    font-size: 0.875rem; color: rgb(43 40 35); cursor: pointer;
+    transition: transform var(--dur-1) var(--ease-out), background var(--dur-1), opacity var(--dur-1);
   }
-  .btn:hover:not(:disabled) { transform: translateY(-1px); }
+  .btn:hover:not(:disabled) { background: var(--surface); }
   .btn:active:not(:disabled) { transform: scale(.96); }
-  .btn:disabled { opacity: .4; cursor: not-allowed; }
-  .btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
-  .btn.ghost { background: transparent; }
-  .status { margin-top: 14px; color: var(--muted); min-height: 1.6em; }
+  .btn:disabled { color: rgb(12 12 14 / .3); cursor: not-allowed; }
+  .btn.primary { background: var(--accent); border-color: transparent; color: #fff; font-weight: 600; }
+  .btn.primary:hover:not(:disabled) { background: rgb(37 128 232); }
+  .btn.primary:disabled { background: rgb(57 146 247 / .4); color: #fff; }
+  .status { margin-top: 14px; font-size: 0.8125rem; color: var(--muted); min-height: 1.5em; }
 
-  /* Cup */
-  .stage { display: grid; place-items: center; min-height: 360px; padding-bottom: 110px; }
-  .cup-wrap { position: relative; width: 190px; height: 300px; transition: transform 700ms var(--ease-out); }
+  /* Glass */
+  .stage { flex: none; display: grid; place-items: center; width: 180px; }
+  .cup-wrap { position: relative; width: 140px; height: 214px; transition: transform 700ms var(--ease-out); }
   .cup {
-    position: absolute; inset: 30px 0 0 0; overflow: hidden;
+    position: absolute; inset: 0 0 14px 0; overflow: hidden;
     clip-path: polygon(0 0, 100% 0, 88% 100%, 12% 100%);
-    background: rgb(255 255 255 / .55);
-    border-radius: 6px 6px 22px 22px;
+    background: linear-gradient(90deg, rgb(255 255 255 / .9), rgb(255 255 255 / .6));
+    border-radius: 2px 2px 12px 12px;
   }
-  .cup::before { content: ''; position: absolute; inset: 0; border: 3px solid rgb(255 255 255 / .9); clip-path: inherit; pointer-events: none; z-index: 5; }
-  .shine { position: absolute; left: 16%; top: 6%; width: 9%; height: 70%; border-radius: 99px; background: linear-gradient(rgb(255 255 255 / .7), rgb(255 255 255 / 0)); z-index: 6; }
+  .cup::before { content: ''; position: absolute; inset: 0; clip-path: inherit; box-shadow: inset 0 0 0 2.5px rgb(160 160 160); border-radius: inherit; pointer-events: none; z-index: 5; }
+  .shine { position: absolute; left: 13%; top: 4%; width: 7%; height: 82%; border-radius: 99px; background: linear-gradient(rgb(255 255 255 / .9), rgb(255 255 255 / 0)); z-index: 6; }
+  .saucer { position: absolute; left: 10px; right: 10px; bottom: 0; height: 8px; border-radius: 50%; background: rgb(12 12 14 / .08); }
   .liquid { position: absolute; inset: auto 0 0 0; display: flex; flex-direction: column-reverse; }
-  .liquid :global(.layer) { height: 26px; transition: height 500ms var(--ease-out); }
+  .liquid :global(.layer) { height: 19px; transition: height 500ms var(--ease-out); }
   .liquid :global(.layer.pour) { animation: pour 600ms var(--ease-out); }
   @keyframes pour { from { height: 0; filter: brightness(1.1); } }
-  .boba { position: absolute; inset: auto 12% 4px 12%; height: 50px; z-index: 2; }
-  .boba :global(i) { position: absolute; left: var(--x); bottom: var(--y); width: 15px; height: 15px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #6b5245, #2a1c16); animation: drop 520ms var(--ease-spring) both; animation-delay: var(--d); }
-  @keyframes drop { from { transform: translateY(-220px); opacity: 0; } }
+  .boba { position: absolute; inset: auto 14% 3px 14%; height: 40px; z-index: 2; }
+  .boba :global(i) { position: absolute; left: var(--x); bottom: var(--y); width: 12px; height: 12px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #6b5245, #2a1c16); animation: drop 520ms var(--ease-spring) both; animation-delay: var(--d); }
+  @keyframes drop { from { transform: translateY(-180px); opacity: 0; } }
   .ice { position: absolute; inset: 0; z-index: 3; }
-  .ice :global(i) { position: absolute; left: var(--x); top: var(--y); width: 34px; height: 30px; border-radius: 7px; background: rgb(255 255 255 / .55); box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / .9); transform: rotate(var(--r)); animation: plunk 600ms var(--ease-spring) both; animation-delay: var(--d); }
-  @keyframes plunk { from { transform: translateY(-240px) rotate(0); opacity: 0; } }
-  .foam { position: absolute; left: 0; right: 0; top: 0; height: 0; background: #fffdf8; z-index: 4; transition: height 600ms var(--ease-out); box-shadow: 0 4px 0 rgb(0 0 0 / .03); }
-  .foam.on { height: 34px; }
-  .straw { position: absolute; left: 58%; top: 0; width: 12px; height: 210px; border-radius: 6px; background: repeating-linear-gradient(180deg, var(--green) 0 14px, #fff 14px 22px); transform: rotate(12deg); transform-origin: bottom; z-index: 0; }
+  .ice :global(i) { position: absolute; left: var(--x); top: var(--y); width: 26px; height: 23px; border-radius: 6px; background: rgb(255 255 255 / .55); box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / .95); transform: rotate(var(--r)); animation: plunk 600ms var(--ease-spring) both; animation-delay: var(--d); }
+  @keyframes plunk { from { transform: translateY(-200px) rotate(0); opacity: 0; } }
+  .foam { position: absolute; left: 0; right: 0; top: 0; height: 0; background: #fffdf8; z-index: 4; transition: height 600ms var(--ease-out); }
+  .foam.on { height: 26px; }
 
-  .cup-wrap.is-served { transform: translateY(-14px) rotate(-3deg); }
+  .cup-wrap.is-served { transform: translateY(-10px) rotate(-3deg); }
   .served {
-    position: absolute; left: 50%; bottom: -12px; transform: translate(-50%, 100%);
-    width: max-content; max-width: 260px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px;
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 8;
+    width: max-content; max-width: 240px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px;
     background: var(--surface); border-radius: var(--radius-m); padding: 14px 18px; box-shadow: var(--shadow-2);
     animation: served-in 520ms var(--ease-spring) both;
   }
   .served[hidden] { display: none; }
-  .served strong { font-weight: 400; font-size: var(--fs-small); line-height: 1.4; }
-  @keyframes served-in { from { opacity: 0; transform: translate(-50%, 120%) scale(.9); } }
+  .served strong { font-weight: 400; font-size: 1rem; line-height: 1.4; }
+  @keyframes served-in { from { opacity: 0; transform: translate(-50%, -40%) scale(.9); } }
 
   @media (max-width: 809px) {
-    .panel { grid-template-columns: 1fr; }
-    .stage { order: -1; min-height: 340px; padding-bottom: 120px; }
+    .panel { flex-direction: column; align-items: stretch; }
+    .stage { width: 100%; padding-bottom: 8px; }
   }
 </style>

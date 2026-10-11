@@ -30,22 +30,22 @@ const rows = [cards.slice(0, 2), cards.slice(2, 4)];
 </div>
 
 <style>
-  .pg { display: flex; flex-direction: column; gap: clamp(32px, 4vw, 56px); }
-  .row { display: grid; gap: clamp(32px, 4vw, 56px) clamp(20px, 2.5vw, 40px); }
+  .pg { display: flex; flex-direction: column; gap: 45px; }
+  .row { display: grid; gap: 45px 32px; }
   .row.even { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   /* 16:9 beside 9:16 → widths in the ratio 16/9 : 9/16 give both cards the same height */
-  .row.mixed { grid-template-columns: minmax(0, 1.7778fr) minmax(0, 0.5625fr); }
+  .row.mixed { grid-template-columns: minmax(0, 1012fr) minmax(0, 315fr); }
 
-  .item { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .item { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
   .media {
-    position: relative; overflow: hidden; border-radius: var(--radius-m);
+    position: relative; overflow: hidden; border-radius: 8px;
     background: var(--img-bg); isolation: isolate;
     transition: box-shadow var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-out);
   }
   .media video { width: 100%; height: 100%; object-fit: cover; transition: transform var(--dur-3) var(--ease-out); }
-  .land .media { aspect-ratio: 16 / 10; }
-  .wide .media { aspect-ratio: 16 / 9; }
-  .tall .media { aspect-ratio: 9 / 16; }
+  .land .media { aspect-ratio: 668 / 521; }
+  .wide .media { aspect-ratio: 1012 / 560; }
+  .tall .media { aspect-ratio: 315 / 560; }
 
   .title { font-size: var(--fs-small); letter-spacing: 0; line-height: 1.4; }
   .stack { color: var(--muted); }

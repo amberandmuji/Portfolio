@@ -28,11 +28,10 @@ const [name, metric] = card.title.split(' I ');
 </Tag>
 
 <style>
-  .card { display: flex; flex-direction: column; gap: 16px; border-radius: var(--radius-l); }
+  .card { display: flex; flex-direction: column; gap: 20px; }
   .media {
-    position: relative; overflow: hidden; border-radius: var(--radius-l);
+    position: relative; overflow: hidden; border-radius: 8px;
     background: var(--img-bg); aspect-ratio: 2100 / 1240; isolation: isolate;
-    box-shadow: var(--shadow-1);
     transition: box-shadow var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-out);
   }
   .md .media { aspect-ratio: 4 / 3; }
@@ -46,7 +45,7 @@ const [name, metric] = card.title.split(' I ');
     opacity: 0; transform: translate(-6px, 6px) scale(.8);
     transition: opacity var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-spring);
   }
-  .body { display: flex; flex-direction: column; gap: 10px; padding-inline: 4px; }
+  .body { display: flex; flex-direction: column; gap: 12px; }
   h3 { font-size: var(--fs-small); letter-spacing: 0; line-height: 1.4; }
   .metric { color: var(--muted); }
 

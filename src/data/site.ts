@@ -87,13 +87,13 @@ export const passion: Card[] = [
     href: '/appeal-of-social-media-influencers',
     title: 'Why Audiences Trust Influencers Over Traditional Media: 45 Interviews, CHI 2023',
     tags: ['UX Research', 'CHI 2023 Publication'],
-    poster: 'https://framerusercontent.com/images/3GelbFnJAJUD8dK3shAK8cgWGEw.png',
+    poster: 'https://framerusercontent.com/images/8sPjZVlAzAJjQ57rNThXzGK1lg.png?width=2101&height=1240',
   },
   {
     href: '/design-system',
     title: 'Develop a Design System to Accelerate Development Time',
     tags: ['Design Systems', 'Fintech', '0 to 1'],
-    poster: 'https://framerusercontent.com/images/nsD1ydpSQU1QkXElfy83ERJmuA.png',
+    poster: 'https://framerusercontent.com/images/1eVVc2N0FOTOUrCWIk7XjCbWI.png?width=1893&height=1117',
   },
 ];
 

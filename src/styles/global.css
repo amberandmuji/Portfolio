@@ -29,8 +29,8 @@
   --link-hover: #0088ff;
 
   --surface-2: rgb(243 243 243);
-  --tag-bg: rgb(237 237 237);
-  --tag-ink: rgb(77 77 77);
+  --tag-bg: rgb(240 240 240 / .7);
+  --tag-ink: rgb(115 115 115);
 
   --radius-s: 10px;
   --radius-m: 16px;
@@ -41,6 +41,8 @@
   /* Layout — Framer page breakpoints: Desktop 1200 · Tablet 810 · Phone 390 */
   --page-max: 1200px;
   --gutter: clamp(16px, 4vw, 48px);
+  --edge: clamp(16px, 2.5vw, 36px);   /* page edge padding on full-width pages (36px at 1440) */
+  --hdr-h: 64px;
   --section-gap: clamp(72px, 10vw, 140px);
 
   /* Motion */
@@ -67,6 +69,7 @@
 
   color-scheme: light;
 }
+@media (max-width: 809px) { :root { --hdr-h: 56px; } }
 @media (min-width: 768px) {
   :root { --fs-section: 1.5rem; --fs-body: 0.937rem; --ls-body: -0.02em; --fs-tag: 0.937rem; --ls-tag: -0.02em; --fs-metric: 2rem; --fs-bio: 1.125rem; }
 }
@@ -123,7 +126,7 @@ p { margin: 0; }
 .eyebrow { font-size: 0.8125rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
 
 .tags { display: flex; flex-wrap: wrap; gap: 8px; }
-.tag { font-size: var(--fs-tag); letter-spacing: var(--ls-tag); line-height: 1.5; font-weight: 400; padding: 6px 20px; border-radius: 999px; background: var(--tag-bg); color: var(--tag-ink); white-space: nowrap; }
+.tag { font-size: var(--fs-tag); letter-spacing: var(--ls-tag); line-height: 1.5; font-weight: 500; padding: 8px 24px; border-radius: 999px; background: var(--tag-bg); color: var(--tag-ink); white-space: nowrap; }
 
 /* ------------------------------------------------------------------
    Micro-animations
@@ -162,3 +165,6 @@ p { margin: 0; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   [data-reveal].pending { opacity: 1; transform: none; }
 }
+
+/* The drink-game band sits directly on top of the footer (home page) */
+main:has(.game) + footer { margin-top: 0; }

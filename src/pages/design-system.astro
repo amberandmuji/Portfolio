@@ -1,0 +1,93 @@
+---
+import Case from '../layouts/Case.astro';
+import { selectedWorks } from '../data/site';
+const F = 'https://framerusercontent.com';
+const next = selectedWorks.find((c) => c.href === '/budget-dashboard')!;
+const BA = `${F}/images/rBHrQWeeVnSyE8CjHJlgyt8ujk.png?width=1752&height=971`;
+const steps = [
+  { t: 'Functional colors', p: 'Each color is purposefully chosen to create visual harmony across components and contexts.', id: 'hrUVNaJdmCV0IeerBEVzEK0mJjE' },
+  { t: 'Typography', p: 'Typography establishes a clear hierarchy, supporting both readability and brand identity.', id: 'VfEduUEQhF9pdA399F421v3OAbA' },
+  { t: 'Components', p: 'Standardized components bring uniformity and reliability to the user experience. Each element is designed to be scalable, adaptable, and easy to implement across products.', id: '2gBu3BS4YAuS7FkpecWm30WJjw' },
+  { t: 'Spacing and design handover', p: 'Defined spacing rules create a balanced, structured layout that enhances user comprehension. Streamlined handover guidelines enable developers to implement designs with precision and consistency.', id: '650jxfAuK6NEpX7mfbq8a3G0E' },
+];
+---
+<Case
+  title="Shepherd Money Design System"
+  hero={`${F}/images/nsD1ydpSQU1QkXElfy83ERJmuA.png?width=8646&height=4575`}
+  heading="I led the creation and implementation of a design system for Shepherd Money, streamlining design and development workflows for our product."
+  meta={[
+    [{ label: 'Product', value: 'Shepherd Money Design System' }, { label: 'Skills', value: 'UI Design, Stakeholder Management, Branding' }],
+    [{ label: 'Role', value: 'UIUX Designer' }, { label: 'Team', value: '3-people UX Team, 5-people Development Team' }],
+  ]}
+  next={next}
+>
+  <section class="cs-c cs-sec">
+    <h2 class="cs-h">Outcome</h2>
+    <div class="cs-metrics two" style="margin-top:36px">
+      <div><b data-count="40" data-suffix="%">40%</b><span>Development Time Reduction</span></div>
+      <div><b data-count="25" data-suffix="%">25%</b><span>Improvement in Cross-Team Collaboration Efficiency</span></div>
+    </div>
+  </section>
+
+  <section class="cs-c cs-sec">
+    <h2 class="cs-h">Context</h2>
+    <div class="cs-cards titled" style="margin-top:84px">
+      <div><p>📈 Business Needs</p><p>Accelerate product development to scale the product quickly.</p></div>
+      <div><p>📍Project Goal</p><p>Build a scalable design system to standardize components, streamline branding, and enhance design-development workflows.</p></div>
+      <div><p>❓Problem</p><p>An inconsistent design delivery workflow led to inefficient development progress and inconsistent design style.</p></div>
+      <div><p>🪨 Challenge</p><p>Balancing legacy components with a new design style required careful integration to preserve functionality while ensuring flexibility for future iterations.</p></div>
+    </div>
+    <figure class="cs-ba" style="margin-top:64px">
+      <img src={BA} alt="Before and after the design system" width="1752" height="971" loading="lazy" />
+      <figcaption class="labels"><span>Before design system implementation</span><span>After design system implementation</span></figcaption>
+    </figure>
+  </section>
+
+  <section class="cs-c cs-sec">
+    <h3 class="cs-h">Research-informed selection of typography and color palette to reflect brand values.</h3>
+    <p class="cs-p">I explored various design systems and branding resources to define a color palette and typography that embodied our brand’s warmth, friendliness, and professionalism. After careful evaluation, I selected the "Poppins" font for its modern yet approachable feel and established a base palette of nine distinct colors.</p>
+    <div class="cs-media" style="margin-top:0"><img src={`${F}/images/gtkYVWv8j96pGVpwHYu96rtObY.png?width=1767&height=1410`} alt="" width="1767" height="1410" loading="lazy" /></div>
+  </section>
+
+  <section class="cs-c cs-sec" style="margin-top:120px">
+    <h2 class="cs-h">Process</h2>
+    {steps.map((s, i) => (
+      <div class:list={[i === 0 ? '' : 'cs-sub']} style={i === 0 ? 'margin-top:56px' : undefined}>
+        <h3 class="cs-h">{s.t}</h3>
+        <p class="cs-p">{s.p}</p>
+        <div class="cs-media"><img src={`${F}/images/${s.id}.png?width=2373&height=1377`} alt="" width="2373" height="1377" loading="lazy" /></div>
+      </div>
+    ))}
+    <div class="cs-sub">
+      <h3 class="cs-h">Design documentation</h3>
+      <p class="cs-p">Documentation is always included on the same page as the component for clarity about the use cases. This consisted of:</p>
+      <ul class="cs-bullets tight">
+        <li>A clear explanation for what this element is and how it is typically used.</li>
+        <li>Picture examples so that it was clear what we were talking about</li>
+        <li>Rules of when to use the component and how to use the component.</li>
+      </ul>
+      <div class="cs-media"><img src={`${F}/images/QZEs6FuJ46I5HvUIwKIvaBX3Cs.png?width=2373&height=1377`} alt="" width="2373" height="1377" loading="lazy" /></div>
+    </div>
+    <div class="cs-sub">
+      <h3 class="cs-h">Keep it simple yet scalable</h3>
+      <p class="cs-p">As the sole designer, I built the system with future scalability in mind. Following atomic design principles, I used nested components and variables to simplify variants. It's an ongoing process to refine reusable components and identify edge-case elements.</p>
+      <div class="cs-media"><img src={`${F}/images/qY1bUZDFQtmFd1zPVeAUf8ZM.png?width=2373&height=1377`} alt="" width="2373" height="1377" loading="lazy" /></div>
+    </div>
+  </section>
+
+  <section class="cs-c cs-sec">
+    <h2 class="cs-h">Final Design after design system implemented</h2>
+    <figure class="cs-ba light" style="margin-top:70px">
+      <img src={BA} alt="Before and after the design system" width="1752" height="971" loading="lazy" />
+      <figcaption class="labels"><span>Before design system implementation</span><span>After design system implementation</span></figcaption>
+    </figure>
+  </section>
+
+  <section class="cs-c cs-sec">
+    <h2 class="cs-h">Reflection</h2>
+    <div class="cs-cols" style="margin-top:72px">
+      <div><p>The Importance of a Comprehensive Design System</p><p>One crucial lesson from the project was the significance of having a well-defined and comprehensive design system in place before embarking on new design projects. It ensures consistent design across the entire app and facilitates seamless collaboration with other teams.</p></div>
+      <div><p>Enhanced Communication and Collaboration with Engineers</p><p>By taking the time to finalize the design guidelines and ensuring that engineers understood and could easily reference them, I created a smoother working relationship. This not only improved the development process but also enhanced the overall quality of the project.</p></div>
+    </div>
+  </section>
+</Case>

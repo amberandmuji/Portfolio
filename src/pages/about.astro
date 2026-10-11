@@ -35,57 +35,43 @@ const hobbies = [
 ];
 ---
 <Base title="About — Amber's portfolio">
-  <section class="intro container">
-    <div class="portrait" data-reveal>
-      <img src={portrait} alt="Amber" width="720" height="960" />
+  <!-- 1152px column (144px edges at 1440), measured from the live Framer page -->
+  <section class="wrap intro">
+    <div class="portrait">
+      <img src={portrait} alt="Amber" width="346" height="385" />
     </div>
     <div class="text">
-      <h1 class="t-name" data-reveal>Hi! I'm Amber</h1>
-      <div class="bio t-bio" data-stagger>
-        <p data-reveal>
-          I'm a UX designer who turns user research and data into decisions that move the needle, with experience spanning
-          B2B and B2C across fintech and healthcare. My electrical engineering background gives me the technical fluency to
-          pick up new tools fast and work closely with engineering teams.
-        </p>
-        <p data-reveal>
-          My path into design began in an HCI lab, where I enjoyed solving the problem behind the code and saw my tools
-          change how people worked. Now I use AI agent tools to prototype and build frontend faster.
-        </p>
-        <p data-reveal>Based in Chicago and open to product design and design engineering roles!</p>
+      <h1>Hi! I'm Amber</h1>
+      <div class="bio">
+        <p>I'm a UX designer who turns user research and data into decisions that move the needle, with experience spanning B2B and B2C across fintech and healthcare. My electrical engineering background gives me the technical fluency to pick up new tools fast and work closely with engineering teams.</p>
+        <p>My path into design began in an HCI lab, where I enjoyed solving the problem behind the code and saw my tools change how people worked. Now I use AI agent tools to prototype and build frontend faster.</p>
+        <p>Based in Chicago and open to product design and design engineering roles!</p>
       </div>
     </div>
   </section>
 
-  <section class="section container cv">
-    <div data-reveal>
-      <h2 class="eyebrow">Experience</h2>
-      <ul>
-        {experience.map((e) => (
-          <li><span class="t-small">{e.role}</span><span class="t-sub">{e.org}, {e.dates}</span></li>
-        ))}
-      </ul>
+  <section class="wrap cv">
+    <div>
+      <h2>EXPERIENCE</h2>
+      <ul>{experience.map((e) => <li><span>{e.role}</span><span class="sub">{e.org}, {e.dates}</span></li>)}</ul>
     </div>
-    <div data-reveal>
-      <h2 class="eyebrow">Education</h2>
-      <ul>
-        {education.map((e) => (
-          <li><span class="t-small">{e.role}</span><span class="t-sub">{e.org}</span></li>
-        ))}
-      </ul>
+    <div>
+      <h2>EDUCATION</h2>
+      <ul>{education.map((e) => <li><span>{e.role}</span><span class="sub">{e.org}</span></li>)}</ul>
     </div>
   </section>
 
-  <section class="section container">
+  <section class="wrap ai">
     <h2 class="section-title" data-reveal>I Like Making Cool Things With AI…</h2>
     <Playground cards={ai} />
   </section>
 
-  <section class="section container">
-    <h2 class="section-title" data-reveal>Outside of work, I enjoy…</h2>
+  <section class="wrap hob">
+    <h2 class="section-title" data-reveal>Outside of work, I  enjoy…</h2>
     <div class="hobbies" data-stagger>
-      {hobbies.map((h, i) => (
-        <figure class="hobby" data-reveal style={`--tilt:${i % 2 ? 2 : -2}deg`}>
-          <img src={h.src} alt={h.label} loading="lazy" decoding="async" />
+      {hobbies.map((h) => (
+        <figure class="hobby" data-reveal>
+          <img src={h.src} alt={h.label} width="264" height="396" loading="lazy" decoding="async" />
           <figcaption>{h.label}</figcaption>
         </figure>
       ))}
@@ -94,32 +80,41 @@ const hobbies = [
 </Base>
 
 <style>
-  .intro { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(28px, 5vw, 72px); align-items: center; padding-block: clamp(48px, 8vw, 112px) 24px; }
-  .portrait { border-radius: var(--radius-l); overflow: hidden; aspect-ratio: 3 / 4; background: var(--img-bg); box-shadow: var(--shadow-1); }
+  .wrap { width: min(1152px, 100% - 2 * var(--gutter)); margin-inline: auto; }
+  .intro { display: grid; grid-template-columns: 346px minmax(0, 1fr); gap: 56px; align-items: start; padding-top: clamp(48px, 8vw, 136px); }
+  .portrait { border-radius: 40px; overflow: hidden; aspect-ratio: 346 / 385; background: var(--img-bg); box-shadow: 1px 1px 20px 1px rgb(0 0 0 / .05); }
   .portrait img { width: 100%; height: 100%; object-fit: cover; }
-  .bio { display: flex; flex-direction: column; gap: 20px; margin-top: 20px; }
+  .text { padding-top: 20px; }
+  h1 { font-size: var(--fs-section); letter-spacing: -0.04em; line-height: 1.4; }
+  .bio { display: flex; flex-direction: column; gap: 20px; margin-top: 20px; font-size: var(--fs-bio); letter-spacing: -0.02em; line-height: 1.5; color: var(--ink-2); }
 
-  .cv { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 5vw, 72px); }
-  .cv ul { list-style: none; margin: 18px 0 0; padding: 0; }
-  .cv li { display: flex; flex-direction: column; padding: 16px 0; border-top: 1px solid var(--line); transition: padding-left var(--dur-2) var(--ease-out); }
-  .cv li:hover { padding-left: 8px; }
-  .cv li .t-sub { font-size: var(--fs-body); }
+  .cv { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; margin-top: 100px; }
+  .cv h2 { font-size: var(--fs-body); letter-spacing: 0; }
+  .cv ul { list-style: none; margin: 20px 0 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+  .cv li { display: flex; flex-direction: column; transition: transform var(--dur-2) var(--ease-out); }
+  .cv li:hover { transform: translateX(4px); }
+  .cv .sub { color: var(--muted); }
 
-  .grid { display: grid; gap: clamp(28px, 3.5vw, 48px) clamp(20px, 2.5vw, 32px); }
-  .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ai { margin-top: 120px; }
+  .hob { margin-top: 200px; }
+  .ai .section-title, .hob .section-title { margin-bottom: 24px; }
 
-  .hobbies { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(14px, 2vw, 24px); }
+  .hobbies { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; }
   .hobby { margin: 0; }
-  .hobby img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: var(--radius-m); background: var(--img-bg); transition: transform var(--dur-2) var(--ease-spring), box-shadow var(--dur-2); }
-  .hobby figcaption { margin-top: 10px; font-size: var(--fs-body); }
-  @media (hover: hover) { .hobby:hover img { transform: rotate(var(--tilt)) scale(1.03); box-shadow: var(--shadow-2); } }
+  .hobby img { width: 100%; aspect-ratio: 264 / 396; object-fit: cover; border-radius: 16px; background: var(--img-bg); box-shadow: 1px 1px 20px 1px rgb(0 0 0 / .05); transition: transform var(--dur-2) var(--ease-spring), box-shadow var(--dur-2); }
+  .hobby figcaption { margin-top: 12px; font-size: var(--fs-bio); letter-spacing: -0.02em; line-height: 1.5; }
+  @media (hover: hover) { .hobby:hover img { transform: translateY(-4px) scale(1.02); box-shadow: var(--shadow-2); } }
 
   /* Tablet (810–1199) */
   @media (max-width: 1199px) { .hobbies { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
   /* Phone (< 810) */
   @media (max-width: 809px) {
-    .intro, .cv, .grid.two { grid-template-columns: 1fr; }
-    .portrait { max-width: 420px; }
-    .hobbies { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .intro, .cv { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+    .portrait { max-width: 300px; }
+    .text { padding-top: 0; }
+    .cv { margin-top: 64px; }
+    .ai { margin-top: 80px; }
+    .hob { margin-top: 96px; }
+    .hobbies { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
   }
 </style>

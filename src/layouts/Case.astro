@@ -1,0 +1,61 @@
+---
+import Base from './Base.astro';
+import WorkCard from '../components/WorkCard.astro';
+import type { Card } from '../data/site';
+import '../styles/case.css';
+
+type Meta = { label: string; value: string };
+interface Props {
+  title: string;
+  description?: string;
+  hero: string;
+  heroBg?: string;
+  heading: string;
+  meta: [Meta[], Meta[]];
+  toc?: { label: string; id: string }[];
+  next: Card;
+  nextLayout?: 'default' | 'half';
+}
+const { title, description, hero, heroBg, heading, meta, toc, next, nextLayout = 'default' } = Astro.props;
+---
+<Base title={`${title} — Amber's portfolio`} description={description}>
+  <article class="cs" style={heroBg ? `--hero-bg:${heroBg}` : undefined}>
+    {toc && (
+      <nav class="cs-toc" data-toc aria-label="On this page">
+        {toc.map((t) => <a href={`#${t.id}`}>{t.label}</a>)}
+      </nav>
+    )}
+
+    <div class="cs-hero" id="overview">
+      <img src={hero} alt="" width="1440" height="762" fetchpriority="high" />
+    </div>
+
+    <header class="cs-c">
+      <h1 class="cs-title">{heading}</h1>
+      <div class="cs-meta">
+        {meta.map((col) => (
+          <div>
+            {col.map((m) => (
+              <dl><dt>{m.label}</dt><dd>{m.value}</dd></dl>
+            ))}
+          </div>
+        ))}
+      </div>
+    </header>
+
+    <div class="cs-body">
+      <slot />
+    </div>
+
+    <section class="cs-c cs-sec">
+      <div class:list={['cs-next', { half: nextLayout === 'half' }]}>
+        <h2 class="cs-h">Next project</h2>
+        <WorkCard card={next} cursor="View case study" />
+      </div>
+    </section>
+  </article>
+  <script is:inline>
+    // Reveal-on-scroll for each top-level block of the case study body
+    document.querySelectorAll('.cs-body > *').forEach(function (el) { el.setAttribute('data-reveal', ''); });
+  </script>
+</Base>

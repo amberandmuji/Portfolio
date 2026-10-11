@@ -1,0 +1,121 @@
+---
+import Case from '../layouts/Case.astro';
+import { selectedWorks } from '../data/site';
+const F = 'https://framerusercontent.com';
+const next = selectedWorks.find((c) => c.href === '/shopping-cart-redesign')!;
+const img = (id: string, w: number, h: number) => ({ src: `${F}/images/${id}.png?width=${w}&height=${h}`, w, h });
+const steps = [
+  { t: 'Understanding different user types', p: 'The Budget Dashboard caters to two main user groups—general users with limited finance knowledge who need a straightforward view of their budget, and advanced users who want to manage their finances in detail, utilizing more in-depth tracking and analytical features.', i: img('pg4SGbAceI4Xp6ogsi3ahpwmU', 2373, 1377) },
+  { t: 'Map out early hypothesis and IA to test', p: 'With insights from research, I began the design process by structuring the initial Information Architecture for the overall experience to discuss key functionalities with stakeholders.', i: img('gtMq6QRtImyOyKMzngfvY1H4', 2373, 1377) },
+  { t: 'Explore wireframes', p: 'I iterated through 4 layout ideas for the budget dashboard, ultimately choosing a design that balances high-level insights with accessible details, enhancing user engagement and clarity.', i: img('jUpqLGacujPKKopz0tPC0RQtLg', 2373, 1377) },
+  { t: 'Iterate through  usability testing feedback - 1', p: 'As I moved into prototyping using Figma, I worked closely with product managers and engineers to find a balance between user needs and business requirements.', i: img('Ti72LGCAUY1mFOJuV4UBSmU1Af0', 2373, 1377) },
+  { t: 'Iterate through usability testing feedback - 2', p: 'Based on feedback from the design lead and engineering team, I iterated on the initial budget interface to reduce visual clutter and integrate real-time tracking features.', i: img('xXbA9baPHtNlWcXY5ojN56wJsU', 2373, 1377) },
+  { t: 'Final version with design system implementation', p: 'After finalizing the designs, I recognized the need for a scalable design system. I refined the visuals to ensure consistency, improving cohesion across the product.', i: img('7jYb06tRUZGY0PglmbACHD9R48', 2373, 1377) },
+];
+---
+<Case
+  title="Web-to-Mobile Budgeting Dashboard"
+  hero={`${F}/images/j3Xj6uWVPPbqXOrneqBr7qnLnTc.png?width=2882&height=1525`}
+  heroBg="rgb(201 231 243)"
+  heading="Rebuilding Budgeting for Web-to-Mobile: A Dual-Persona Dashboard with +20% Engagement"
+  meta={[
+    [{ label: 'Product', value: 'Shepherd Money App' }, { label: 'Skills', value: 'Product design Stakeholder management, Interactive prototyping, User research & testing' }],
+    [{ label: 'Role', value: 'UX Researcher & UX Designer' }, { label: 'Team', value: '3-people UX Team, product manager, 5-people Development Team' }],
+  ]}
+  toc={[
+    { label: 'Overview', id: 'overview' },
+    { label: 'Outcome', id: 'outcome' },
+    { label: 'Context', id: 'context' },
+    { label: 'Process', id: 'process' },
+    { label: 'Challenges', id: 'challenges' },
+    { label: 'Final Design', id: 'final-design' },
+    { label: 'Reflections', id: 'reflections' },
+  ]}
+  next={next}
+>
+  <section class="cs-c cs-sec" id="outcome">
+    <h2 class="cs-h">Outcome</h2>
+    <div class="cs-metrics">
+      <div><b data-count="19" data-suffix="%">19%</b><span>user engagement time increased</span></div>
+      <div><b data-count="31" data-suffix="%">31%</b><span>Task Completion Time Reduced</span></div>
+      <div><b data-count="23" data-suffix="%">23%</b><span>Drop Off Rate Reduced</span></div>
+    </div>
+  </section>
+
+  <section class="cs-c cs-sec" id="context">
+    <h2 class="cs-h">What's the problem? What's the goals?</h2>
+    <div class="cs-cards">
+      <div><p>❓Problem to Solve</p><p>An unclear budgeting workflow caused confusion and led to high drop-off rates.</p></div>
+      <div><p>🪨 Unique Challenge</p><p>Rebranding and porting the product from web to mobile while keeping the experience intuitive for existing users.</p></div>
+      <div class="dim"><p>📍Project Goal</p><p>Streamlined the budget feature that enables users to manage their budget status.</p></div>
+      <div class="dim"><p>📈 Business Needs</p><p>Leadership plans to increase user base by rebranding and adding mobile product line.</p></div>
+    </div>
+  </section>
+
+  <section class="cs-c cs-sec">
+    <h2 class="cs-h">What's Shepherd Money?</h2>
+    <p class="cs-p">An ai-powered personalized financial planning platform</p>
+    <div class="cs-media"><img src={`${F}/images/LbjKhDOubfwbLy2YpinZQuSP8UA.png?width=2946&height=1428`} alt="" width="2946" height="1428" loading="lazy" /></div>
+    <p class="cs-p" style="margin-top:12px">Shepherd Money helps users manage every aspect of their finances—from budgeting and net worth tracking to personalized investment strategies—all with a focus on tailored insights and ease of use.</p>
+  </section>
+
+  <section class="cs-c cs-sec" id="process">
+    <h2 class="cs-h">Process</h2>
+    <div style="margin-top:68px">
+      <h3 class="cs-h">Research Insights</h3>
+      <p class="cs-p">I conducted competitive analysis and user interviews to uncover the pinpoints of old budget feature.</p>
+      <div class="cs-items tight">
+        <div><p>Poor Navigation Structure</p><p>Unclear interface makes budgeting features hard to find, causing frustration and inefficient finance tracking.</p></div>
+        <div><p>Ineffective Feature Exposure</p><p>Poor feature visibility leads to missed opportunities for better financial management.</p></div>
+        <div><p>Rigid Budgeting Workflows</p><p>Limited budget customization restricts users from managing finances according to their goals.</p></div>
+      </div>
+      <div class="cs-media"><img src={`${F}/images/HKFnGZT1CyNiGQrvPI8yUWac.png?width=1920&height=1005`} alt="The old website product" width="1920" height="1005" loading="lazy" /></div>
+      <p class="cs-caption">The old website product</p>
+    </div>
+    <div class="cs-sub">
+      <h3 class="cs-h">User interviews indicate that users need personalized features to address unique financial goals.</h3>
+      <p class="cs-p">We conducted interviews with 5 users from different occupations to understand their financial needs. Early-career users face distinct challenges, such as student loans and limited financial knowledge, setting them apart from general users. Therefore, Their short-term financial goals require a more tailored budgeting experience.</p>
+      <div class="cs-media"><img src={`${F}/images/xWwwrL9QqVHJzvkWxTuXGeGnhY.png?width=10758&height=7167`} alt="" width="10758" height="7167" loading="lazy" /></div>
+    </div>
+    <div class="cs-sub">
+      <h3 class="cs-h">Competitor analysis reveals best practices for dashboard-centric and card-based design patterns.</h3>
+      <p class="cs-p">Across various personal finance apps, we found that dashboard-centric design enhances engagement by providing a clear overview of budgets, spending trends, and goals. A card-based UI improves usability, allowing users to track and adjust budgets effortlessly.</p>
+      <div class="cs-media"><img src={`${F}/images/6VOyigyE4QtZmQBp9YPqSg4XwM.png?width=640&height=470`} alt="" width="640" height="470" loading="lazy" /></div>
+    </div>
+    {steps.map((s) => (
+      <div class="cs-sub">
+        <h3 class="cs-h">{s.t}</h3>
+        <p class="cs-p">{s.p}</p>
+        <div class="cs-media"><img src={s.i.src} alt="" width={s.i.w} height={s.i.h} loading="lazy" /></div>
+      </div>
+    ))}
+  </section>
+
+  <section class="cs-c cs-sec" id="challenges">
+    <h2 class="cs-h">Challenges</h2>
+    <div class="cs-sub" style="margin-top:56px">
+      <h3 class="cs-h">Balance between stakeholders and existing product</h3>
+      <p class="cs-p">Before ideating solutions, I faced a few challenges about balancing between user needs, business goals and existing website product within the constraint of limited resources and strict timeline.</p>
+      <div class="cs-media"><img src={`${F}/images/YtnfzwnbJ02dqGI4AE4T5GntVwQ.png?width=2373&height=1377`} alt="" width="2373" height="1377" loading="lazy" /></div>
+    </div>
+    <div style="margin-top:100px">
+      <h3 class="cs-h">Collaborate with development team</h3>
+      <p class="cs-p">Facing communication challenges with engineers, I proposed to build a design system to bridge this gap, presented its benefits to stakeholders, and fostered early collaboration, ultimately achieving stronger alignment and efficiency across the team.</p>
+      <div class="cs-media"><img src={`${F}/images/Sv8ohM0Iqded0tljRimkEFqlI.png?width=2373&height=1377`} alt="" width="2373" height="1377" loading="lazy" /></div>
+    </div>
+  </section>
+
+  <section class="cs-c cs-sec" id="final-design">
+    <h2 class="cs-h">Final Design</h2>
+    <div class="cs-media" style="margin-top:56px"><img src={`${F}/images/1Xl4IBujfpsnNuUnwWZuc6x7qg.png?width=1751&height=921`} alt="" width="1751" height="921" loading="lazy" /></div>
+  </section>
+
+  <section class="cs-c cs-sec" id="reflections">
+    <h2 class="cs-h">Reflections</h2>
+    <div class="cs-items" style="margin-top:68px">
+      <div><p>Effective Communication with Pixels and Color Codes</p><p>When collaborating on the project, one valuable lesson is the importance of using specific units like pixels (px) and color codes to communicate design elements accurately. Additionally, specifying color codes precisely, such as hex codes or RGB values, helps maintain color consistency throughout the project.</p></div>
+      <div><p>Prioritizing Functionality before Visual Design</p><p>By doing this, I established a strong foundation for the design system, ensuring that it meets user needs and functional requirements. Once the functionality is well-defined, I could then layer visual design elements on top, creating a visually appealing and consistent user interface that aligns with the system's functional components.</p></div>
+      <div><p>Explore more solutions before diving into one</p><p>Due to time limitation, in this project we didn’t try out many solutions to solve problem. I realized that next time I would do some simple test of each solutions and then pick the one which fit the problem statement and business goal the most.</p></div>
+    </div>
+  </section>
+</Case>

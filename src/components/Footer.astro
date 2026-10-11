@@ -2,8 +2,8 @@
 import { site } from '../data/site';
 ---
 <footer class="ftr" id="contact">
-  <div class="container ftr-in" data-reveal>
-    <h2 class="t-footer">Thanks for stopping by !</h2>
+  <div class="ftr-in">
+    <h2 class="ftr-title">Thanks for stopping by !</h2>
     <div class="icons">
       <a href={`mailto:${site.email}`} aria-label="Email Amber" class="icon">
         <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M3.5 6.5h17v11h-17zM4 7l8 6 8-6"/></svg>
@@ -12,15 +12,16 @@ import { site } from '../data/site';
         <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.75h4v11H3zM9.5 9.75h3.8v1.6h.06c.53-.95 1.83-1.95 3.77-1.95 4.03 0 4.77 2.5 4.77 5.75v5.6h-4v-4.96c0-1.18-.02-2.7-1.7-2.7-1.7 0-1.95 1.3-1.95 2.62v5.04h-4z"/></svg>
       </a>
     </div>
-    <p class="fine">© {new Date().getFullYear()} {site.name}</p>
   </div>
 </footer>
 
 <style>
-  .ftr { padding-block: clamp(64px, 9vw, 120px) 40px; background: var(--footer-bg); border-top: 1px solid var(--line); margin-top: var(--section-gap); }
-  .ftr-in { display: flex; flex-direction: column; align-items: center; gap: 22px; text-align: center; }
-  .icons { display: flex; gap: 12px; }
-  .icon { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: var(--surface); border: 1px solid var(--line); color: var(--ink); transition: transform var(--dur-2) var(--ease-spring), background var(--dur-1), color var(--dur-1); }
-  .icon:hover { transform: translateY(-3px) scale(1.06); background: var(--ink); color: var(--bg); }
-  .fine { color: var(--muted); font-size: 0.8125rem; }
+    /* Full-width bar like the Framer footer: 134px tall at desktop */
+  .ftr { margin-top: 120px; background: var(--footer-bg); }
+  .ftr-in { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 134px; padding: 24px var(--edge); }
+  .ftr-title { font-size: var(--fs-section); letter-spacing: -0.04em; line-height: 1.4; }
+  .icons { display: flex; gap: 10px; }
+  .icon { display: grid; place-items: center; width: 54px; height: 54px; border-radius: 50%; background: var(--surface); color: var(--ink); transition: transform var(--dur-2) var(--ease-spring), background var(--dur-1), color var(--dur-1); }
+  .icon:hover { transform: translateY(-3px) scale(1.06); background: var(--ink); color: var(--surface); }
+  @media (max-width: 809px) { .ftr-in { min-height: 112px; } .icon { width: 46px; height: 46px; } }
 </style>

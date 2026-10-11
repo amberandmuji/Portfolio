@@ -1,0 +1,96 @@
+---
+import Case from '../layouts/Case.astro';
+import { selectedWorks } from '../data/site';
+const F = 'https://framerusercontent.com';
+const next = selectedWorks.find((c) => c.href === '/pcc-client-portal')!;
+---
+<Case
+  title="Checkout Redesign"
+  hero={`${F}/images/3uU2S8HgTeiSL1y1dqmHcINj1w.png?width=2882&height=1525`}
+  heroBg="rgb(252 237 199)"
+  heading="Redesigning Checkout for Trust: +32% Conversion via Price Transparency"
+  meta={[
+    [{ label: 'Product', value: 'Ding-go website' }, { label: 'Skills', value: 'Data Analysis, Product design, Stakeholder management, User research & testing' }],
+    [{ label: 'Role', value: 'UX Researcher & UX Designer' }, { label: 'Team', value: 'UX Team, Marketing Team, Content Team, Development Team' }],
+  ]}
+  toc={[
+    { label: 'Overview', id: 'overview' },
+    { label: 'Outcome', id: 'outcome' },
+    { label: 'Context', id: 'context' },
+    { label: 'Process', id: 'process' },
+    { label: 'Final Design', id: 'final-design' },
+    { label: 'Reflection', id: 'reflections' },
+  ]}
+  next={next}
+>
+  <section class="cs-c cs-sec" id="outcome">
+    <h2 class="cs-h">Outcome</h2>
+    <div class="cs-metrics">
+      <div><b data-count="7" data-suffix="%">7%</b><span>Reached Checkout Rate Increased</span></div>
+      <div><b data-count="28" data-suffix="%">28%</b><span>Completed Checkout Rate Increased</span></div>
+      <div><b data-count="32" data-suffix="%">32%</b><span>Conversion rate Increased</span></div>
+    </div>
+  </section>
+
+  <section class="cs-c cs-sec">
+    <h2 class="cs-h">What's Ding-go?</h2>
+    <p class="cs-p">Ding-go (a BLIVE GLOBAL brand) is a direct-to-consumer e-commerce startup that curates authentic Asian snacks, beverages, beauty, and specialty foods from Japan, Korea, Taiwan, and beyond for Asian diaspora communities across the U.S. As an early-stage online retailer with limited runway, it relied on mobile traffic from marketing ads to grow, so turning that traffic into sales was critical to proving product-market fit.</p>
+    <div class="cs-media flat"><img src={`${F}/images/K1B95IjPAaffsqOOql0cDZR8og.png?width=1087&height=354`} alt="" width="1087" height="354" loading="lazy" /></div>
+  </section>
+
+  <section class="cs-c cs-sec" id="context">
+    <h2 class="cs-h">Context</h2>
+    <div class="cs-cards">
+      <div><p>❓Problem to Solve</p><p>A 90.3% cart abandonment rate showed the cart page lacked the clarity and trust needed to move customers forward.</p></div>
+      <div><p>🪨 Challenge</p><p>Redesign the cart under tight engineering resources while building user confidence and supporting varied purchase behaviors across devices.</p></div>
+      <div class="dim"><p>📍Project Goal</p><p>Redesign the cart with a trust-focused, mobile-optimized layout that clearly communicates shipping, pricing, and available actions.</p></div>
+      <div class="dim"><p>📈 Business Needs</p><p>Increase revenue by improving the conversion funnel, reduce cart abandonment and help more users complete purchases.</p></div>
+    </div>
+  </section>
+
+  <section class="cs-c cs-sec" id="process">
+    <h2 class="cs-h">Process</h2>
+    <div class="cs-sub">
+      <h3 class="cs-h">Research: Vague Pricing and Checkout Friction Drove Cart Abandonment</h3>
+      <p class="cs-p">To understand cart drop-offs, I interviewed 4 early users, analyzed Google Analytics Reports and Hotjar session recordings.</p>
+      <div class="cs-media"><img src={`${F}/images/9UTND0YZrx94a5n0RR4NyW4Hio.png?width=2373&height=1377`} alt="" width="2373" height="1377" loading="lazy" /></div>
+    </div>
+    <div class="cs-sub">
+      <h3 class="cs-h">Prototyping &amp; Feedback</h3>
+      <p class="cs-p">I created prototypes in Figma, then presented to marketing, engineering, and product teams to collect feedback.</p>
+      <div class="cs-media"><img src={`${F}/images/xN6D4e7Akf1LyMYDNIkWh0L4u0.png?width=1796&height=1042`} alt="" width="1796" height="1042" loading="lazy" /></div>
+    </div>
+    <div class="cs-sub">
+      <h3 class="cs-h">Quick Win - First Launch</h3>
+      <p class="cs-p">Collaborated with the engineering team to launch the first version of the product, prioritizing key features. This release received positive customer feedback and led to an increased cart conversion rate.</p>
+      <div class="cs-media"><img src={`${F}/images/1hUydCFERDsiaWFmnkk1ZomClM.png?width=2373&height=1335`} alt="" width="2373" height="1335" loading="lazy" /></div>
+    </div>
+    <div class="cs-sub">
+      <h3 class="cs-h">Iterating with Post-Launch Data</h3>
+      <p class="cs-p">Post-launch data showed cart conversion had already increased, confirming the direction was right, so I iterated further, adding components that hadn't made it into the initial engineering timeline.</p>
+      <div class="cs-media"><img src={`${F}/images/14tsYruLegeoXC4Yzp6XmLXGaI.png?width=2373&height=1402`} alt="" width="2373" height="1402" loading="lazy" /></div>
+    </div>
+  </section>
+
+  <section class="cs-c cs-sec" id="final-design">
+    <h2 class="cs-h">Final Design</h2>
+    <div class="cs-card cs-split cart-card">
+      <img class="phone" src={`${F}/images/7nfzlhizz4ux9IcTxQJgwYb90.png?width=365&height=781`} alt="Redesigned mobile cart" width="365" height="781" loading="lazy" />
+      <div class="cs-items tight" style="margin-top:0">
+        <div><p>Trust Enhancements</p><p>Added estimated shipping dates to reduce hesitation<br />Moved discount code input from checkout to cart to offer value earlier</p></div>
+        <div><p>Price Transparency</p><p>Introduced a clear summary of total costs (including shipping)</p></div>
+        <div><p>CTA Clarity</p><p>Separated the primary checkout CTA from quick-pay buttons<br />Improved visual hierarchy to increase action rates</p></div>
+      </div>
+    </div>
+    <div class="cs-card"><img class="fill" src={`${F}/images/b2FcABCLEWXkSTNCGwBRVBOXHdQ.png?width=1752&height=971`} alt="" width="1752" height="971" loading="lazy" /></div>
+  </section>
+
+  <section class="cs-c cs-sec" id="reflections">
+    <h2 class="cs-h">What I Learned From Unexpected Data Results &amp; Next Steps</h2>
+    <div class="cs-items" style="margin-top:68px">
+      <div><p>Why Checkout Completed Rate Increased More Than Checkout Rate</p><p>This suggests the redesign helped reassure users during the checkout process, likely by improving clarity around final pricing, shipping details, and discounts, which reduced drop-off after checkout started.</p></div>
+      <div><p>Limited Impact on Reached Checkout Rate: Entry Friction Still Exists</p><p>Users might still not see enough value or urgency to move forward. Overwhelming checkout options (like multiple quick-pay buttons) may still cause confusion.</p></div>
+      <div><p>Next Focus: Reduce Pre-Checkout Friction And Streamline Checkout</p><p>Run session replays or click maps on the cart page to identify hesitation. A/B test  simplifying quick-pay options (e.g., hide them behind a dropdown or reduce visual noise).</p></div>
+    </div>
+  </section>
+</Case>

@@ -30,8 +30,9 @@ It downloads every image and video into `public/assets/` and rewrites the links 
 |---|---|
 | Colors, text styles, spacing, motion timing | `src/styles/global.css` (`:root` tokens, named after the Framer tokens) |
 | Home cards, testimonials, nav, links | `src/data/site.ts` |
-| Case studies (one Markdown file each) | `src/content/work/*.md` |
-| Case-study template, TOC, metrics, cards | `src/pages/[slug].astro` |
+| Case studies (one page each) | `src/pages/<case-study>.astro` |
+| Case-study layout, left section menu, hero, next project | `src/layouts/Case.astro` |
+| Case-study building blocks (columns, cards, metrics, personas) | `src/styles/case.css` |
 | About page | `src/pages/about.astro` |
 | Matcha drink game | `src/components/MatchaGame.astro` |
 | Scroll reveals, header, video autoplay, count-ups | `src/scripts/motion.ts` |

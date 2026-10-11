@@ -35,16 +35,15 @@ const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 <style>
   .hdr {
     position: sticky; top: 0; z-index: 50;
-    background: color-mix(in srgb, var(--bg) 82%, transparent);
-    backdrop-filter: saturate(1.4) blur(14px);
-    -webkit-backdrop-filter: saturate(1.4) blur(14px);
+    /* Transparent at the top of the page (so case-study heroes run under it), frosted once scrolled */
+    background: transparent;
+    transition: transform var(--dur-2) var(--ease-out), border-color var(--dur-2), background var(--dur-2);
     border-bottom: 1px solid transparent;
-    transition: transform var(--dur-2) var(--ease-out), border-color var(--dur-2);
   }
-  .hdr.scrolled { border-bottom-color: rgb(12 12 14 / .05); }
+  .hdr.scrolled { border-bottom-color: rgb(12 12 14 / .05); background: color-mix(in srgb, var(--bg) 85%, transparent); backdrop-filter: saturate(1.4) blur(14px); -webkit-backdrop-filter: saturate(1.4) blur(14px); }
   .hdr.hide { transform: translateY(-100%); }
   /* Full-width bar: name on the far left, links on the far right */
-  .hdr-in { display: flex; align-items: center; justify-content: space-between; height: 64px; padding-inline: clamp(16px, 2.5vw, 48px); }
+  .hdr-in { display: flex; align-items: center; justify-content: space-between; height: var(--hdr-h); padding-inline: var(--edge); }
 
   .brand { font-size: 1.25rem; letter-spacing: -0.02em; color: rgb(77 77 77); transition: color var(--dur-2) var(--ease-out); }
   .brand:hover { color: var(--ink); }
@@ -74,6 +73,5 @@ const path = Astro.url.pathname.replace(/\/$/, '') || '/';
   @media (max-width: 809px) {
     .links { display: none; }
     .burger { display: block; }
-    .hdr-in { height: 56px; }
   }
 </style>

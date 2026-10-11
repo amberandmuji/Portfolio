@@ -6,46 +6,47 @@ import Playground from '../components/Playground.astro';
 import { selectedWorks, playground, passion, testimonials } from '../data/site';
 ---
 <Base>
-  <section class="hero container">
+  <!-- Full-width layout with 36px page edges, measured from the live Framer page at 1440px -->
+  <section class="hero edge">
     <h1 class="hello t-name">
-      <span class="line"><span class="w">Hello!</span></span>
-      <span class="line"><span class="w">I'm</span> <span class="w">Amber</span></span>
+      <span>Hello!</span>
+      <span>I'm Amber</span>
     </h1>
-    <p class="intro t-bio">
+    <p class="intro">
       Product Designer with an engineering background, shipping across B2B and B2C including fintech and healthcare with
       data-driven design and AI tools.
     </p>
   </section>
 
-  <section id="projects" class="section container">
+  <section id="projects" class="block edge">
     <h2 class="section-title" data-reveal>Selected Works</h2>
     <div class="grid two" data-stagger>
       {selectedWorks.map((c) => <WorkCard card={c} cursor="View case study" />)}
     </div>
   </section>
 
-  <section class="section container">
+  <section class="block edge">
     <h2 class="section-title" data-reveal>Vibe Coding Playground</h2>
     <Playground cards={playground} />
   </section>
 
-  <section class="section container">
+  <section class="block edge">
     <h2 class="section-title" data-reveal>Passion Projects</h2>
     <div class="grid two" data-stagger>
-      {passion.map((c) => <WorkCard card={c} size="md" />)}
+      {passion.map((c) => <WorkCard card={c} cursor="View case study" />)}
     </div>
   </section>
 
-  <section class="section container">
+  <section class="block edge">
     <h2 class="section-title" data-reveal>What other people said about me</h2>
-    <div class="grid two" data-stagger>
+    <div class="grid two quotes" data-stagger>
       {testimonials.map((t) => (
-        <figure class="quote lift" data-reveal>
-          <blockquote class="t-body">{t.quote}</blockquote>
+        <figure class="quote" data-reveal>
           <figcaption>
-            <img src={t.photo} alt="" width="56" height="56" loading="lazy" />
-            <span><span class="t-small">{t.name}</span><span class="t-sub role">{t.role}</span></span>
+            <img src={t.photo} alt="" width="50" height="50" loading="lazy" />
+            <span><span class="name">{t.name}</span><span class="role">{t.role}</span></span>
           </figcaption>
+          <blockquote>{t.quote}</blockquote>
         </figure>
       ))}
     </div>
@@ -55,25 +56,31 @@ import { selectedWorks, playground, passion, testimonials } from '../data/site';
 </Base>
 
 <style>
-  .hero { padding-block: clamp(56px, 9vw, 128px) clamp(32px, 5vw, 72px); position: relative; }
-  .hello { display: flex; flex-direction: column; }
-  .line { display: block; overflow: hidden; padding-bottom: .08em; }
-  .w { display: inline-block; }
-  .intro { max-width: 640px; margin-top: 20px; }
+  .edge { padding-inline: var(--edge); }
+  .hero { padding-block: clamp(64px, 10vw, 147px) 0; }
+  .hello { display: flex; flex-direction: column; gap: 19px; }
+  .intro { max-width: 958px; margin-top: 20px; font-size: var(--fs-bio); letter-spacing: -0.02em; line-height: 1.5; color: var(--ink); }
 
-  .grid { display: grid; gap: clamp(28px, 3.5vw, 48px) clamp(20px, 2.5vw, 32px); }
+  .block { margin-top: clamp(96px, 12vw, 172px); }
+  #projects { margin-top: clamp(96px, 13vw, 192px); }
+  .section-title { margin-bottom: 22px; }
+
+  .grid { display: grid; gap: 50px 32px; }
   .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .quotes { margin-top: 80px; gap: 32px; }
 
-  .quote { margin: 0; display: flex; flex-direction: column; justify-content: space-between; gap: 24px; padding: clamp(22px, 3vw, 32px); border-radius: var(--radius-l); background: var(--surface); border: 1px solid var(--line); }
-  blockquote { margin: 0; color: var(--ink); }
-  blockquote::before { content: '“'; display: block; font-size: 3.5rem; line-height: .6; color: var(--accent); margin-bottom: 8px; font-variation-settings: 'opsz' 32; }
-  figcaption { display: flex; align-items: center; gap: 14px; }
-  figcaption img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; background: var(--img-bg); }
-  figcaption > span { display: flex; flex-direction: column; line-height: 1.3; }
-  .role { font-size: var(--fs-body); }
+  .quote { margin: 0; padding: 30px; border-radius: 20px; background: var(--surface); }
+  figcaption { display: flex; align-items: center; gap: 15px; }
+  figcaption img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; background: var(--img-bg); }
+  figcaption > span { display: flex; flex-direction: column; }
+  .name { font-size: var(--fs-small); line-height: 1.4; }
+  .role { color: var(--muted); }
+  blockquote { margin: 30px 0 0; color: var(--ink); }
 
   /* Phone (Framer < 810) */
   @media (max-width: 809px) {
-    .grid.two { grid-template-columns: 1fr; }
+    .grid.two { grid-template-columns: 1fr; gap: 40px; }
+    .quotes { margin-top: 32px; gap: 16px; }
+    .quote { padding: 22px; }
   }
 </style>

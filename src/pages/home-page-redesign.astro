@@ -1,0 +1,137 @@
+---
+import Case from '../layouts/Case.astro';
+import { selectedWorks } from '../data/site';
+const F = 'https://framerusercontent.com';
+const next = selectedWorks.find((c) => c.href === '/shopping-cart-redesign')!;
+---
+<Case
+  title="Homepage Redesign"
+  description="Ding-go homepage redesign"
+  hero={`${F}/images/CdorXOuQvQxGSwK1UHQmf11as.png?width=2882&height=1525`}
+  heroBg="rgb(253 217 174)"
+  heading="Mobile-First Homepage Redesign with AI-Accelerated Deployment: +52% Add-to-Cart Rate"
+  meta={[
+    [{ label: 'Product', value: 'Ding-go website' }, { label: 'Skills', value: 'Data Analysis, Product design, Stakeholder management, User research & testing' }],
+    [{ label: 'Role', value: 'UX Researcher & UX Designer' }, { label: 'Team', value: '2-people UX Team, Marketing Team, Content Team, Development Team' }],
+  ]}
+  toc={[
+    { label: 'Overview', id: 'overview' },
+    { label: 'Outcome', id: 'outcome' },
+    { label: 'Context', id: 'context' },
+    { label: 'Process', id: 'process' },
+    { label: 'Final Design', id: 'final-design' },
+    { label: 'Next Steps', id: 'next-steps' },
+  ]}
+  next={next}
+>
+  <section class="cs-c cs-sec" id="outcome">
+    <h2 class="cs-h">Outcome</h2>
+    <div class="cs-metrics">
+      <div><b data-count="37" data-suffix="%">37%</b><span>Session Duration Increased</span></div>
+      <div><b data-count="49" data-suffix="%">49%</b><span>Checkout Conversion Rate Increased</span></div>
+      <div><b data-count="21" data-suffix="%">21%</b><span>Checkout Reach Rate Increased</span></div>
+    </div>
+  </section>
+
+  <section class="cs-c cs-sec" id="context">
+    <h2 class="cs-h">What's Ding-go?</h2>
+    <p class="cs-p">Ding-go (a BLIVE GLOBAL brand) is a direct-to-consumer e-commerce startup that curates authentic Asian snacks, beverages, beauty, and specialty foods from Japan, Korea, Taiwan, and beyond for Asian diaspora communities across the U.S. As an early-stage online retailer with limited runway, it relied on mobile traffic from marketing ads to grow, so turning that traffic into sales was critical to proving product-market fit.</p>
+    <div class="cs-media flat"><img src={`${F}/images/K1B95IjPAaffsqOOql0cDZR8og.png?width=1087&height=354`} alt="" width="1087" height="354" loading="lazy" /></div>
+  </section>
+
+  <section class="cs-c cs-sec">
+    <h2 class="cs-h">Problem</h2>
+    <p class="cs-statement">Marketing ads drove strong traffic, but users bounced within seconds before ever seeing the products.</p>
+  </section>
+
+  <section class="cs-c cs-sec">
+    <h2 class="cs-h">Unique Challenge</h2>
+    <p class="cs-statement">Balanced brand storytelling with usability, limited engineering bandwidth meant designers used AI to build components directly.</p>
+  </section>
+
+  <section class="cs-sec" id="process">
+    <div class="cs-c">
+      <h2 class="cs-h">Process</h2>
+      <div class="cs-sub">
+        <h3 class="cs-h">Where and When Users Dropped Off Our Website?</h3>
+        <p class="cs-p">I conducted a UX audit, Hotjar session analysis, and Google Analytics review to uncover why users dropped off our website and failed to convert into buyers.</p>
+      </div>
+    </div>
+    <div class="cs-w cs-media"><img src={`${F}/images/oMdQJCwLZbWEKIAd2hMYftki5c.png?width=2564&height=1567`} alt="" width="2564" height="1567" loading="lazy" /></div>
+  </section>
+
+  <section class="cs-sub">
+    <div class="cs-c">
+      <h3 class="cs-h">Aligning on Priorities with the CEO</h3>
+      <p class="cs-p">I analyzed every mobile page by effort, design impact, and urgency, then presented the matrix to the CEO to confirm the roadmap. We agreed to redesign the homepage first.</p>
+    </div>
+    <div class="cs-w cs-media"><img src={`${F}/images/diuWC7VOwsLFyQCMFiAKmDJXf0U.png?width=1097&height=633`} alt="" width="1097" height="633" loading="lazy" /></div>
+  </section>
+
+  <section class="cs-sub">
+    <div class="cs-c">
+      <h3 class="cs-h">Users Dropped Off Due to Poor Mobile Usability</h3>
+      <p class="cs-p">Session replays and analytics revealed that users quickly scrolled past the banner and exited. Key CTAs were buried below the fold, making it hard to navigate. Combined with cluttered content and inconsistent layout hierarchy, the homepage failed to deliver clear value, hurting both scan­ability and user trust.</p>
+    </div>
+    <div class="cs-w cs-media"><img src={`${F}/images/HCPHbrlVk2CeqcfbUb4fv6ngg.png?width=2373&height=1377`} alt="" width="2373" height="1377" loading="lazy" /></div>
+  </section>
+
+  <section class="cs-sub">
+    <div class="cs-c">
+      <h3 class="cs-h">Prototyping &amp; Feedback</h3>
+      <p class="cs-p">With the pain points surfaced in research, I developed four visual directions in Figma, then collected feedback from marketing, engineering, and product teams.</p>
+    </div>
+    <div class="cs-w cs-media"><img src={`${F}/images/zcLkHBT9CJ3W1IXJSaAF4dFyfl4.png?width=2602&height=1893`} alt="" width="2602" height="1893" loading="lazy" /></div>
+  </section>
+
+  <section class="cs-sub">
+    <div class="cs-c">
+      <h3 class="cs-h">Front-End Deployment with AI Agent</h3>
+      <p class="cs-p">With limited engineering bandwidth, I built and shipped the storefront's front-end myself using Shopify's AI agent. I wrote the prompts, reviewed the generated Liquid and CSS, and tested each section on different devices in the live theme before release.</p>
+    </div>
+    <div class="cs-w cs-card cs-split ai-card" style="margin-top:40px">
+      <img src={`${F}/images/vJlXrDFyN2HNfbgOH7h7vo5KM.png?width=1312&height=1113`} alt="" width="1312" height="1113" loading="lazy" />
+      <div class="cs-items tight" style="margin-top:0">
+        <div><p>Prompted from design intent</p><p>Described each component's behavior and brand styling, like the discount code section.</p></div>
+        <div><p>Reviewed code</p><p>Refined generated CSS for interaction states and tied colors to theme settings for easy customization.</p></div>
+        <div><p>Closed the design-to-production gap</p><p>Designing and deploying in one loop removed handoff delays and kept the UI faithful to the mockups.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cs-sec" id="final-design">
+    <div class="cs-c"><h2 class="cs-h">Final Design</h2></div>
+    <div class="cs-w cs-card round" style="margin-top:56px"><img class="fill" src={`${F}/images/GAxBZfSSNlxGnAbcoi06ZDkUAI.png?width=2074&height=1167`} alt="" width="2074" height="1167" loading="lazy" /></div>
+    <div class="cs-w cs-card round" style="padding:20px"><img class="fill" src={`${F}/images/1IQ0CNCi1rBXwWcc9T1fAAQR0Q.png?width=2489&height=1167`} alt="" width="2489" height="1167" loading="lazy" /></div>
+
+    <div class="cs-w cs-card round cs-split fd-hero">
+      <div class="cs-items tight" style="margin-top:0">
+        <h4 style="font-size:var(--fs-small);line-height:1.4">Key Deals Above the Fold Cut Friction, Lifted Engagement</h4>
+        <div><p class="ink">PROBLEM SOLVED</p><p>Users scrolled past the banner, missed categories below the fold, and got overwhelmed by cluttered messaging.</p></div>
+        <div><p class="ink">HOW</p><p>Touch-friendly category shortcuts now sit above the fold. The banner is shorter, creating clear hierarchy between content and CTAs.</p></div>
+        <div><p class="ink">WHY</p><p>Clarity-first design helps users grasp value instantly and interact without extra effort.</p></div>
+      </div>
+      <img class="phone" src={`${F}/images/OklvS7qWXaN433L9uJsefc1qAAU.png?width=320&height=685`} alt="Redesigned mobile homepage" width="320" height="685" loading="lazy" />
+    </div>
+
+    <div class="cs-w fd-pair">
+      <div class="cs-card round">
+        <div class="cs-items tight" style="margin-top:0"><div><p>Language Selection &amp; Banner</p><p>Added a language toggle for the 73% non-English-speaking user base, and made the hero banner swipeable for faster discovery.</p></div></div>
+        <img src={`${F}/images/JIHnwCltsu9ElJp2j9WKz8oLjj8.png?width=406&height=476`} alt="" width="406" height="476" loading="lazy" />
+      </div>
+      <div class="cs-card round">
+        <img src={`${F}/images/YOewFQPj39RNh2Pq7QPyouuFH0.png?width=406&height=476`} alt="" width="406" height="476" loading="lazy" />
+        <div class="cs-items tight" style="margin-top:0"><div><p>Navigation Menu &amp; Collection Titles</p><p>Icon-based navigation speeds up access to categories; shorter titles and an above-the-fold "View All" support immediate exploration.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cs-c cs-sec" id="next-steps">
+    <h2 class="cs-h">What I Learned From Unexpected Data Results &amp; Next Steps</h2>
+    <div class="cs-items" style="margin-top:68px">
+      <div><p>Checkout Conversion Outpaced Add-to-Cart Growth Post-Launch</p><p>After the homepage redesign, cart additions rose by 26%, but checkouts jumped 49%, suggesting the new layout attracted higher-intent users and reduced friction in the funnel.</p></div>
+      <div><p>Validate Assumptions: Buyer Intent &amp; Drop-Off Insights</p><p>Despite the improvement, checkout rates still lag behind industry benchmarks. I’ll review session replays and refine questions for upcoming interviews to better understand cart-to-checkout drop-off behavior.</p></div>
+      <div><p>Next Focus: Shopping Cart Redesign to further improve conversion rate</p><p>Clarify pricing, shipping, and discount visibility in the cart, conduct internal usability testing, and streamline the mobile checkout flow for better conversion.</p></div>
+    </div>
+  </section>
+</Case>
