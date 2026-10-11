@@ -13,7 +13,7 @@ const [name, metric] = card.title.split(' I ');
         <source src={card.media} type="video/mp4" />
       </video>
     ) : (
-      <img src={card.poster} alt="" loading="lazy" decoding="async" />
+      <img src={card.poster} alt={card.alt ?? ''} loading="lazy" decoding="async" />
     )}
     {card.href && (
       <span class="go" aria-hidden="true">
@@ -31,7 +31,7 @@ const [name, metric] = card.title.split(' I ');
   .card { display: flex; flex-direction: column; gap: 16px; border-radius: var(--radius-l); }
   .media {
     position: relative; overflow: hidden; border-radius: var(--radius-l);
-    background: var(--surface-2); aspect-ratio: 16 / 10; isolation: isolate;
+    background: var(--img-bg); aspect-ratio: 2100 / 1240; isolation: isolate;
     box-shadow: var(--shadow-1);
     transition: box-shadow var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-out);
   }
@@ -44,8 +44,8 @@ const [name, metric] = card.title.split(' I ');
     transition: opacity var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-spring);
   }
   .body { display: flex; flex-direction: column; gap: 10px; padding-inline: 4px; }
-  h3 { font-size: clamp(18px, 1.6vw, 21px); font-weight: 600; letter-spacing: -0.01em; line-height: 1.3; }
-  .metric { color: var(--accent); }
+  h3 { font-size: var(--fs-small); letter-spacing: 0; line-height: 1.4; }
+  .metric { color: var(--muted); }
 
   @media (hover: hover) {
     a.card:hover .media { box-shadow: var(--shadow-2); transform: translateY(-4px); }

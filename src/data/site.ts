@@ -19,33 +19,36 @@ export const nav = [
   { label: 'Resume', href: site.resume, external: true },
 ];
 
-export type Card = { href: string; title: string; tags: string[]; media?: string; poster?: string; external?: boolean };
+export type Card = { href: string; title: string; tags: string[]; media?: string; poster?: string; alt?: string; external?: boolean };
 
 export const selectedWorks: Card[] = [
   {
     href: '/pcc-client-portal',
     title: 'Automated Partner File Portal I 12% Less Manual Work',
     tags: ['B2B', '0 to 1', 'Workflow Automation'],
-    media: 'https://framerusercontent.com/assets/R3ubwcpGgOXQswe4PLhcGieQ.mp4',
+    media: '/assets/home/pcc-client-portal.mp4',
+    poster: '/assets/home/pcc-client-portal-poster.webp',
   },
   {
     href: '/home-page-redesign',
     title: 'Homepage Redesign, AI Deployment I +52% Add-to-Cart',
     tags: ['B2C', 'E-Commerce', 'AI Dev Tools'],
-    media: 'https://framerusercontent.com/assets/r8FQPS2aKImhrUqB50chBw4Ik.mp4',
+    media: '/assets/home/home-page-redesign.mp4',
+    poster: '/assets/home/home-page-redesign-poster.webp',
   },
   {
     href: '/shopping-cart-redesign',
     title: 'Checkout Redesign, Price Transparency I +32% Conversion',
     tags: ['E-Commerce', 'Growth/CRO', 'Usability Testing'],
-    media: 'https://framerusercontent.com/assets/Tk8LeIvcKNjSwlwUwoIDT2ti7M.mp4',
+    media: '/assets/home/shopping-cart-redesign.mp4',
+    poster: '/assets/home/shopping-cart-redesign-poster.webp',
   },
   {
     href: '/budget-dashboard',
     title: 'Web-to-Mobile Budgeting, Dashboard I +20% Engagement',
     tags: ['Fintech', 'Design System', 'UX Design'],
-    // The live card has no video; it uses the case-study hero image.
-    poster: 'https://framerusercontent.com/images/MnuqMsgRw8GBqZt1lt1ABzq80xA.png',
+    poster: '/assets/home/budget-dashboard.webp',
+    alt: 'Shepherd Money budget dashboard and Living Expense screens',
   },
 ];
 

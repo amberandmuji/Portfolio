@@ -45,15 +45,16 @@ const path = Astro.url.pathname.replace(/\/$/, '') || '/';
   .hdr.hide { transform: translateY(-100%); }
   .hdr-in { display: flex; align-items: center; justify-content: space-between; height: 72px; }
 
-  .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; letter-spacing: -0.01em; }
+  .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 500; font-size: 1.125rem; letter-spacing: -0.02em; font-variation-settings: 'opsz' 32; }
   .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); transition: transform var(--dur-2) var(--ease-spring); }
   .brand:hover .dot { transform: scale(1.6); }
 
   .links { display: flex; gap: 6px; }
-  .link { position: relative; padding: 8px 14px; border-radius: 999px; font-weight: 500; font-size: 15.5px; color: var(--ink-2); transition: color var(--dur-1), background var(--dur-1); }
-  .link:hover { color: var(--ink); background: var(--surface-2); }
-  .link.active { color: var(--ink); }
-  .link.active::after { content: ''; position: absolute; left: 50%; bottom: 3px; width: 4px; height: 4px; margin-left: -2px; border-radius: 50%; background: var(--accent); }
+  /* Framer link style "Menu-Navigation": rgb(11,12,14), hover 80% */
+  .links { padding: 4px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); }
+  .link { position: relative; padding: 6px 16px; border-radius: 999px; font-size: var(--fs-body); color: rgb(11 12 14); transition: color var(--dur-1), background var(--dur-2) var(--ease-out); }
+  .link:hover { color: rgb(11 12 14 / .8); background: var(--surface-2); }
+  .link.active { color: var(--surface); background: var(--nav-selected); }
 
   .burger { display: none; position: relative; width: 44px; height: 44px; border: 0; background: transparent; border-radius: 12px; cursor: pointer; }
   .bar { position: absolute; left: 12px; right: 12px; height: 2px; border-radius: 2px; background: var(--ink); transition: transform var(--dur-2) var(--ease-out), top var(--dur-2) var(--ease-out); }
@@ -61,9 +62,9 @@ const path = Astro.url.pathname.replace(/\/$/, '') || '/';
   .burger[aria-expanded='true'] .bar:nth-of-type(1) { top: 21px; transform: rotate(45deg); }
   .burger[aria-expanded='true'] .bar:nth-of-type(2) { top: 21px; transform: rotate(-45deg); }
 
-  .menu { display: flex; flex-direction: column; gap: 4px; padding: 8px var(--gutter) 24px; }
+  .menu { background: var(--surface); display: flex; flex-direction: column; gap: 4px; padding: 8px var(--gutter) 24px; }
   .menu[hidden] { display: none; }
-  .menu a { font-size: 28px; font-weight: 600; padding: 10px 0; border-bottom: 1px solid var(--line); animation: menu-in var(--dur-2) var(--ease-out) both; animation-delay: calc(var(--i) * 60ms); }
+  .menu a { font-size: 1.75rem; letter-spacing: -0.04em; padding: 10px 0; border-bottom: 1px solid var(--line); animation: menu-in var(--dur-2) var(--ease-out) both; animation-delay: calc(var(--i) * 60ms); }
   @keyframes menu-in { from { opacity: 0; transform: translateY(-8px); } }
 
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

@@ -1,4 +1,7 @@
 ---
+// Inter (variable, with optical-size axis → Inter Display at opsz 32), self-hosted
+import '@fontsource-variable/inter/opsz.css';
+import '@fontsource-variable/inter/opsz-italic.css';
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
@@ -28,9 +31,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta name="robots" content="max-image-preview:large" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&display=swap" rel="stylesheet" />
 
     <!-- Mark JS available so reveal animations only hide content when they can show it again -->
     <script is:inline>document.documentElement.classList.add('js');</script>

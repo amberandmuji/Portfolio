@@ -10,9 +10,13 @@ npm run dev        # http://localhost:4321
 npm run build      # static output in dist/
 ```
 
+## Fonts
+
+Only Inter and Inter Display are used, and both are self-hosted through `@fontsource-variable/inter`. Inter Display is Inter's optical-size axis at 32 (`font-variation-settings: 'opsz' 32`). It's applied by `.t-name` and `.t-bio`, which correspond to Framer's "Heading for name" and "Bio Summary" styles.
+
 ## Before cancelling Framer: pull the assets
 
-Images and videos still load from Framer's CDN (`framerusercontent.com`). Run this once on your machine:
+The Selected Works media on the home page already lives in `public/assets/home/`. Everything else still loads from Framer's CDN (`framerusercontent.com`). Run this once on your machine:
 
 ```bash
 npm run pull-assets
@@ -24,7 +28,7 @@ It downloads every image and video into `public/assets/` and rewrites the links 
 
 | What | File |
 |---|---|
-| Colors, fonts, spacing, motion timing | `src/styles/global.css` (`:root` tokens) |
+| Colors, text styles, spacing, motion timing | `src/styles/global.css` (`:root` tokens, named after the Framer tokens) |
 | Home cards, testimonials, nav, links | `src/data/site.ts` |
 | Case studies (one Markdown file each) | `src/content/work/*.md` |
 | Case-study template, TOC, metrics, cards | `src/pages/[slug].astro` |
