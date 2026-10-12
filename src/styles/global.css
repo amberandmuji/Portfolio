@@ -8,7 +8,7 @@
 
   /* Color tokens (Framer names in comments) */
   --bg: rgb(250 250 250);                 /* Background */
-  --footer-bg: rgb(240 240 240 / .7);     /* Footer bg */
+  --footer-bg: rgb(243 243 243);         /* Footer bg — Framer rgba(240,240,240,.7) flattened onto the page background, so stacked grey blocks never show a seam */
   --ink: rgb(12 12 14);                   /* Text */
   --ink-2: #666;                          /* Bio Summary text */
   --muted: rgb(115 115 115);              /* Text Subtle */
@@ -146,11 +146,33 @@ p { margin: 0; }
    on mouse/trackpad devices; touch devices never see it. */
 .cursor-label {
   position: fixed; left: 0; top: 0; z-index: 100; pointer-events: none;
-  padding: 8px 14px; border-radius: 999px; background: var(--ink); color: var(--surface);
-  font-size: 0.875rem; letter-spacing: -0.01em; line-height: 1.2; white-space: nowrap;
+  padding: 9px 16px; border-radius: 999px;
+  /* Liquid glass: frosted, slightly brightened backdrop with a bright rim and soft inner light */
+  background: linear-gradient(135deg, rgb(255 255 255 / .55), rgb(255 255 255 / .22));
+  -webkit-backdrop-filter: blur(14px) saturate(1.8) brightness(1.08);
+  backdrop-filter: blur(14px) saturate(1.8) brightness(1.08);
+  border: 1px solid rgb(255 255 255 / .6);
+  box-shadow:
+    inset 0 1px 1px rgb(255 255 255 / .9),
+    inset 0 -1px 2px rgb(255 255 255 / .25),
+    inset 0 0 12px rgb(255 255 255 / .25),
+    0 6px 20px rgb(12 12 14 / .14),
+    0 1px 3px rgb(12 12 14 / .08);
+  color: var(--ink); font-size: 0.875rem; font-weight: 500; letter-spacing: -0.01em; line-height: 1.2; white-space: nowrap;
+  text-shadow: 0 1px 0 rgb(255 255 255 / .5);
   opacity: 0; transform: translate3d(var(--cx, 0), var(--cy, 0), 0) translate(-50%, -50%) scale(.6);
-  transition: opacity 200ms var(--ease-out), transform 260ms var(--ease-spring);
+  transition: opacity 200ms var(--ease-out), transform 300ms var(--ease-spring);
   will-change: transform;
+  overflow: hidden;
+}
+/* Specular highlight across the top half */
+.cursor-label::before {
+  content: ''; position: absolute; inset: 1px 1px 50% 1px; border-radius: 999px 999px 40% 40% / 999px 999px 60% 60%;
+  background: linear-gradient(rgb(255 255 255 / .55), rgb(255 255 255 / 0));
+  pointer-events: none;
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .cursor-label { background: rgb(255 255 255 / .9); }
 }
 .cursor-label.on { opacity: 1; transform: translate3d(var(--cx, 0), var(--cy, 0), 0) translate(-50%, -50%) scale(1); }
 @media (hover: hover) and (pointer: fine) { .has-cursor-label [data-cursor] { cursor: none; } }

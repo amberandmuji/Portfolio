@@ -12,7 +12,8 @@
 .cs-c, .cs-w { width: min(var(--col), 100% - 2 * var(--gutter)); margin-inline: auto; }
 .cs-w { width: min(var(--wide), 100% - 2 * var(--gutter)); }
 
-.cs-title { margin-top: 30px; font-size: var(--fs-section); letter-spacing: -0.04em; line-height: 1.4; text-wrap: balance; }
+/* html has scroll-padding-top: 80px; +40px puts the title's top line level with the fixed menu's "Overview" (top: 116px + 4px padding) */
+.cs-title { scroll-margin-top: 40px; margin-top: 30px; font-size: var(--fs-section); letter-spacing: -0.04em; line-height: 1.4; text-wrap: balance; }
 .cs-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 350px)); column-gap: 20px; row-gap: 26px; margin-top: 47px; }
 .cs-meta > div { display: flex; flex-direction: column; gap: 26px; }
 .cs-meta dl { margin: 0; }

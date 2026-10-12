@@ -26,12 +26,12 @@ const { title, description, hero, heroBg, heading, meta, toc, next, nextLayout =
       </nav>
     )}
 
-    <div class="cs-hero" id="overview">
+    <div class="cs-hero">
       <img src={hero} alt="" width="1440" height="762" fetchpriority="high" />
     </div>
 
     <header class="cs-c">
-      <h1 class="cs-title">{heading}</h1>
+      <h1 class="cs-title" id="overview">{heading}</h1>
       <div class="cs-meta">
         {meta.map((col) => (
           <div>
