@@ -98,6 +98,16 @@ export const playground: Card[] = [
     ratio: '1708 / 1280',
     media: '/assets/playground/sent-wide.mp4', poster: '/assets/playground/sent-wide-poster.webp',
   },
+  {
+    href: 'https://amberandmuji.github.io/portfolio-apps/muji-desktop-pet/',
+    title: 'Muji · Desktop Pom',
+    tags: ['Claude Code'],
+    desc: 'My Pomeranian Muji as an 8-bit pet who wanders along the bottom of my Mac screen, naps when I step away and says hi when I’m back.',
+    kinds: ['Desktop pet', 'Pixel art'],
+    ratio: '1440 / 1080',
+    media: '/assets/playground/muji-desktop-pet.mp4', poster: '/assets/playground/muji-desktop-pet-poster.webp',
+    external: true,
+  },
 ];
 
 export const passion: Card[] = [
