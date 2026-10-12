@@ -24,7 +24,7 @@ const wall = site.drinkWall;
 <section class="game" aria-labelledby="game-title">
   <div class="panel">
     <div class="stage">
-      <div class="glass" data-glass>
+      <div class="glass" data-glass tabindex="-1" aria-label="Your drink. After serving, drag the straw or use the arrow keys to stir.">
         <div class="lid" aria-hidden="true"></div>
         <div class="straw" aria-hidden="true"></div>
         <div class="inside" aria-hidden="true">
@@ -87,8 +87,6 @@ const wall = site.drinkWall;
       <div class="result" data-result hidden>
         <span class="eyebrow">Order up</span>
         <strong class="name" data-drink-name></strong>
-        <div class="swatch-bar" data-swatch></div>
-        <p class="facts" data-facts></p>
         <div class="actions">
           <button class="btn primary" type="button" data-share>Add to the drink wall</button>
           <button class="btn" type="button" data-again>Make another</button>
@@ -118,7 +116,7 @@ const wall = site.drinkWall;
   const FLOOR = 5;         // glass base thickness
   const UNIT = 26;         // height of one pour
   const CAP = 196;         // usable height
-  const CUBE_H = 25, CUBE_ROW = 21, PER_ROW = 3, ICE_MAX = 6;
+  const CUBE_H = 25, CUBE_ROW = 21, PER_ROW = 3, ICE_PER_TAP = 3, ICE_MAX = 9;
   const PEARL_ROW = 10, PEARLS_PER_TAP = 6, PEARL_MAX = 18;
   const FOAM_TAP = 15, FOAM_MAX = 30;
   const DISPLACE = 6;      // liquid rise per submerged cube
@@ -130,11 +128,12 @@ const wall = site.drinkWall;
   const status = $('[data-status]'), glass = $('[data-glass]');
 
   const count = (id) => cup.filter((c) => c === id).length;
+  const rand = (i, k) => { const x = Math.sin(i * 12.9898 + k * 78.233) * 43758.5453; return x - Math.floor(x); };
 
   function model() {
     const liquids = {};
     for (const id of cup) if (byId[id].kind === 'liquid') liquids[id] = (liquids[id] || 0) + 1;
-    const ice = Math.min(count('ice'), ICE_MAX);
+    const ice = Math.min(count('ice') * ICE_PER_TAP, ICE_MAX);
     const pearls = Math.min(count('boba') * PEARLS_PER_TAP, PEARL_MAX);
     const foam = Math.min(count('foam') * FOAM_TAP, FOAM_MAX);
     const units = Object.values(liquids).reduce((a, b) => a + b, 0);
@@ -200,10 +199,24 @@ const wall = site.drinkWall;
 
     // Boba: sinks to the floor
     sync(pearlsEl, m.pearls, (i) => { const b = document.createElement('i'); b.style.setProperty('--d', `${(i % 6) * 35}ms`); return b; });
+    const floaters = new Set();
+    if (m.liquidH > 40) for (let i = 0; i < m.pearls; i++) if (rand(i, 3) < 0.34 && i % 6 !== 0) floaters.add(i);
+    let k = 0;
     [...pearlsEl.children].forEach((b, i) => {
-      const r = Math.floor(i / 6), col = i % 6;
-      b.style.left = `${19 + col * 11 + (r % 2) * 5}%`;
-      b.style.bottom = `${FLOOR + r * PEARL_ROW}px`;
+      if (floaters.has(i)) {
+        // suspended somewhere in the drink, drifting slowly
+        const lo = 18, hi = Math.max(lo + 10, m.liquidH * 0.78);
+        b.style.left = `${16 + rand(i, 5) * 66}%`;
+        b.style.bottom = `${FLOOR + lo + rand(i, 7) * (hi - lo)}px`;
+        b.classList.add('drift');
+        b.style.setProperty('--dd', `${2.6 + rand(i, 9) * 2.4}s`);
+      } else {
+        // settled in an uneven heap on the floor
+        const r = Math.floor(k / 6), col = k % 6; k++;
+        b.style.left = `${18 + col * 11 + (r % 2) * 5 + (rand(i, 1) - 0.5) * 5}%`;
+        b.style.bottom = `${FLOOR + r * (PEARL_ROW - 1) + rand(i, 2) * 3}px`;
+        b.classList.remove('drift');
+      }
     });
 
     // Ice
@@ -246,8 +259,8 @@ const wall = site.drinkWall;
 
   function explain(id, before, after) {
     const g = byId[id];
-    if (g.kind === 'ice') return after.liquidH ? 'The ice floats. It is lighter than the drink.' : 'Ice sits on the bottom of an empty cup.';
-    if (g.kind === 'boba') return 'Boba sinks straight to the bottom.';
+    if (g.kind === 'ice') return after.liquidH ? 'A layer of ice floats on the drink.' : 'A layer of ice sits on the bottom of the empty cup.';
+    if (g.kind === 'boba') return after.liquidH > 40 ? 'Most boba sinks, a few pearls hang in the drink.' : 'Boba sinks to the bottom.';
     if (g.kind === 'foam') return after.liquidH ? 'Cold foam floats on the surface.' : 'Foam settles in. It floats once you add a drink.';
     if (before.liquidH === 0 && after.ice) return 'The ice lifts off the bottom and floats.';
     if (after.units * UNIT >= CAP) return 'Your cup is full. Serve it!';
@@ -286,7 +299,7 @@ const wall = site.drinkWall;
     return {
       name: nameDrink(),
       layers: m.layers.map((l) => ({ c: l.c, h: +(l.h / total).toFixed(3) })),
-      boba: Math.min(m.pearls, 18), ice: m.ice, foam: m.foam > 0,
+      boba: Math.min(m.pearls, 18), ice: Math.min(m.ice, 6), foam: m.foam > 0,
     };
   }
 
@@ -327,7 +340,7 @@ const wall = site.drinkWall;
     let list = reached ? others : mine;
     if (list.length < 4) list = [...list, ...HOUSE];
     $('[data-wall-title]').textContent = reached ? 'Drinks other visitors made' : 'The drink wall';
-    $('[data-wall-sub]').textContent = reached ? 'Newest first' : 'Your drinks and a few house recipes';
+    $('[data-wall-sub]').textContent = reached ? 'Newest first' : 'Your drinks and a few house recipes from other guests';
     drawWall(list.map(clean).filter(Boolean).slice(0, 18));
   }
 
@@ -408,28 +421,82 @@ const wall = site.drinkWall;
       const d = snapshot();
       const m = model();
       glass.classList.add('is-served');
+      glass.tabIndex = 0;
       $('[data-build]').hidden = true;
       $('[data-result]').hidden = false;
       $('[data-drink-name]').textContent = d.name;
-      const sw = blendedGradient(m.layers, m.liquidH, 'to right');
-      $('[data-swatch]').style.background = sw === 'none' ? 'repeating-linear-gradient(45deg, #eee 0 6px, #f6f6f6 6px 12px)' : sw;
-      const facts = [];
-      if (m.layers.length) facts.push(`${m.layers.length} ${m.layers.length === 1 ? 'layer' : 'layers'} swirled together`);
-      if (m.ice) facts.push(`${m.ice} ice cube${m.ice > 1 ? 's' : ''}`);
-      if (m.pearls) facts.push('boba on the bottom');
-      if (m.foam) facts.push('cold foam on top');
-      $('[data-facts]').textContent = facts.join(' · ');
+      mix = 0; blendEl.style.opacity = '0';
+      celebrate(m);
       const sh = $('[data-share]'); sh.disabled = false; sh.textContent = 'Add to the drink wall';
-      status.textContent = m.layers.length > 1 ? 'Served! The layers blend as you stir.' : 'Served!';
+      status.textContent = m.layers.length > 1 ? 'Cheers! Drag the straw to stir it up.' : 'Cheers! Drag the straw to give it a stir.';
     } else if ('share' in b.dataset) { share(); }
     else if ('again' in b.dataset) {
       cup = [];
-      glass.classList.remove('is-served');
+      glass.classList.remove('is-served', 'mixed');
+      glass.tabIndex = -1;
+      blendEl.style.opacity = '';
+      glass.style.removeProperty('--stir');
       $('[data-build]').hidden = false;
       $('[data-result]').hidden = true;
       render();
       status.textContent = 'Your cup is empty.';
     }
+  });
+
+  // ---------- Celebrate + stir ----------
+  let mix = 0;
+  function celebrate(m) {
+    if (reduce) return;
+    const stage = glass.parentElement;
+    const colors = [...m.layers.map((l) => l.c), '#3992f7', '#c1deaf', '#fae4d0'];
+    for (let i = 0; i < 26; i++) {
+      const bit = document.createElement('i');
+      bit.className = 'confetti';
+      const a = (-90 + (rand(i, 11) - 0.5) * 150) * Math.PI / 180;
+      const dist = 90 + rand(i, 12) * 90;
+      bit.style.setProperty('--x', `${Math.cos(a) * dist}px`);
+      bit.style.setProperty('--y', `${Math.sin(a) * dist}px`);
+      bit.style.setProperty('--r', `${(rand(i, 13) - 0.5) * 720}deg`);
+      bit.style.background = colors[i % colors.length];
+      if (i % 4 === 0) bit.classList.add('round');
+      stage.appendChild(bit);
+      setTimeout(() => bit.remove(), 1400);
+    }
+  }
+  function addMix(amount) {
+    if (mix >= 1) return;
+    mix = Math.min(1, mix + amount);
+    blendEl.style.opacity = String(mix);
+    if (mix >= 1) { glass.classList.add('mixed'); status.textContent = 'Perfectly mixed!'; }
+    else if (mix > 0.05) status.textContent = 'Stirring…';
+  }
+
+  let dragging = false, lastX = 0, pos = 0;
+  glass.addEventListener('pointerdown', (e) => {
+    if (!glass.classList.contains('is-served')) return;
+    dragging = true; lastX = e.clientX; glass.setPointerCapture(e.pointerId); glass.classList.add('stirring');
+  });
+  glass.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    const dx = e.clientX - lastX; lastX = e.clientX;
+    pos = Math.max(-1, Math.min(1, pos + dx / 45));
+    glass.style.setProperty('--stir', pos.toFixed(3));
+    addMix(Math.abs(dx) / 700);
+  });
+  const stop = () => {
+    if (!dragging) return;
+    dragging = false; pos = 0; glass.classList.remove('stirring');
+    glass.style.setProperty('--stir', '0');
+  };
+  glass.addEventListener('pointerup', stop);
+  glass.addEventListener('pointercancel', stop);
+  // Keyboard: arrow keys stir once the drink is served
+  glass.addEventListener('keydown', (e) => {
+    if (!glass.classList.contains('is-served') || !['ArrowLeft', 'ArrowRight'].includes(e.key)) return;
+    e.preventDefault();
+    glass.style.setProperty('--stir', e.key === 'ArrowLeft' ? '-0.8' : '0.8');
+    addMix(0.12);
+    clearTimeout(glass._t); glass._t = setTimeout(() => glass.style.setProperty('--stir', '0'), 250);
   });
 
   render();
@@ -477,8 +544,18 @@ const wall = site.drinkWall;
   .result[hidden], .build[hidden] { display: none; }
   .result .actions { margin-top: 6px; }
   .result .name { font-weight: 400; font-size: var(--fs-small); line-height: 1.35; }
-  .swatch-bar { height: 14px; border-radius: 999px; box-shadow: inset 0 0 0 1px rgb(0 0 0 / .06); }
-  .facts { color: var(--muted); font-size: 0.875rem; }
+  .result .name { animation: name-pop 600ms var(--ease-spring) 150ms both; }
+  @keyframes name-pop { from { opacity: 0; transform: scale(.9) translateY(6px); } }
+  .stage :global(.confetti) {
+    position: absolute; left: 50%; top: 45%; width: 8px; height: 12px; border-radius: 2px; z-index: 10; pointer-events: none;
+    animation: burst 1.2s cubic-bezier(.15, .7, .3, 1) forwards;
+  }
+  .stage :global(.confetti.round) { width: 9px; height: 9px; border-radius: 50%; }
+  @keyframes burst {
+    0% { transform: translate(-50%, -50%) scale(.4); opacity: 1; }
+    70% { opacity: 1; }
+    100% { transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y) + 60px)) rotate(var(--r)); opacity: 0; }
+  }
   @keyframes rise-in { from { opacity: 0; transform: translateY(8px); } }
 
   /* ---------- Glass ---------- */
@@ -502,9 +579,8 @@ const wall = site.drinkWall;
     content: ''; position: absolute; inset: 0; pointer-events: none;
     background: linear-gradient(90deg, rgb(0 0 0 / .08), transparent 22%, transparent 78%, rgb(0 0 0 / .1));
   }
-  .blend { position: absolute; inset: 0; opacity: 0; transition: opacity 1.4s var(--ease-out) .15s; }
-  .is-served .blend { opacity: 1; }
-  @keyframes wave { 50% { transform: translateY(1px) scaleX(.97); } }
+  .blend { position: absolute; inset: 0; opacity: 0; transition: opacity 200ms linear; }
+    @keyframes wave { 50% { transform: translateY(1px) scaleX(.97); } }
 
   .pearls { position: absolute; inset: 0; z-index: 2; }
   .pearls :global(i) {
@@ -513,6 +589,9 @@ const wall = site.drinkWall;
     box-shadow: 0 1px 1px rgb(0 0 0 / .25);
     transition: bottom 500ms var(--ease-out), left 500ms var(--ease-out);
   }
+  .pearls :global(i) { transition: bottom 900ms var(--ease-out), left 700ms var(--ease-out); }
+  .pearls :global(i.drift) { animation: drift var(--dd, 3s) ease-in-out infinite; }
+  @keyframes drift { 50% { transform: translate(2px, -4px); } }
   .pearls :global(i.enter) { animation: sink 650ms cubic-bezier(.55, 0, .7, 1) both; animation-delay: var(--d); }
   @keyframes sink { from { transform: translateY(-210px); opacity: 0; } 30% { opacity: 1; } }
 
@@ -554,10 +633,9 @@ const wall = site.drinkWall;
 
   .straw, .lid { position: absolute; opacity: 0; pointer-events: none; }
   .straw {
-    left: 92px; top: -46px; width: 11px; height: 200px; border-radius: 6px; z-index: 0;
-    background: repeating-linear-gradient(180deg, var(--accent) 0 14px, #fff 14px 22px);
-    box-shadow: inset -2px 0 0 rgb(0 0 0 / .08);
-    transform: rotate(10deg) translateY(-20px); transform-origin: bottom center;
+    left: 86px; top: -52px; width: 10px; height: 236px; border-radius: 5px; z-index: 5;
+    background: linear-gradient(90deg, #5f8a45, #74a356 45%, #5f8a45);
+    transform: translateY(-24px) rotate(8deg); transform-origin: 50% 20%;
     transition: opacity 300ms, transform 600ms var(--ease-spring) 150ms;
   }
   .lid {
@@ -568,7 +646,13 @@ const wall = site.drinkWall;
     transform: translateY(-14px);
     transition: opacity 300ms, transform 500ms var(--ease-spring);
   }
-  .is-served .straw { opacity: 1; transform: rotate(10deg); }
+  .is-served .straw { opacity: 1; transform: rotate(calc(8deg + var(--stir, 0) * 16deg)) translateX(calc(var(--stir, 0) * 14px)); }
+  .glass.is-served { cursor: grab; touch-action: none; }
+  .glass.stirring { cursor: grabbing; }
+  .glass:focus-visible { outline: 2px solid var(--accent); outline-offset: 8px; border-radius: 12px; }
+  .glass.stirring .straw { transition: opacity 300ms, transform 120ms linear; }
+  .is-served .cubes, .is-served .pearls { transform: translateX(calc(var(--stir, 0) * 7px)); transition: transform 500ms var(--ease-spring); }
+  .glass.mixed { animation: pop 420ms var(--ease-spring); }
   .is-served .lid { opacity: 1; transform: none; }
   .glass.is-served { animation: swirl 900ms var(--ease-out); }
   @keyframes swirl { 25% { transform: rotate(-4deg) translateY(-6px); } 55% { transform: rotate(3deg) translateY(-4px); } }
