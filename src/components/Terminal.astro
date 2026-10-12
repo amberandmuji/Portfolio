@@ -29,8 +29,7 @@ const info: [string, string][] = [
     <div class="out">
       <canvas class="art" data-art role="img" aria-label="Amber's portrait drawn in ASCII characters" style={`aspect-ratio:${(grid.cols * 0.6).toFixed(1)}/${grid.rows.length * grid.lineHeight}`}></canvas>
       <div class="info">
-        {info.map(([k, v]) => <p class="ln" data-info><span class="k">{k}</span>{v}</p>)}
-        <p class="ln swatches" data-info aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></p>
+        {info.map(([k, v]) => <p class="ln" data-info><span class="k">{k}</span><span class="v">{v}</span></p>)}
       </div>
     </div>
     <p class="ln end" data-end><span class="ps">~</span> <span class="ps2">$</span> <span class="caret blink"></span></p>
@@ -170,17 +169,10 @@ const info: [string, string][] = [
   .art { display: block; width: 100%; cursor: crosshair; }
   .info [data-info] { opacity: 0; transform: translateX(-4px); transition: opacity 200ms, transform 200ms; }
   .info [data-info].on { opacity: 1; transform: none; }
-  .k { display: inline-block; width: 8ch; color: #6ee7a8; font-weight: 700; }
+  .k { display: inline-block; width: 8ch; color: #e8ecf1; font-weight: 700; }
+  .v { color: #7aa2f7; }
   .info { font-size: 11.5px; line-height: 18px; }
-  .info .ln:not(.swatches) { display: grid; grid-template-columns: 8ch minmax(0, 1fr); white-space: normal; }
-  .swatches { display: flex; gap: 0; margin-top: 8px; }
-  .swatches i { width: 18px; height: 12px; }
-  .swatches i:nth-child(1) { background: #3992f7; }
-  .swatches i:nth-child(2) { background: #6ee7a8; }
-  .swatches i:nth-child(3) { background: #febc2e; }
-  .swatches i:nth-child(4) { background: #ff5f57; }
-  .swatches i:nth-child(5) { background: #c084fc; }
-  .swatches i:nth-child(6) { background: #e8ecf1; }
+  .info .ln { display: grid; grid-template-columns: 8ch minmax(0, 1fr); white-space: normal; }
 
   .end { opacity: 0; }
   .end.on { opacity: 1; }
