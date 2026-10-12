@@ -790,13 +790,14 @@ const wall = site.drinkWall;
   @keyframes swirl { 25% { transform: rotate(-4deg) translateY(-6px); } 55% { transform: rotate(3deg) translateY(-4px); } }
 
   /* ---------- Drink wall ---------- */
-  .wall { max-width: 980px; margin: 64px auto 0; }
+  .wall { margin: 64px 0 0; }   /* full width of the band; the band's padding gives the page-edge gutters */
   .wall-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
   .wall h3 { font-size: var(--fs-small); line-height: 1.4; letter-spacing: 0; width: 100%; text-align: center; }
   .wall-sub { color: var(--muted); font-size: 0.875rem; }
   .wall-grid {
-    list-style: none; margin: 22px 0 0; padding: 8px 4px 16px;
-    display: flex; flex-wrap: wrap; justify-content: center; gap: 26px 22px;
+    list-style: none; margin: 22px 0 0; padding: 8px 0 16px;
+    /* rows of photos span the full width and wrap; a short row stays grouped instead of scattering */
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 30px clamp(20px, 3.4vw, 56px);
   }
   .wall-grid :global(li) {
     position: relative; transform: translateY(var(--dy, 0)) rotate(var(--rot, 0deg));
@@ -806,7 +807,7 @@ const wall = site.drinkWall;
   .wall-grid :global(li:hover) { transform: translateY(calc(var(--dy, 0) - 6px)) rotate(0deg) scale(1.06); z-index: 2; }
   @keyframes pin-in { from { opacity: 0; transform: translateY(-24px) rotate(calc(var(--rot, 0deg) * 2)) scale(.9); } }
   .wall-grid :global(.polaroid) {
-    position: relative; width: 104px; padding: 7px 7px 26px; background: #fff; border-radius: 2px;
+    position: relative; width: clamp(104px, 8.5vw, 124px); padding: 7px 7px 26px; background: #fff; border-radius: 2px;
     box-shadow: 0 1px 2px rgb(12 12 14 / .08), 0 8px 18px rgb(12 12 14 / .1);
   }
   .wall-grid :global(.polaroid::before) { /* washi tape */
