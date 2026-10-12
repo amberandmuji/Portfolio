@@ -87,13 +87,13 @@ export const passion: Card[] = [
     href: '/appeal-of-social-media-influencers',
     title: 'Why Audiences Trust Influencers Over Traditional Media: 45 Interviews, CHI 2023',
     tags: ['UX Research', 'CHI 2023 Publication'],
-    poster: 'https://framerusercontent.com/images/8sPjZVlAzAJjQ57rNThXzGK1lg.png?width=2101&height=1240',
+    poster: '/assets/appeal-of-social-media-influencers/card.png',
   },
   {
     href: '/design-system',
     title: 'Develop a Design System to Accelerate Development Time',
     tags: ['Design Systems', 'Fintech', '0 to 1'],
-    poster: 'https://framerusercontent.com/images/1eVVc2N0FOTOUrCWIk7XjCbWI.png?width=1893&height=1117',
+    poster: '/assets/design-system/card.png',
   },
 ];
 
@@ -101,14 +101,14 @@ export const testimonials = [
   {
     name: 'Bofan Xu',
     role: 'CEO @Shepherd Money',
-    photo: 'https://framerusercontent.com/images/1v9NRpCgHgzdhJaWOqd8YKekjrU.png?width=908&height=910',
+    photo: '/assets/testimonials/bofan-xu.webp',
     quote:
       'Amber Liang was an exceptional UIUX design intern. She played a key role in creating our design system and contributed to several critical pages. Amber collaborated seamlessly with our product and engineering teams, ensuring her designs were successfully implemented and launched. Her strong design skills, attention to detail, and ability to work cross-functionally made a significant impact.',
   },
   {
     name: 'Lai Wang',
     role: 'SWE @Shepherd Money',
-    photo: 'https://framerusercontent.com/images/2odU3mUxdjE7fkjLco33bjg8Koc.png?width=908&height=906',
+    photo: '/assets/testimonials/lai-wang.webp',
     quote:
       'Amber is a talented designer and a wonderful person to work with! I was working with her at Shepherd Money, where she led the creation and implementation of the internal design system. Her ability to collaborate across teams stood out —she consistently communicated design intent clearly and made thoughtful decisions that balanced user needs with technical feasibility. Her contributions have demonstrably benefited the entire product team.',
   },
