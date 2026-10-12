@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import WorkCard from '../components/WorkCard.astro';
 import MatchaGame from '../components/MatchaGame.astro';
 import Terminal from '../components/Terminal.astro';
-import { selectedWorks, passion, testimonials } from '../data/site';
+import { selectedWorks, testimonials } from '../data/site';
 ---
 <Base>
   <!-- Full-width layout with 36px page edges, measured from the live Framer page at 1440px -->
@@ -24,13 +24,6 @@ import { selectedWorks, passion, testimonials } from '../data/site';
     <h2 class="section-title" data-reveal>Selected Works</h2>
     <div class="grid two" data-stagger>
       {selectedWorks.map((c) => <WorkCard card={c} cursor="View case study" />)}
-    </div>
-  </section>
-
-  <section class="block edge">
-    <h2 class="section-title" data-reveal>Passion Projects</h2>
-    <div class="grid two" data-stagger>
-      {passion.map((c) => <WorkCard card={c} cursor="View case study" />)}
     </div>
   </section>
 

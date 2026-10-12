@@ -1,7 +1,8 @@
 ---
 import Base from '../layouts/Base.astro';
 import Playground from '../components/Playground.astro';
-import { playground } from '../data/site';
+import WorkCard from '../components/WorkCard.astro';
+import { playground, passion } from '../data/site';
 ---
 <Base title="Playground — Amber's portfolio" description="Vibe coding projects Amber built with AI tools.">
   <section class="edge pg-page">
@@ -9,10 +10,22 @@ import { playground } from '../data/site';
     <p class="lede">Small things I build with AI tools to try ideas fast. Click one to play with it.</p>
     <Playground cards={playground} />
   </section>
+
+  <section class="edge past">
+    <h2 class="section-title" data-reveal>Past Projects</h2>
+    <div class="grid two" data-stagger>
+      {passion.map((c) => <WorkCard card={c} cursor="View case study" />)}
+    </div>
+  </section>
 </Base>
 
 <style>
   .edge { padding-inline: var(--edge); }
   .pg-page { padding-top: clamp(48px, 8vw, 120px); }
+  .past { margin-top: clamp(96px, 12vw, 172px); }
+  .past .section-title { margin-bottom: 22px; }
+  .grid { display: grid; gap: 50px 32px; }
+  .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width: 809px) { .grid.two { grid-template-columns: minmax(0, 1fr); gap: 40px; } }
   .lede { margin: 12px 0 40px; max-width: 640px; font-size: var(--fs-bio); letter-spacing: -0.02em; line-height: 1.5; color: var(--muted); }
 </style>
