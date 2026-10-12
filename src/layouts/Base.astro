@@ -34,6 +34,23 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 
     <!-- Mark JS available so reveal animations only hide content when they can show it again -->
     <script is:inline>document.documentElement.classList.add('js');</script>
+    <script is:inline>
+      // Every page opens at the very top: no browser scroll restoration on reload or back/forward.
+      // Links with a #section (like "Work") still jump to that section.
+      (function () {
+        if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+        var toTop = function () {
+          if (location.hash) return;
+          var el = document.documentElement, prev = el.style.scrollBehavior;
+          el.style.scrollBehavior = 'auto';
+          window.scrollTo(0, 0);
+          el.style.scrollBehavior = prev;
+        };
+        toTop();
+        document.addEventListener('DOMContentLoaded', toTop);
+        window.addEventListener('pageshow', toTop);
+      })();
+    </script>
 
     <!-- Google Tag Manager (same container as the Framer site) -->
     <script is:inline define:vars={{ gtm: site.gtm }}>
