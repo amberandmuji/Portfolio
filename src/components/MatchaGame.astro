@@ -178,23 +178,28 @@ const wall = site.drinkWall;
     return `linear-gradient(${dir}, ${stops.join(', ')})`;
   }
 
-  // Stage 1: layers swirl into each other but every ingredient keeps its colour (marbled streaks over a soft gradient)
-  function marbled(layers, H) {
+  // Stage 1: layers swirl into each other but every ingredient keeps its colour.
+  // s (0–1) is how far the swirl has gone: edges soften and streaks reach further;
+  // phase drifts the streaks around with the straw so they move like liquid.
+  function marbled(layers, H, s = 1, phase = 0) {
     if (layers.length < 2) return blendedGradient(layers, H);
     const blobs = []; const stops = []; let y = 0;
+    const soft = 1 + s * 9;
     layers.forEach((l, li) => {
       const lo = y / H * 100, hi = (y + l.h) / H * 100, mid = (lo + hi) / 2; y += l.h;
-      stops.push(`${l.c} ${(lo + (li ? 6 : 0)).toFixed(1)}%`, `${l.c} ${(hi - (li < layers.length - 1 ? 6 : 0)).toFixed(1)}%`);
+      stops.push(`${l.c} ${(lo + (li ? soft : 0)).toFixed(1)}%`, `${l.c} ${(hi - (li < layers.length - 1 ? soft : 0)).toFixed(1)}%`);
+      if (s < 0.02) return;
       for (let j = 0; j < 4; j++) {
         const n = li * 4 + j;
-        const x = 8 + rand(n, 21) * 84;
-        const reach = (hi - lo) / 2 + 14;                       // streaks poke into the neighbouring layers
-        const pos = 100 - Math.max(3, Math.min(97, mid + (rand(n, 22) - 0.5) * 2 * reach));
-        const w = 22 + rand(n, 23) * 26, h = 5 + rand(n, 24) * 6;
-        blobs.push(`radial-gradient(ellipse ${w.toFixed(0)}% ${h.toFixed(0)}% at ${x.toFixed(0)}% ${pos.toFixed(0)}%, ${l.c} 0 55%, transparent 80%)`);
+        const dir = n % 2 ? 1 : -1;                              // neighbouring streaks swirl opposite ways
+        const x = 50 + Math.sin(phase * dir * (0.7 + rand(n, 25) * 0.6) + rand(n, 21) * 6.28) * 40;
+        const reach = ((hi - lo) / 2 + 14) * s;                  // streaks poke further into neighbours as you stir
+        const pos = 100 - Math.max(3, Math.min(97, mid + (rand(n, 22) - 0.5) * 2 * reach + Math.cos(phase * 0.6 + n) * 3 * s));
+        const w = (22 + rand(n, 23) * 26) * (0.35 + 0.65 * s), h = (5 + rand(n, 24) * 6) * (0.5 + 0.5 * s);
+        blobs.push(`radial-gradient(ellipse ${w.toFixed(1)}% ${h.toFixed(1)}% at ${x.toFixed(1)}% ${pos.toFixed(1)}%, ${l.c} 0 45%, transparent 85%)`);
       }
     });
-    return `${blobs.join(', ')}, linear-gradient(to top, ${stops.join(', ')})`;
+    return `${blobs.length ? blobs.join(', ') + ', ' : ''}linear-gradient(to top, ${stops.join(', ')})`;
   }
   // Stage 2: everything blends into one colour, weighted by how much of each was poured
   function averageColor(layers) {
@@ -219,7 +224,7 @@ const wall = site.drinkWall;
     liquidEl.style.height = m.liquidH + 'px';
     liquidEl.style.background = layeredGradient(m.layers);
     liquidEl.style.setProperty('--top', m.layers.length ? m.layers[m.layers.length - 1].c : 'transparent');
-    blendEl.style.background = marbled(m.layers, m.liquidH);
+    blendEl.style.background = marbled(m.layers, m.liquidH, 0);
     uniformEl.style.background = m.layers.length ? averageColor(m.layers) : 'none';
     liquidEl.classList.toggle('has', m.liquidH > 0);
 
@@ -427,7 +432,7 @@ const wall = site.drinkWall;
 
   async function share() {
     const d = snapshot();
-    if (mix >= 1 && d.layers.length) d.layers = [{ c: averageColor(model().layers), h: 1 }];
+    if (target >= 1 && d.layers.length) d.layers = [{ c: averageColor(model().layers), h: 1 }];
     const btn = $('[data-share]');
     btn.disabled = true;
     writeLocal([{ ...d, t: Date.now() }, ...readLocal()]);
@@ -477,7 +482,6 @@ const wall = site.drinkWall;
       glass.classList.remove('is-served', 'mixed');
       glass.tabIndex = -1;
       setMix(0);
-      glass.style.removeProperty('--stir');
       $('[data-build]').hidden = false;
       $('[data-result]').hidden = true;
       render();
@@ -486,8 +490,7 @@ const wall = site.drinkWall;
   });
 
   // ---------- Celebrate + stir ----------
-  let mix = 0, hold = 0;
-  function celebrate(m) {
+    function celebrate(m) {
     if (reduce) return;
     const stage = glass.parentElement;
     const colors = [...m.layers.map((l) => l.c), '#3992f7', '#c1deaf', '#fae4d0'];
@@ -505,39 +508,70 @@ const wall = site.drinkWall;
       setTimeout(() => bit.remove(), 1400);
     }
   }
+  // Mixing runs on one animation loop so every part eases instead of jumping:
+  //   target – how much stirring you've done (0–1); shown – what's drawn, easing after target
+  //   pos/vel – the straw follows your finger on a soft spring and swings back when let go
+  //   lag – ice and boba trail behind the straw a little, like they're in liquid
+  //   phase – keeps the swirl drifting while it carries momentum
+  let target = 0, shown = 0, pos = 0, aim = 0, vel = 0, lag = 0, phase = 0, energy = 0, raf = 0, half = false;
+  const smooth = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+  function draw() {
+    const m = model();
+    const s = smooth(0, 0.55, shown);
+    blendEl.style.background = marbled(m.layers, m.liquidH, s, phase);
+    blendEl.style.opacity = shown > 0.001 ? '1' : '0';
+    uniformEl.style.opacity = smooth(0.42, 1, shown).toFixed(3);
+    glass.style.setProperty('--stir', pos.toFixed(3));
+    glass.style.setProperty('--lag', lag.toFixed(3));
+    glass.style.setProperty('--slosh', (vel * 6).toFixed(2));
+  }
+  function tick() {
+    // straw: spring toward where the finger is (or back to rest)
+    const k = dragging ? 0.22 : 0.08, damp = dragging ? 0.62 : 0.86;
+    vel = (vel + (aim - pos) * k) * damp; pos += vel;
+    lag += (pos - lag) * 0.07;
+    energy *= 0.94;
+    phase += energy * 0.9 + Math.abs(vel) * 0.6;
+    shown += (target - shown) * 0.06;
+    if (Math.abs(target - shown) < 0.0015) shown = target;
+    draw();
+    const settled = !dragging && Math.abs(pos) < 0.002 && Math.abs(vel) < 0.002 && Math.abs(lag) < 0.002 && energy < 0.002 && shown === target;
+    if (settled) { pos = vel = lag = 0; draw(); raf = 0; glass.classList.remove('moving'); } else raf = requestAnimationFrame(tick);
+  }
+  const wake = () => { if (!raf && !reduce) { glass.classList.add('moving'); raf = requestAnimationFrame(tick); } else if (reduce) { shown = target; draw(); } };
   function setMix(v) {
-    mix = v;
-    blendEl.style.opacity = String(Math.min(1, mix * 2));          // 0–50%: layers swirl, colours stay distinct
-    uniformEl.style.opacity = String(Math.max(0, (mix - 0.5) * 2)); // 50–100%: everything blends into one colour
+    target = shown = v; pos = aim = vel = lag = energy = phase = 0; half = false;
+    if (raf) { cancelAnimationFrame(raf); raf = 0; } glass.classList.remove('moving');
+    draw();
   }
   function addMix(amount) {
-    if (mix >= 1) return;
-    const before = mix;
-    if (hold > Date.now()) return;                            // pause on the swirled stage so it can be seen
-    let next = Math.min(1, mix + amount);
-    if (before < 0.5 && next > 0.5) { next = 0.5; hold = Date.now() + 700; }
-    setMix(next);
-    if (mix >= 1) { glass.classList.remove('mixed'); void glass.offsetWidth; glass.classList.add('mixed'); status.textContent = 'Perfectly mixed!'; }
-    else if (before < 0.5 && mix >= 0.5) { glass.classList.remove('mixed'); void glass.offsetWidth; glass.classList.add('mixed'); status.textContent = 'The layers are swirling. Keep stirring to blend it all.'; }
-    else if (mix < 0.5 && mix > 0.03) status.textContent = 'Stirring…';
+    if (target >= 1) return;
+    // ease off around the halfway point so the marbled stage lingers a moment
+    const nearHalf = 0.35 + 0.65 * smooth(0, 0.1, Math.abs(target - 0.5));
+    target = Math.min(1, target + amount * nearHalf);
+    energy = Math.min(0.12, energy + amount * 3);
+    if (target >= 1) { setTimeout(() => { glass.classList.remove('mixed'); void glass.offsetWidth; glass.classList.add('mixed'); }, 450); status.textContent = 'Perfectly mixed!'; }
+    else if (!half && target >= 0.5) { half = true; status.textContent = 'The layers are swirling. Keep stirring to blend it all.'; }
+    else if (target < 0.5 && target > 0.03) status.textContent = 'Stirring…';
+    wake();
   }
 
-  let dragging = false, lastX = 0, pos = 0;
+  let dragging = false, lastX = 0;
   glass.addEventListener('pointerdown', (e) => {
     if (!glass.classList.contains('is-served')) return;
     dragging = true; lastX = e.clientX; glass.setPointerCapture(e.pointerId); glass.classList.add('stirring');
+    wake();
   });
   glass.addEventListener('pointermove', (e) => {
     if (!dragging) return;
     const dx = e.clientX - lastX; lastX = e.clientX;
-    pos = Math.max(-1, Math.min(1, pos + dx / 45));
-    glass.style.setProperty('--stir', pos.toFixed(3));
-    addMix(Math.abs(dx) / (mix < 0.5 ? 700 : 1400));
+    aim = Math.max(-1, Math.min(1, aim + dx / 50));
+    addMix(Math.abs(dx) / (target < 0.5 ? 650 : 1100));
   });
   const stop = () => {
     if (!dragging) return;
-    dragging = false; pos = 0; glass.classList.remove('stirring');
-    glass.style.setProperty('--stir', '0');
+    dragging = false; aim = 0; glass.classList.remove('stirring');
+    wake();
   };
   glass.addEventListener('pointerup', stop);
   glass.addEventListener('pointercancel', stop);
@@ -545,9 +579,8 @@ const wall = site.drinkWall;
   glass.addEventListener('keydown', (e) => {
     if (!glass.classList.contains('is-served') || !['ArrowLeft', 'ArrowRight'].includes(e.key)) return;
     e.preventDefault();
-    glass.style.setProperty('--stir', e.key === 'ArrowLeft' ? '-0.8' : '0.8');
+    vel += e.key === 'ArrowLeft' ? -0.25 : 0.25;
     addMix(0.08);
-    clearTimeout(glass._t); glass._t = setTimeout(() => glass.style.setProperty('--stir', '0'), 250);
   });
 
   render();
@@ -630,7 +663,7 @@ const wall = site.drinkWall;
     content: ''; position: absolute; inset: 0; pointer-events: none;
     background: linear-gradient(90deg, rgb(0 0 0 / .08), transparent 22%, transparent 78%, rgb(0 0 0 / .1));
   }
-  .blend { position: absolute; inset: 0; opacity: 0; transition: opacity 200ms linear; }
+  .blend { position: absolute; inset: 0; opacity: 0; }
     @keyframes wave { 50% { transform: translateY(1px) scaleX(.97); } }
 
   .pearls { position: absolute; inset: 0; z-index: 2; }
@@ -697,12 +730,13 @@ const wall = site.drinkWall;
     transform: translateY(-14px);
     transition: opacity 300ms, transform 500ms var(--ease-spring);
   }
-  .is-served .straw { opacity: 1; transform: rotate(calc(8deg + var(--stir, 0) * 16deg)) translateX(calc(var(--stir, 0) * 14px)); }
+  .is-served .straw { opacity: 1; transform: translateX(calc(var(--stir, 0) * 14px)) rotate(calc(8deg + var(--stir, 0) * 16deg)); }
   .glass.is-served { cursor: grab; touch-action: none; }
   .glass.stirring { cursor: grabbing; }
   .glass:focus-visible { outline: 2px solid var(--accent); outline-offset: 8px; border-radius: 12px; }
-  .glass.stirring .straw { transition: opacity 300ms, transform 120ms linear; }
-  .is-served .cubes, .is-served .pearls { transform: translateX(calc(var(--stir, 0) * 7px)); transition: transform 500ms var(--ease-spring); }
+  .glass.moving .straw { transition: opacity 300ms; }
+  .is-served .cubes, .is-served .pearls { transform: translateX(calc(var(--lag, 0) * 8px)) rotate(calc(var(--lag, 0) * -2deg)); }
+  .is-served .liquid.has::before { translate: calc(var(--slosh, 0) * 1px) 0; rotate: calc(var(--slosh, 0) * -0.6deg); }
   .glass.mixed { animation: pop 420ms var(--ease-spring); }
   .is-served .lid { opacity: 1; transform: none; }
   .glass.is-served { animation: swirl 900ms var(--ease-out); }
