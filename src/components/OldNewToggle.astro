@@ -1,0 +1,68 @@
+---
+// Old / New comparison card: a switch on top cross-fades between two screenshots.
+interface Props { old: string; new: string; oldAlt: string; newAlt: string; width: number; height: number; }
+const { old: oldSrc, new: newSrc, oldAlt, newAlt, width, height } = Astro.props;
+---
+<div class="cs-w on-card" data-oldnew>
+  <div class="on-switch">
+    <button type="button" class="on-label" data-set="old">Old</button>
+    <button type="button" class="on-track" role="switch" aria-checked="true" aria-label="Show the new design" data-toggle><span class="on-knob"></span></button>
+    <button type="button" class="on-label on" data-set="new">New</button>
+  </div>
+  <div class="on-stage" style={`aspect-ratio:${width}/${height}`}>
+    <img class="on-img" data-img="old" src={oldSrc} alt={oldAlt} width={width} height={height} loading="lazy" />
+    <img class="on-img show" data-img="new" src={newSrc} alt={newAlt} width={width} height={height} loading="lazy" />
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-oldnew]').forEach((card) => {
+    const track = card.querySelector<HTMLButtonElement>('[data-toggle]')!;
+    const labels = card.querySelectorAll<HTMLButtonElement>('[data-set]');
+    const imgs = card.querySelectorAll<HTMLElement>('[data-img]');
+    const set = (isNew: boolean) => {
+      track.setAttribute('aria-checked', String(isNew));
+      track.setAttribute('aria-label', isNew ? 'Show the old design' : 'Show the new design');
+      labels.forEach((l) => l.classList.toggle('on', (l.dataset.set === 'new') === isNew));
+      imgs.forEach((i) => i.classList.toggle('show', (i.dataset.img === 'new') === isNew));
+    };
+    track.addEventListener('click', () => set(track.getAttribute('aria-checked') !== 'true'));
+    labels.forEach((l) => l.addEventListener('click', () => set(l.dataset.set === 'new')));
+  });
+</script>
+
+<style>
+  .on-card {
+    margin-top: 56px; padding: 28px clamp(16px, 4vw, 48px) clamp(20px, 4vw, 48px);
+    border-radius: 24px;
+    background: linear-gradient(160deg, #e6f6fa 0%, #d8f3f1 55%, #e4f1fb 100%);
+  }
+  .on-switch { display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: clamp(16px, 2.5vw, 28px); }
+  .on-label {
+    padding: 4px 2px; border: 0; background: none; cursor: pointer;
+    font: inherit; font-size: 18px; letter-spacing: -0.01em; color: rgb(31 66 77 / .55);
+    transition: color 200ms;
+  }
+  .on-label.on { color: #1f424d; }
+  .on-label:hover { color: #1f424d; }
+  .on-track {
+    position: relative; width: 56px; height: 30px; padding: 0; border: 0; border-radius: 999px; cursor: pointer;
+    background: #9fbcc4; transition: background 250ms;
+  }
+  .on-track[aria-checked='true'] { background: #2b6f80; }
+  .on-knob {
+    position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff;
+    box-shadow: 0 1px 3px rgb(0 0 0 / .2); transition: transform 300ms var(--ease-spring);
+  }
+  .on-track[aria-checked='true'] .on-knob { transform: translateX(26px); }
+  .on-track:focus-visible, .on-label:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 999px; }
+
+  .on-stage { position: relative; display: grid; }
+  .on-img {
+    grid-area: 1 / 1; width: 100%; height: 100%; object-fit: contain; display: block;
+    opacity: 0; transform: scale(.985); transition: opacity 350ms var(--ease-out), transform 450ms var(--ease-out);
+  }
+  .on-img.show { opacity: 1; transform: none; }
+  @media (max-width: 809px) { .on-label { font-size: 15px; } .on-card { border-radius: 18px; } }
+  @media (prefers-reduced-motion: reduce) { .on-img, .on-knob { transition: none; } }
+</style>
