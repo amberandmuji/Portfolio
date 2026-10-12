@@ -94,10 +94,9 @@ export const playground: Card[] = [
     tags: ['Claude Code'],
     desc: 'A bouldering log for every session: snap the wall, pick the grade, count your attempts and mark it sent.',
     kinds: ['Mobile app', 'Climbing tracker'],
-    // phone video (9:16) shown whole in a 4:3 frame; the sides repeat the video's own edge gradient (sampled from the video)
-    fit: 'contain', ratio: '4 / 3',
-    bg: 'linear-gradient(180deg, #faccb0 0%, #faceb4 10%, #fad5bb 25%, #fbdcc8 50%, #fbe4d5 75%, #fbebdc 90%, #fdeee3 100%) left / 50% 100% no-repeat, linear-gradient(180deg, #faceb4 0%, #fad2b9 10%, #fad6c0 25%, #fbe0ce 50%, #fbe8da 75%, #fdeee3 90%, #fdf1e7 100%) right / 50% 100% no-repeat',
-    media: '/assets/playground/sent.mp4', poster: '/assets/playground/sent-poster.webp',
+    // the phone video re-rendered at 4:3 with its own edge colours extended to the sides (seamless in every browser)
+    ratio: '1708 / 1280',
+    media: '/assets/playground/sent-wide.mp4', poster: '/assets/playground/sent-wide-poster.webp',
   },
 ];
 
