@@ -87,7 +87,7 @@ const next = selectedWorks.find((c) => c.href === '/home-page-redesign')!;
       <h3 class="cs-h">Ideation: An Automated Shared Space</h3>
       <p class="cs-p">I proposed building a shared space as client portal, replacing manual link creation with a persistent, permission-based area partners could return to.</p>
     </div>
-    <div class="cs-w cs-media"><img src="https://framerusercontent.com/images/YfwtxNiWP6nvHQgCnWKhUCWQs.png?width=1858&height=1211" alt="" width="1858" height="1211" loading="lazy" /></div>
+    <div class="cs-w cs-media"><img src="/assets/pcc-client-portal/ideation.png" alt="" width="1858" height="1211" loading="lazy" /></div>
   </section>
 
   <section class="cs-sub">
@@ -131,9 +131,9 @@ const next = selectedWorks.find((c) => c.href === '/home-page-redesign')!;
       <p class="cs-p">I built mid-fidelity Figma wireframes, used Claude to make them clickable, and ran 5 moderated usability sessions with internal healthcare staff, iterating on the design and validating the concept with the legal team before handoff.</p>
       <h4 class="cs-statement" style="margin-top:40px">Finding 1: The Portal Entrance Needed Role-Based Views to Prevent Cross-Partner Exposure</h4>
     </div>
-    <div class="cs-w cs-media" style="margin-top:16px"><img src="https://framerusercontent.com/images/vQ02lZIBL96qStB9fNKrUBiaCtE.png?width=2057&height=1013" alt="" width="2057" height="1013" loading="lazy" /></div>
+    <div class="cs-w cs-media" style="margin-top:16px"><img src="/assets/pcc-client-portal/finding-1.png" alt="" width="2057" height="1013" loading="lazy" /></div>
     <div class="cs-c"><h4 class="cs-statement" style="margin-top:60px">Finding 2: Program Managers wanted self-serve subfolder structures instead of one-size-fits-all sections</h4></div>
-    <div class="cs-w cs-media" style="margin-top:16px"><img src="https://framerusercontent.com/images/xDqMdFHKTipcbP8mtj1IZxqlKA.png?width=2057&height=803" alt="" width="2057" height="803" loading="lazy" /></div>
+    <div class="cs-w cs-media" style="margin-top:16px"><img src="/assets/pcc-client-portal/finding-2.png" alt="" width="2057" height="803" loading="lazy" /></div>
   </section>
 
   <section class="cs-sec" id="final-design">
@@ -145,7 +145,7 @@ const next = selectedWorks.find((c) => c.href === '/home-page-redesign')!;
       { tone: 'blue', view: 'Internal View', name: 'Send files to partners', lead: "Drop a batch in the Central Library; a Power Automate flow routes each file to the right partner's read-only From PCC folder and emails them.", video: '/assets/pcc-client-portal/send-files.mp4', solved: 'Staff manually added users and sent files one by one, automation replaces the repetitive provisioning work.' },
       { tone: 'blue', view: 'Internal View', name: 'Receive files from partners', lead: 'New uploads trigger a notification card to responsive staff in the Master Inbox, so staff process every submission from one place instead of 20 sites.', video: '/assets/pcc-client-portal/receive-files.mp4', solved: 'Incoming files were lost across email and scattered folders, a single inbox catches every submission.' },
       { tone: 'blue', view: 'Internal View', name: 'Partner list directory', lead: 'Every partner gets its own site with inheritance broken, so none can see another, each listed with its permission group setting.', video: '/assets/pcc-client-portal/partner-directory.mp4', solved: "Partners were locked out by SharePoint's default permissions, isolated sites give each one reliable, scoped access." },
-      { tone: 'amber', view: 'External View', name: 'What partners see: their space only', lead: `Separate read-only "From PCC" and Upload folders keep partner data private and PCC's originals safe from overwrites.`, video: 'https://framerusercontent.com/assets/T4NJDP43vSudH3DGohZE3smwaE.mp4', solved: '' },
+      { tone: 'amber', view: 'External View', name: 'What partners see: their space only', lead: `Separate read-only "From PCC" and Upload folders keep partner data private and PCC's originals safe from overwrites.`, video: '/assets/pcc-client-portal/partner-view.mp4', solved: '' },
     ].map((f) => (
       <div class="cs-w cs-card">
         <div class="cs-feature-head"><span class:list={['cs-pill', f.tone]}>{f.view}</span><span>{f.name}</span></div>
