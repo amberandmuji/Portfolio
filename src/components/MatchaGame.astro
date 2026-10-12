@@ -5,6 +5,8 @@
 // cold foam sits on the surface. Serving blends the layers into a gradient and
 // adds the drink to the drink wall.
 import { site } from '../data/site';
+interface Props { story?: string }   // optional personal note shown under the title (About page)
+const { story } = Astro.props;
 
 type Kind = 'liquid' | 'ice' | 'boba' | 'foam';
 const ingredients: { id: string; label: string; color: string; kind: Kind; density?: number }[] = [
@@ -55,6 +57,7 @@ const wall = site.drinkWall;
 
     <div class="copy">
       <h2 id="game-title">Make yourself a drink!</h2>
+      {story && <p class="story">{story}</p>}
       <p class="sub">Tap ingredients to pour them in, then serve it.</p>
 
       <div class="build" data-build>
@@ -626,6 +629,7 @@ const wall = site.drinkWall;
   .copy { max-width: 470px; min-width: 0; }
   h2 { font-size: var(--fs-section); letter-spacing: -0.04em; line-height: 1.4; }
   .sub { margin-top: 2px; color: var(--muted); }
+  .story { margin: 8px 0 14px; max-width: 46ch; color: var(--ink-2); line-height: 1.5; text-wrap: pretty; }
 
   .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
   .chip {

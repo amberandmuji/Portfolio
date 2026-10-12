@@ -1,27 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
-import Playground from '../components/Playground.astro';
-import type { Card } from '../data/site';
-
-const portrait = '/assets/about/portrait.webp';
-
-const experience = [
-  { role: 'UIUX Designer', org: 'Primary Care Coalition (PCC)', dates: '08/2025 – 05/2026' },
-  { role: 'UIUX Designer', org: 'BLIVE GLOBAL, LLC', dates: '06/2025 – 12/2025' },
-  { role: 'UX Design Intern', org: 'Shepherd Money', dates: '05/2023 – 08/2023' },
-];
-const education = [
-  { role: 'MS in Human-Computer Interaction (HCIM)', org: 'University of Maryland' },
-  { role: 'Exchange Program in Information Science', org: 'University of Illinois Urbana-Champaign' },
-  { role: 'BS in Electrical Engineering', org: 'National Yang Ming Chiao Tung University' },
-];
-
-const ai: Card[] = [
-  { href: 'https://claude.ai/artifact/SaEd5mY6mwmdF3vhb9MxYj', title: 'Starside Campfire', tags: ['Claude Code'], media: '/assets/playground/starside-campfire.mp4', poster: '/assets/playground/starside-campfire-poster.webp', external: true },
-  { href: 'https://claude.ai/artifact/3dckUjhQNJqaanGR9j84z1', title: 'Drape Room', tags: ['Claude Code'], media: '/assets/playground/drape-room.mp4', poster: '/assets/playground/drape-room-poster.webp', external: true },
-  { href: 'https://claude.ai/artifact/KNTBxFwJAWEQS9NViyKjzk', title: 'Twenty Years in the Windy City', tags: ['Claude Code'], media: '/assets/playground/windy-city.mp4', poster: '/assets/playground/windy-city-poster.webp', external: true },
-  { href: '', title: 'Sent', tags: ['Claude Code', 'React'], media: '/assets/playground/sent.mp4', poster: '/assets/playground/sent-poster.webp' },
-];
+import Terminal from '../components/Terminal.astro';
+import MatchaGame from '../components/MatchaGame.astro';
 
 const hobbies = [
   { label: 'Espresso and Matcha', src: '/assets/about/espresso-matcha.webp' },
@@ -37,9 +17,7 @@ const hobbies = [
 <Base title="About — Amber's portfolio">
   <!-- 1152px column (144px edges at 1440), measured from the live Framer page -->
   <section class="wrap intro">
-    <div class="portrait">
-      <img src={portrait} alt="Amber" width="346" height="385" />
-    </div>
+    <div class="term-col"><Terminal /></div>
     <div class="text">
       <h1>Hi! I'm Amber</h1>
       <div class="bio">
@@ -48,22 +26,6 @@ const hobbies = [
         <p>Based in Chicago and open to product design and design engineering roles!</p>
       </div>
     </div>
-  </section>
-
-  <section class="wrap cv">
-    <div>
-      <h2>EXPERIENCE</h2>
-      <ul>{experience.map((e) => <li><span>{e.role}</span><span class="sub">{e.org}, {e.dates}</span></li>)}</ul>
-    </div>
-    <div>
-      <h2>EDUCATION</h2>
-      <ul>{education.map((e) => <li><span>{e.role}</span><span class="sub">{e.org}</span></li>)}</ul>
-    </div>
-  </section>
-
-  <section class="wrap ai">
-    <h2 class="section-title" data-reveal>I Like Making Cool Things With AI…</h2>
-    <Playground cards={ai} />
   </section>
 
   <section class="wrap hob">
@@ -77,29 +39,19 @@ const hobbies = [
       ))}
     </div>
   </section>
+
+  <MatchaGame story="I'm from Taiwan, a place famous for boba tea, so I built this little drink bar to share the joy of boba with everyone who stops by. Mix your favorite, then pin it to the wall." />
 </Base>
 
 <style>
   .wrap { width: min(1152px, 100% - 2 * var(--gutter)); margin-inline: auto; }
-  .intro { display: grid; grid-template-columns: 346px minmax(0, 1fr); gap: 56px; align-items: start; padding-top: clamp(48px, 8vw, 136px); }
-  /* Photo-print look: white border, soft shadow, a little spin on hover */
-  .portrait { border-radius: 40px; overflow: hidden; aspect-ratio: 346 / 385; background: var(--img-bg); border: 8px solid #fff; box-shadow: 0 2px 6px rgb(12 12 14 / .06), 0 10px 30px rgb(12 12 14 / .08); transition: transform 500ms var(--ease-spring), box-shadow var(--dur-2); }
-  .portrait img { width: 100%; height: 100%; object-fit: cover; border-radius: 32px; }
-  @media (hover: hover) { .portrait:hover { transform: rotate(-3deg) scale(1.02); box-shadow: 0 4px 10px rgb(12 12 14 / .08), 0 22px 44px rgb(12 12 14 / .14); } }
+  .intro { display: grid; grid-template-columns: minmax(0, 460px) minmax(0, 1fr); gap: 56px; align-items: start; padding-top: clamp(48px, 8vw, 136px); }
   .text { padding-top: 20px; }
   h1 { font-size: var(--fs-section); letter-spacing: -0.04em; line-height: 1.4; }
   .bio { display: flex; flex-direction: column; gap: 20px; margin-top: 20px; font-size: var(--fs-bio); letter-spacing: -0.02em; line-height: 1.5; color: var(--ink-2); }
 
-  .cv { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; margin-top: 100px; }
-  .cv h2 { font-size: var(--fs-body); letter-spacing: 0; }
-  .cv ul { list-style: none; margin: 20px 0 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
-  .cv li { display: flex; flex-direction: column; transition: transform var(--dur-2) var(--ease-out); }
-  .cv li:hover { transform: translateX(4px); }
-  .cv .sub { color: var(--muted); }
-
-  .ai { margin-top: 120px; }
-  .hob { margin-top: 200px; }
-  .ai .section-title, .hob .section-title { margin-bottom: 24px; }
+  .hob { margin-top: clamp(96px, 12vw, 172px); }
+  .hob .section-title { margin-bottom: 24px; }
 
   .hobbies { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; }
   .hobby { margin: 0; }
@@ -114,11 +66,9 @@ const hobbies = [
   @media (max-width: 1199px) { .hobbies { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
   /* Phone (< 810) */
   @media (max-width: 809px) {
-    .intro, .cv { grid-template-columns: minmax(0, 1fr); gap: 28px; }
-    .portrait { max-width: 300px; }
+    .intro { grid-template-columns: minmax(0, 1fr); gap: 28px; }
     .text { padding-top: 0; }
-    .cv { margin-top: 64px; }
-    .ai { margin-top: 80px; }
+      .ai { margin-top: 80px; }
     .hob { margin-top: 96px; }
     .hobbies { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
   }

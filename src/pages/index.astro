@@ -2,9 +2,8 @@
 import Base from '../layouts/Base.astro';
 import WorkCard from '../components/WorkCard.astro';
 import MatchaGame from '../components/MatchaGame.astro';
-import Playground from '../components/Playground.astro';
 import Terminal from '../components/Terminal.astro';
-import { selectedWorks, playground, passion, testimonials } from '../data/site';
+import { selectedWorks, passion, testimonials } from '../data/site';
 ---
 <Base>
   <!-- Full-width layout with 36px page edges, measured from the live Framer page at 1440px -->
@@ -26,11 +25,6 @@ import { selectedWorks, playground, passion, testimonials } from '../data/site';
     <div class="grid two" data-stagger>
       {selectedWorks.map((c) => <WorkCard card={c} cursor="View case study" />)}
     </div>
-  </section>
-
-  <section class="block edge">
-    <h2 class="section-title" data-reveal>Vibe Coding Playground</h2>
-    <Playground cards={playground} />
   </section>
 
   <section class="block edge">
