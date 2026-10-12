@@ -1,6 +1,6 @@
 from PIL import Image, ImageOps, ImageFilter, ImageDraw, ImageFont
 import numpy as np, json, sys
-COLS = int(sys.argv[1]) if len(sys.argv) > 1 else 72
+COLS = int(sys.argv[1]) if len(sys.argv) > 1 else 60
 im = Image.open('cut.png')
 W, H = im.size
 s = W / 500
