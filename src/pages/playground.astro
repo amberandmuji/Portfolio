@@ -7,7 +7,6 @@ import { playground, passion } from '../data/site';
 <Base title="Playground — Amber's portfolio" description="Vibe coding projects Amber built with AI tools.">
   <section class="edge pg-page">
     <h1 class="section-title">Vibe Coding Playground</h1>
-    <p class="lede">Small things I build with AI tools to try ideas fast. Click one to play with it.</p>
     <PlaygroundList cards={playground} />
   </section>
 
@@ -22,10 +21,10 @@ import { playground, passion } from '../data/site';
 <style>
   .edge { padding-inline: var(--edge); }
   .pg-page { padding-top: clamp(48px, 8vw, 120px); }
+  .pg-page .section-title { margin-bottom: 22px; }   /* same title-to-content gap as other sections */
   .past { margin-top: clamp(96px, 12vw, 172px); }
   .past .section-title { margin-bottom: 22px; }
   .grid { display: grid; gap: 50px 32px; }
   .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   @media (max-width: 809px) { .grid.two { grid-template-columns: minmax(0, 1fr); gap: 40px; } }
-  .lede { margin: 12px 0 40px; max-width: 640px; font-size: var(--fs-bio); letter-spacing: -0.02em; line-height: 1.5; color: var(--muted); }
 </style>
