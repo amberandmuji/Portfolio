@@ -87,9 +87,9 @@ The game saves each served drink to a "drink wall". Without setup, the wall is l
 
 The wall then shows the 18 newest drinks from everyone. The anon key is safe to publish: the policies above only allow reading and adding drinks.
 
-## Analytics (Google Analytics 4 via Google Tag Manager)
+## Analytics (Google Analytics 4)
 
-The site loads GTM container `site.gtm` (`src/data/site.ts`) and pushes these events to `dataLayer` (code: `src/scripts/analytics.ts`):
+Set `ga4` in `src/data/site.ts` to your Measurement ID (`G-…`, from GA4 → Admin → Data streams → your web stream). The site then loads gtag.js and sends page views plus these events (code: `src/scripts/analytics.ts`). No Google Tag Manager needed.
 
 | Event | Parameters | Meaning |
 |---|---|---|
@@ -101,13 +101,6 @@ The site loads GTM container `site.gtm` (`src/data/site.ts`) and pushes these ev
 | `playground_click` | `project` | clicked "Try it out" |
 | `drink_served`, `drink_shared` | | played the matcha game |
 | `old_new_toggle` | `case_study`, `view` | flipped the PCC comparison |
-
-One-time setup in GTM (tagmanager.google.com):
-1. **Variables → New → Data Layer Variable** for each parameter: `location`, `method`, `case_study`, `percent`, `section`, `project`, `view`.
-2. **Tags → New → Google Tag**, Tag ID = your GA4 Measurement ID (`G-…`), trigger **Initialization – All Pages**.
-3. **Triggers → New → Custom Event**, event name `resume_click|contact_click|case_study_click|case_study_progress|toc_click|playground_click|drink_served|drink_shared|old_new_toggle`, tick **Use regex matching**.
-4. **Tags → New → Google Analytics: GA4 Event**, Measurement ID `G-…`, Event Name `{{Event}}`, add event parameters (name = parameter, value = its Data Layer Variable), trigger = the custom event trigger above.
-5. **Preview** to check events fire on your site, then **Submit → Publish**.
 
 In GA4: mark `resume_click` and `contact_click` as **Key events** (Admin → Events), and register `case_study`, `location`, `method`, `percent`, `project` as **Custom dimensions** (Admin → Custom definitions) so they show up in reports.
 

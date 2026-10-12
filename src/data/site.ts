@@ -10,7 +10,9 @@ export const site = {
   email: 'amberliangdesign@gmail.com',
   linkedin: 'https://www.linkedin.com/in/amberamberliang/',
   resume: 'https://drive.google.com/file/d/1A_y0yWqywBqdfvFAxsPZsVOIBvwer2c1/view?usp=sharing',
-  gtm: 'GTM-KK8D28BG',
+  // Google Analytics 4 Measurement ID (GA4 → Admin → Data streams → your web stream), e.g. 'G-AB12CD34EF'.
+  // Leave empty to load no analytics.
+  ga4: '',
   // Shared drink wall for the matcha game (optional). Leave empty to keep the wall local to each visitor.
   // To share drinks between visitors, create a free Supabase project and paste its URL and anon key here
   // (see README → "Drink wall").

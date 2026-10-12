@@ -55,10 +55,17 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       })();
     </script>
 
-    <!-- Google Tag Manager (same container as the Framer site) -->
-    <script is:inline define:vars={{ gtm: site.gtm }}>
-      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer',gtm);
-    </script>
+    <!-- Google Analytics 4 (gtag.js), loaded only when site.ga4 is set -->
+    {site.ga4 && <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${site.ga4}`}></script>}
+    {site.ga4 && (
+      <script is:inline define:vars={{ ga4: site.ga4 }}>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', ga4);
+      </script>
+    )}
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>

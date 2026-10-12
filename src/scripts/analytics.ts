@@ -1,6 +1,6 @@
-/* Job-hunt analytics: sends named events to the Google Tag Manager dataLayer.
-   GTM forwards them to Google Analytics 4 (see README → "Analytics").
-   If GTM/GA isn't set up, these pushes are harmless no-ops.
+/* Job-hunt analytics: sends named events straight to Google Analytics 4 via gtag.js
+   (loaded in Base.astro when site.ga4 is set; see README → "Analytics").
+   Without a Measurement ID, gtag doesn't exist and these calls do nothing.
 
    Events
    - resume_click        { location }                       opened the resume
@@ -13,10 +13,10 @@
    - old_new_toggle      { case_study, view }               flipped the PCC old/new comparison
 */
 type Params = Record<string, string | number>;
-declare global { interface Window { dataLayer?: unknown[] } }
+declare global { interface Window { gtag?: (...args: unknown[]) => void } }
 
 const track = (event: string, params: Params = {}) => {
-  (window.dataLayer = window.dataLayer || []).push({ event, ...params });
+  window.gtag?.('event', event, params);
 };
 
 const RESUME = document.documentElement.dataset.resume || '';
