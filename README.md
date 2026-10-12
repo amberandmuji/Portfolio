@@ -28,7 +28,7 @@ It downloads every image and video into `public/assets/` and rewrites the links 
 
 | What | File |
 |---|---|
-| Hero terminal that prints your portrait in `*` | `src/components/Terminal.astro` (grid data in `src/data/amber-ascii.json`; regenerate with `tools/ascii-portrait.py` from a background-removed `cut.png`) |
+| Hero terminal that prints your ASCII portrait | `src/components/Terminal.astro` (characters in `src/data/amber-ascii.json`; regenerate with `python3 tools/ascii-portrait.py cut.png 72`, where `cut.png` is your photo with the background removed) |
 | Colors, text styles, spacing, motion timing | `src/styles/global.css` (`:root` tokens, named after the Framer tokens) |
 | Home cards, testimonials, nav, links | `src/data/site.ts` |
 | Case studies (one page each) | `src/pages/<case-study>.astro` |

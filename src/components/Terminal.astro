@@ -1,8 +1,12 @@
 ---
 // A compact terminal that types `npx render-amber`, then prints Amber's portrait
-// in asterisks next to a neofetch-style info panel.
-// The grid comes from tools/ascii-portrait.py (background removed, local contrast,
-// Floyd–Steinberg dithered to 3 levels: 0 empty, 1 dim, 2 bright).
+// in ASCII next to a short info panel.
+// The portrait comes from tools/ascii-portrait.py, which picks each character by shape
+// (6 sampling circles + directional/global contrast, after alexharri.com/blog/ascii-rendering)
+// using JetBrains Mono's glyphs — the same font the canvas draws with.
+import '@fontsource/jetbrains-mono/400.css';
+import '@fontsource/jetbrains-mono/500.css';
+import '@fontsource/jetbrains-mono/700.css';
 import grid from '../data/amber-ascii.json';
 const info: [string, string][] = [
   ['role', 'Product Designer'],
@@ -23,10 +27,8 @@ const info: [string, string][] = [
   <div class="body">
     <p class="ln"><span class="ps">~</span> <span class="ps2">$</span> <span data-typed></span><span class="caret" data-caret></span></p>
     <div class="out">
-      <canvas class="art" data-art role="img" aria-label="Amber's portrait drawn with asterisks" style={`aspect-ratio:${grid.cols}/${grid.rows.length}`}></canvas>
+      <canvas class="art" data-art role="img" aria-label="Amber's portrait drawn in ASCII characters" style={`aspect-ratio:${(grid.cols * 0.6).toFixed(1)}/${grid.rows.length * grid.lineHeight}`}></canvas>
       <div class="info">
-        <p class="ln head" data-info><span class="hl">amber</span>@<span class="hl">portfolio</span></p>
-        <p class="ln rule" data-info>-----------------</p>
         {info.map(([k, v]) => <p class="ln" data-info><span class="k">{k}</span>{v}</p>)}
         <p class="ln swatches" data-info aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></p>
       </div>
@@ -44,7 +46,8 @@ const info: [string, string][] = [
   const canvas = root.querySelector('[data-art]');
   const ctx = canvas.getContext('2d');
   const COMMAND = 'npx render-amber';
-  const MONO = 'ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace';
+  const MONO = '"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace';
+  const LH = grid.lineHeight || 1;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const rows = grid.rows, COLS = grid.cols, ROWS = rows.length;
 
@@ -53,31 +56,30 @@ const info: [string, string][] = [
   function size() {
     dpr = Math.min(2, window.devicePixelRatio || 1);
     const w = canvas.clientWidth;
-    cell = w / COLS;
+    cell = w / COLS;                                  // character advance (0.6em)
     canvas.width = Math.round(w * dpr);
-    canvas.height = Math.round(cell * ROWS * dpr);
+    canvas.height = Math.round(cell / 0.6 * LH * ROWS * dpr);
     draw();
   }
   function draw() {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    const big = `700 ${(cell * 1.85).toFixed(2)}px ${MONO}`;
-    const small = `700 ${(cell * 1.45).toFixed(2)}px ${MONO}`;
-    const R = cell * 12;
+    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+    const fs = cell / 0.6, lh = fs * LH;
+    ctx.font = `500 ${fs.toFixed(2)}px ${MONO}`;
+    const R = fs * 7;
     for (let y = 0; y < shown; y++) {
       const r = rows[y];
-      const cy = y * cell + cell * 0.8;            // '*' sits high in the em box, nudge it down
-      for (let x = 0; x < COLS; x++) {
-        const k = r.charCodeAt(x) - 48;
-        if (!k) continue;
-        const cx = x * cell + cell / 2;
-        let glow = 0;
-        if (pointer) { const d = Math.hypot(cx - pointer.x, cy - pointer.y); if (d < R) glow = Math.min(1, (1 - d / R) * 1.4); }
-        ctx.font = k === 2 ? big : small;
-        if (glow > 0) ctx.fillStyle = `rgba(${Math.round(232 - 175 * glow)}, ${Math.round(236 - 90 * glow)}, ${Math.round(241 + 6 * glow)}, ${k === 2 ? 1 : 0.5 + 0.5 * glow})`;
-        else ctx.fillStyle = k === 2 ? 'rgb(232 236 241)' : 'rgb(232 236 241 / .55)';
-        ctx.fillText('*', cx, cy);
+      const by = y * lh + lh * 0.78;                 // baseline, matching the shape vectors
+      if (!pointer) { ctx.fillStyle = 'rgb(232 236 241)'; ctx.fillText(r, 0, by); continue; }
+      for (let x = 0; x < r.length; x++) {
+        const c = r[x];
+        if (c === ' ') continue;
+        const cx = x * cell + cell / 2, cy = by - lh * 0.3;
+        const d = Math.hypot(cx - pointer.x, cy - pointer.y);
+        const glow = d < R ? Math.min(1, (1 - d / R) * 1.4) : 0;
+        ctx.fillStyle = glow > 0 ? `rgb(${Math.round(232 - 175 * glow)} ${Math.round(236 - 90 * glow)} ${Math.round(241 + 6 * glow)})` : 'rgb(232 236 241)';
+        ctx.fillText(c, x * cell, by);
       }
     }
   }
@@ -133,13 +135,14 @@ const info: [string, string][] = [
   root.querySelector('[data-replay]').addEventListener('click', play);
 
   new ResizeObserver(size).observe(canvas);
+  document.fonts?.load(`500 12px "JetBrains Mono"`).then(draw);
   const io = new IntersectionObserver((ents) => { if (ents.some((e) => e.isIntersecting)) { io.disconnect(); play(); } }, { threshold: 0.3 });
   io.observe(root);
 </script>
 
 <style>
   .term {
-    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    --mono: 'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
     width: 100%; max-width: 460px; border-radius: 12px; overflow: hidden;
     background: #0e1014; color: #e8ecf1;
     border: 1px solid rgb(255 255 255 / .06);
@@ -163,14 +166,13 @@ const info: [string, string][] = [
   .ps { color: #7aa2f7; font-weight: 700; }
   .ps2 { color: #6ee7a8; font-weight: 700; }
 
-  .out { display: grid; grid-template-columns: 44% minmax(0, 1fr); gap: 18px; align-items: center; margin: 10px 0 8px; }
+  .out { display: grid; grid-template-columns: 52% minmax(0, 1fr); gap: 16px; align-items: center; margin: 10px 0 8px; }
   .art { display: block; width: 100%; cursor: crosshair; }
   .info [data-info] { opacity: 0; transform: translateX(-4px); transition: opacity 200ms, transform 200ms; }
   .info [data-info].on { opacity: 1; transform: none; }
-  .hl { color: #7aa2f7; font-weight: 700; }
-  .head { color: #8b93a1; }
-  .rule { color: #4b5260; }
   .k { display: inline-block; width: 8ch; color: #6ee7a8; font-weight: 700; }
+  .info { font-size: 11.5px; line-height: 18px; }
+  .info .ln:not(.swatches) { display: grid; grid-template-columns: 8ch minmax(0, 1fr); white-space: normal; }
   .swatches { display: flex; gap: 0; margin-top: 8px; }
   .swatches i { width: 18px; height: 12px; }
   .swatches i:nth-child(1) { background: #3992f7; }
@@ -189,6 +191,6 @@ const info: [string, string][] = [
 
   @media (max-width: 420px) {
     .term { font-size: 10.5px; line-height: 16px; }
-    .out { grid-template-columns: 40% minmax(0, 1fr); gap: 10px; }
+    .out { grid-template-columns: 48% minmax(0, 1fr); gap: 10px; }
   }
 </style>
