@@ -25,7 +25,8 @@ const ingredients: { id: string; label: string; color: string; kind: Kind; densi
 const wall = site.drinkWall;
 ---
 <section class="game" aria-labelledby="game-title">
-  <div class="panel">
+  <div class:list={["panel", { "has-story": !!story }]}>
+    {story && <p class="story">{story}</p>}
     <div class="stage">
       <div class="glass" data-glass tabindex="-1" aria-label="Your drink. After serving, drag the straw or use the arrow keys to stir.">
         <div class="lid" aria-hidden="true"></div>
@@ -58,7 +59,6 @@ const wall = site.drinkWall;
 
     <div class="copy">
       <h2 id="game-title">Make yourself a drink!</h2>
-      {story && <p class="story">{story}</p>}
       <p class="sub">Tap ingredients to pour them in, then serve it.</p>
 
       <div class="build" data-build>
@@ -630,10 +630,16 @@ const wall = site.drinkWall;
   .copy { max-width: 470px; min-width: 0; }
   h2 { font-size: var(--fs-section); letter-spacing: -0.04em; line-height: 1.4; }
   .sub { margin-top: 2px; color: var(--muted); }
+  /* Handwritten note: left of the cup on large screens, on top on smaller ones */
   .story {
-    margin: 10px 0 16px; max-width: 34ch;
+    margin: 0; flex: 0 1 260px; align-self: center;
     font-family: 'Caveat', cursive; font-weight: 500; font-size: clamp(1.35rem, 1.1rem + 0.7vw, 1.6rem); line-height: 1.25; letter-spacing: 0;
-    color: #3f6b3a; rotate: -1deg; transform-origin: left center; text-wrap: pretty;
+    color: #3f6b3a; rotate: -2deg; text-wrap: pretty;
+  }
+  .panel.has-story { max-width: 1180px; }
+  @media (max-width: 1099px) {
+    .panel.has-story { flex-wrap: wrap; }
+    .panel.has-story .story { flex: 0 0 100%; max-width: 100%; margin: 0 0 8px; padding-inline: max(0px, calc((100% - 44ch) / 2)); text-align: center; rotate: -1deg; }
   }
 
   .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
@@ -839,6 +845,7 @@ const wall = site.drinkWall;
 
   @media (max-width: 809px) {
     .panel { flex-direction: column; align-items: stretch; }
+    .panel.has-story .story { flex: none; text-align: left; margin: 0; max-width: none; padding-inline: 0; }
     .stage { width: 100%; padding-top: 48px; }
     .wall { margin-top: 40px; }
   }
