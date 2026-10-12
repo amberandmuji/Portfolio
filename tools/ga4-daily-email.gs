@@ -22,6 +22,9 @@ const SEND_HOUR = 8;                              // ← local hour to send (Chi
 const TIMEZONE = 'America/Chicago';
 const SEND_WHEN_NO_VISITS = true;                 // set false to skip quiet days
 
+// sites that mean a recruiter or hiring team opened the portfolio from an application or job platform
+const JOB_SITES = /greenhouse|lever\.co|workday|myworkdayjobs|ashby|smartrecruiters|icims|jobvite|bamboohr|wellfound|linkedin|indeed|glassdoor|handshake/i;
+
 const KEY_EVENTS = ['resume_click', 'contact_click', 'case_study_click', 'case_study_progress',
   'toc_click', 'playground_click', 'drink_served', 'drink_shared', 'old_new_toggle'];
 
@@ -36,7 +39,7 @@ function sendDailyReport() {
   const visitors = num_(cur[0]);
   if (!visitors && !SEND_WHEN_NO_VISITS) return;
 
-  const sources = run_({ dateRanges: [day], dimensions: d_('sessionSource', 'sessionMedium', 'sessionCampaignName'),
+  const sources = run_({ dateRanges: [day], dimensions: d_('sessionSource', 'sessionMedium'),
     metrics: m_('sessions'), orderBys: [{ metric: { metricName: 'sessions' }, desc: true }], limit: 10 });
   const cities = run_({ dateRanges: [day], dimensions: d_('city', 'country'), metrics: m_('activeUsers'),
     orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }], limit: 10 });
@@ -64,7 +67,7 @@ function sendDailyReport() {
   if (ev.resume_click) hi.push(`📄 Resume opened <b>${ev.resume_click}×</b>`);
   if (ev.contact_click) hi.push(`✉️ Contact clicks: <b>${ev.contact_click}</b>`);
   if (ret.returning) hi.push(`🔁 <b>${ret.returning}</b> returning visitor${ret.returning > 1 ? 's' : ''} (someone came back)`);
-  rows_(sources).forEach((r) => { if (r[2] && r[2] !== '(not set)' && r[2] !== '(direct)' && r[2] !== '(organic)' && r[2] !== '(referral)') hi.push(`🎯 Visit from campaign <b>${esc_(r[2])}</b> (${esc_(r[0])})`); });
+  rows_(sources).forEach((r) => { if (JOB_SITES.test(r[0])) hi.push(`💼 ${num_(r[2])} visit${num_(r[2]) > 1 ? 's' : ''} from <b>${esc_(r[0])}</b> (job platform)`); });
   if (avgPrev && visitors >= Math.max(3, avgPrev * 2)) hi.push(`📈 Traffic spike: ${visitors} visitors vs ~${avgPrev.toFixed(1)}/day last week`);
   if (!hi.length) hi.push(visitors ? 'No resume or contact clicks yesterday.' : 'No visitors yesterday.');
 
@@ -77,7 +80,7 @@ function sendDailyReport() {
     ${box_('Highlights', '<ul style="margin:0;padding-left:18px">' + hi.map((h) => `<li>${h}</li>`).join('') + '</ul>')}
     ${box_('Visitors', `<b style="font-size:22px">${visitors}</b> visitors · ${num_(cur[1])} new · ${num_(cur[2])} sessions · avg ${secs_(cur[3])} per session
       <br><span style="color:#6b6b73">Last 7 days: ~${avgPrev.toFixed(1)} visitors/day · Devices: ${rows_(devices).map((r) => `${r[0]} ${r[1]}`).join(', ') || '—'}</span>`)}
-    ${box_('Where they came from', table_(['Source', 'Medium', 'Campaign', 'Sessions'], rows_(sources)))}
+    ${box_('Where they came from', table_(['Source', 'Medium', 'Sessions'], rows_(sources)))}
     ${box_('Where they are', table_(['City', 'Country', 'Visitors'], rows_(cities)))}
     ${box_('What they looked at', table_(['Page', 'Views', 'Avg time'], rows_(pages).map((r) => [r[0], r[1], secs_(num_(r[3]) ? num_(r[2]) / num_(r[3]) : 0)])))}
     ${box_('Actions', table_(['Event', 'Count'], KEY_EVENTS.filter((k) => ev[k]).map((k) => [k, ev[k]])))}

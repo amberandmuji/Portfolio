@@ -113,4 +113,4 @@ In GA4: mark `resume_click` and `contact_click` as **Key events** (Admin → Eve
 
 ### Daily summary email (free)
 
-`tools/ga4-daily-email.gs` is a Google Apps Script that reads GA4 every morning and emails a short job-hunt summary (highlights, visitors, sources/campaigns, cities, pages, resume/contact clicks, reading depth). Setup steps are at the top of the file: paste it into script.google.com, add the "Google Analytics Data API" service, set your property ID, run `sendDailyReport` once, then `createDailyTrigger`.
+`tools/ga4-daily-email.gs` is a Google Apps Script that reads GA4 every morning and emails a short job-hunt summary (highlights incl. visits from job platforms like Greenhouse, Lever, Workday and LinkedIn, visitors, sources, cities, pages, resume/contact clicks, reading depth). Setup steps are at the top of the file: paste it into script.google.com, add the "Google Analytics Data API" service, set your property ID, run `sendDailyReport` once, then `createDailyTrigger`.
