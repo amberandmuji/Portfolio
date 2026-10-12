@@ -110,3 +110,7 @@ One-time setup in GTM (tagmanager.google.com):
 5. **Preview** to check events fire on your site, then **Submit → Publish**.
 
 In GA4: mark `resume_click` and `contact_click` as **Key events** (Admin → Events), and register `case_study`, `location`, `method`, `percent`, `project` as **Custom dimensions** (Admin → Custom definitions) so they show up in reports.
+
+### Daily summary email (free)
+
+`tools/ga4-daily-email.gs` is a Google Apps Script that reads GA4 every morning and emails a short job-hunt summary (highlights, visitors, sources/campaigns, cities, pages, resume/contact clicks, reading depth). Setup steps are at the top of the file: paste it into script.google.com, add the "Google Analytics Data API" service, set your property ID, run `sendDailyReport` once, then `createDailyTrigger`.
