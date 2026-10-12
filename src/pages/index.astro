@@ -71,25 +71,24 @@ import { selectedWorks, playground, passion, testimonials } from '../data/site';
   .intro { max-width: 958px; margin-top: 20px; font-size: var(--fs-bio); letter-spacing: -0.02em; line-height: 1.5; color: var(--ink); }
 
   .block { margin-top: clamp(96px, 12vw, 172px); }
-  #projects { margin-top: clamp(96px, 13vw, 192px); }
   .section-title { margin-bottom: 22px; }
 
   .grid { display: grid; gap: 50px 32px; }
   .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .quotes { margin-top: 80px; gap: 32px; }
+  .quotes { gap: 32px; }
 
   .quote { margin: 0; padding: 30px; border-radius: 20px; background: var(--surface); }
   figcaption { display: flex; align-items: center; gap: 15px; }
   figcaption img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; background: var(--img-bg); }
   figcaption > span { display: flex; flex-direction: column; }
-  .name { font-size: var(--fs-small); line-height: 1.4; }
+  .name { font-size: var(--fs-small); line-height: 1.4; letter-spacing: 0; }
   .role { color: var(--muted); }
   blockquote { margin: 30px 0 0; color: var(--ink); }
 
   /* Phone (Framer < 810) */
   @media (max-width: 809px) {
     .grid.two { grid-template-columns: 1fr; gap: 40px; }
-    .quotes { margin-top: 32px; gap: 16px; }
+    .quotes { gap: 16px; }
     .quote { padding: 22px; }
   }
 </style>
