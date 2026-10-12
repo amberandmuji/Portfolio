@@ -40,13 +40,13 @@ const hobbies = [
     </div>
   </section>
 
-  <MatchaGame story="I'm from Taiwan, a place famous for boba tea, so I built this little drink bar to share the joy of boba with everyone who stops by. Mix your favorite, then pin it to the wall." />
+  <MatchaGame story="Growing up in Taiwan, the home of boba tea, a cup of bubble tea was always my little everyday joy. I built this tiny drink bar to share that feeling with you, so mix your favorite and pin it to the wall!" />
 </Base>
 
 <style>
   .wrap { width: min(1152px, 100% - 2 * var(--gutter)); margin-inline: auto; }
-  .intro { display: grid; grid-template-columns: minmax(0, 460px) minmax(0, 1fr); gap: 56px; align-items: start; padding-top: clamp(48px, 8vw, 136px); }
-  .text { padding-top: 20px; }
+  .intro { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(32px, 4vw, 64px); align-items: center; padding-top: clamp(48px, 8vw, 136px); }
+  .term-col { justify-self: center; width: 100%; max-width: 460px; }   /* same as the homepage hero */
   h1 { font-size: var(--fs-section); letter-spacing: -0.04em; line-height: 1.4; }
   .bio { display: flex; flex-direction: column; gap: 20px; margin-top: 20px; font-size: var(--fs-bio); letter-spacing: -0.02em; line-height: 1.5; color: var(--ink-2); }
 
@@ -67,7 +67,7 @@ const hobbies = [
   /* Phone (< 810) */
   @media (max-width: 809px) {
     .intro { grid-template-columns: minmax(0, 1fr); gap: 28px; }
-    .text { padding-top: 0; }
+    .term-col { justify-self: stretch; }
       .ai { margin-top: 80px; }
     .hob { margin-top: 96px; }
     .hobbies { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }

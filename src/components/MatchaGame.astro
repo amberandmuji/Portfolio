@@ -4,6 +4,7 @@
 // ice rests on the bottom of an empty cup and floats once there is liquid,
 // cold foam sits on the surface. Serving blends the layers into a gradient and
 // adds the drink to the drink wall.
+import '@fontsource/caveat/500.css';   // handwritten font for the personal note only
 import { site } from '../data/site';
 interface Props { story?: string }   // optional personal note shown under the title (About page)
 const { story } = Astro.props;
@@ -629,7 +630,11 @@ const wall = site.drinkWall;
   .copy { max-width: 470px; min-width: 0; }
   h2 { font-size: var(--fs-section); letter-spacing: -0.04em; line-height: 1.4; }
   .sub { margin-top: 2px; color: var(--muted); }
-  .story { margin: 8px 0 14px; max-width: 46ch; color: var(--ink-2); line-height: 1.5; text-wrap: pretty; }
+  .story {
+    margin: 10px 0 16px; max-width: 34ch;
+    font-family: 'Caveat', cursive; font-weight: 500; font-size: clamp(1.35rem, 1.1rem + 0.7vw, 1.6rem); line-height: 1.25; letter-spacing: 0;
+    color: #3f6b3a; rotate: -1deg; transform-origin: left center; text-wrap: pretty;
+  }
 
   .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
   .chip {
