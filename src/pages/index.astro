@@ -61,8 +61,8 @@ import { selectedWorks, playground, passion, testimonials } from '../data/site';
 
 <style>
   .edge { padding-inline: var(--edge); }
-  .hero { padding-block: clamp(40px, 6vw, 96px) 0; display: grid; grid-template-columns: minmax(0, 1fr) clamp(320px, 32vw, 460px); align-items: center; gap: clamp(32px, 5vw, 96px); }
-  .hero-term { justify-self: end; width: 100%; }
+  .hero { padding-block: clamp(40px, 6vw, 96px) 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: clamp(32px, 4vw, 64px); }
+  .hero-term { justify-self: center; width: 100%; max-width: 460px; }
   @media (max-width: 809px) {
     .hero { grid-template-columns: minmax(0, 1fr); gap: 24px; }
     .hero-term { justify-self: stretch; max-width: 460px; }
