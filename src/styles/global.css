@@ -160,9 +160,10 @@ p { margin: 0; }
     0 1px 3px rgb(12 12 14 / .08);
   color: var(--ink); font-size: 0.875rem; font-weight: 500; letter-spacing: -0.01em; line-height: 1.2; white-space: nowrap;
   text-shadow: 0 1px 0 rgb(255 255 255 / .5);
-  opacity: 0; transform: translate3d(var(--cx, 0), var(--cy, 0), 0) translate(-50%, -50%) scale(.6);
-  transition: opacity 200ms var(--ease-out), transform 300ms var(--ease-spring);
-  will-change: transform;
+  /* translate is set every frame from JS; only the fade and the pop-in scale are transitioned */
+  translate: 0 0; transform: translate(-50%, -50%); scale: .6; opacity: 0;
+  transition: opacity 180ms var(--ease-out), scale 260ms var(--ease-spring);
+  will-change: translate, opacity;
   overflow: hidden;
 }
 /* Specular highlight across the top half */
@@ -174,7 +175,7 @@ p { margin: 0; }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .cursor-label { background: rgb(255 255 255 / .9); }
 }
-.cursor-label.on { opacity: 1; transform: translate3d(var(--cx, 0), var(--cy, 0), 0) translate(-50%, -50%) scale(1); }
+.cursor-label.on { opacity: 1; scale: 1; }
 @media (hover: hover) and (pointer: fine) { .has-cursor-label [data-cursor] { cursor: none; } }
 
 /* Hover lift for cards */

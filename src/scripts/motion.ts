@@ -100,30 +100,42 @@ if (tocLinks.length) {
   map.forEach((_, el) => tio.observe(el));
 }
 
-/* 7. Cursor label: a pill that follows the pointer over [data-cursor] (mouse/trackpad only) */
+/* 7. Cursor label: a pill that follows the pointer over [data-cursor] (mouse/trackpad only).
+   Position is eased toward the pointer once per animation frame (no CSS transition on
+   position, so it never restarts or overshoots); fade/scale use their own CSS transitions. */
 const label = document.querySelector<HTMLElement>('[data-cursor-label]');
 if (label && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
   document.documentElement.classList.add('has-cursor-label');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let current: Element | null = null;
-  const place = (e: PointerEvent) => {
-    label.style.setProperty('--cx', `${e.clientX}px`);
-    label.style.setProperty('--cy', `${e.clientY}px`);
+  let tx = 0, ty = 0, x = 0, y = 0, raf = 0, last = 0, hideTimer = 0;
+  const render = () => { label.style.translate = `${x.toFixed(1)}px ${y.toFixed(1)}px`; };
+  const tick = (t: number) => {
+    const dt = last ? Math.min(64, t - last) : 16; last = t;
+    const k = reduce ? 1 : 1 - Math.pow(0.0008, dt / 1000 * 3);   // frame-rate independent ease (~90ms to settle)
+    x += (tx - x) * k; y += (ty - y) * k;
+    render();
+    if (Math.abs(tx - x) > 0.1 || Math.abs(ty - y) > 0.1) raf = requestAnimationFrame(tick);
+    else { x = tx; y = ty; render(); raf = 0; last = 0; }
+  };
+  const show = (target: Element, e: PointerEvent) => {
+    clearTimeout(hideTimer);
+    const text = target.getAttribute('data-cursor') || '';
+    if (label.textContent !== text) label.textContent = text;
+    if (!label.classList.contains('on')) { x = tx = e.clientX; y = ty = e.clientY; render(); }   // appear right at the pointer
+    label.classList.add('on');
+  };
+  const hide = (delay = 90) => {      // short grace period so moving between cards doesn't flicker
+    clearTimeout(hideTimer);
+    hideTimer = window.setTimeout(() => { current = null; label.classList.remove('on'); }, delay);
   };
   document.addEventListener('pointermove', (e) => {
+    tx = e.clientX; ty = e.clientY;
     const target = (e.target as Element).closest('[data-cursor]');
-    if (target !== current) {
-      current = target;
-      if (target) {
-        label.textContent = target.getAttribute('data-cursor');
-        if (!label.classList.contains('on')) {
-          // jump into place before fading in, so it doesn't fly across the screen
-          label.style.transition = 'none'; place(e); void label.offsetWidth; label.style.transition = '';
-        }
-      }
-      label.classList.toggle('on', !!target);
-    }
-    if (target) place(e);
+    if (target) { current = target; show(target, e); }
+    else if (current) hide();
+    if (!raf) raf = requestAnimationFrame(tick);
   }, { passive: true });
-  document.addEventListener('pointerleave', () => { current = null; label.classList.remove('on'); });
-  window.addEventListener('blur', () => { current = null; label.classList.remove('on'); });
+  document.documentElement.addEventListener('pointerleave', () => hide(0));
+  window.addEventListener('blur', () => hide(0));
 }
