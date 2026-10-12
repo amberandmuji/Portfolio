@@ -200,7 +200,18 @@ const ingredients = [
   .boba :global(i) { position: absolute; left: var(--x); bottom: var(--y); width: 12px; height: 12px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #6b5245, #2a1c16); animation: drop 520ms var(--ease-spring) both; animation-delay: var(--d); }
   @keyframes drop { from { transform: translateY(-180px); opacity: 0; } }
   .ice { position: absolute; inset: 0; z-index: 3; }
-  .ice :global(i) { position: absolute; left: var(--x); top: var(--y); width: 26px; height: 23px; border-radius: 6px; background: rgb(255 255 255 / .55); box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / .95); transform: rotate(var(--r)); animation: plunk 600ms var(--ease-spring) both; animation-delay: var(--d); }
+  /* Ice cubes: pale blue tint, cool-grey edge and an inner glint so they read against the white glass */
+  .ice :global(i) {
+    position: absolute; left: var(--x); top: var(--y); width: 26px; height: 23px; border-radius: 6px;
+    background: linear-gradient(135deg, rgb(232 244 250 / .92), rgb(196 222 236 / .7));
+    border: 1px solid rgb(128 162 184 / .6);
+    box-shadow:
+      inset 1.5px 1.5px 0 rgb(255 255 255 / .95),
+      inset -2px -3px 4px rgb(110 150 178 / .28),
+      0 1px 3px rgb(50 80 100 / .18);
+    transform: rotate(var(--r)); animation: plunk 600ms var(--ease-spring) both; animation-delay: var(--d);
+  }
+  .ice :global(i)::after { content: ''; position: absolute; left: 4px; top: 3px; width: 8px; height: 3px; border-radius: 2px; background: rgb(255 255 255 / .9); transform: rotate(-12deg); }
   @keyframes plunk { from { transform: translateY(-200px) rotate(0); opacity: 0; } }
   .foam { position: absolute; left: 0; right: 0; top: 0; height: 0; background: #fffdf8; z-index: 4; transition: height 600ms var(--ease-out); }
   .foam.on { height: 26px; }
