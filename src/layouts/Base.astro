@@ -12,7 +12,7 @@ const { title = site.title, description = site.description, image = site.ogImage
 const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 <!doctype html>
-<html lang="en">
+<html lang="en" data-resume={site.resume} data-base={import.meta.env.BASE_URL}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -70,6 +70,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <div class="cursor-label" data-cursor-label aria-hidden="true"></div>
     <script>
       import '../scripts/motion.ts';
+      import '../scripts/analytics.ts';
     </script>
   </body>
 </html>

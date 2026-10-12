@@ -86,3 +86,27 @@ The game saves each served drink to a "drink wall". Without setup, the wall is l
 3. Paste both into `drinkWall` in `src/data/site.ts`, then rebuild and deploy.
 
 The wall then shows the 18 newest drinks from everyone. The anon key is safe to publish: the policies above only allow reading and adding drinks.
+
+## Analytics (Google Analytics 4 via Google Tag Manager)
+
+The site loads GTM container `site.gtm` (`src/data/site.ts`) and pushes these events to `dataLayer` (code: `src/scripts/analytics.ts`):
+
+| Event | Parameters | Meaning |
+|---|---|---|
+| `resume_click` | `location` | opened the resume |
+| `contact_click` | `method` (email / linkedin), `location` | reached out |
+| `case_study_click` | `case_study`, `location` | opened a case study from a card or "Next project" |
+| `case_study_progress` | `case_study`, `percent` (25/50/75/100) | how far someone read |
+| `toc_click` | `case_study`, `section` | used the case-study side menu |
+| `playground_click` | `project` | clicked "Try it out" |
+| `drink_served`, `drink_shared` | | played the matcha game |
+| `old_new_toggle` | `case_study`, `view` | flipped the PCC comparison |
+
+One-time setup in GTM (tagmanager.google.com):
+1. **Variables → New → Data Layer Variable** for each parameter: `location`, `method`, `case_study`, `percent`, `section`, `project`, `view`.
+2. **Tags → New → Google Tag**, Tag ID = your GA4 Measurement ID (`G-…`), trigger **Initialization – All Pages**.
+3. **Triggers → New → Custom Event**, event name `resume_click|contact_click|case_study_click|case_study_progress|toc_click|playground_click|drink_served|drink_shared|old_new_toggle`, tick **Use regex matching**.
+4. **Tags → New → Google Analytics: GA4 Event**, Measurement ID `G-…`, Event Name `{{Event}}`, add event parameters (name = parameter, value = its Data Layer Variable), trigger = the custom event trigger above.
+5. **Preview** to check events fire on your site, then **Submit → Publish**.
+
+In GA4: mark `resume_click` and `contact_click` as **Key events** (Admin → Events), and register `case_study`, `location`, `method`, `percent`, `project` as **Custom dimensions** (Admin → Custom definitions) so they show up in reports.
