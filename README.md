@@ -58,3 +58,29 @@ Breakpoints match Framer's defaults: phone below 810px, tablet from 810 to 1199p
    - A `CNAME` record for `www` pointing to `<github-username>.github.io`.
 5. Once the certificate is issued, turn on **Enforce HTTPS**.
 6. Check the live site, then cancel the Framer plan.
+
+## Drink wall (matcha game)
+
+The game saves each served drink to a "drink wall". Without setup, the wall is local to each visitor: it shows their own drinks plus three house recipes. To share drinks between all visitors, use a free [Supabase](https://supabase.com) project:
+
+1. Create a project. In **SQL Editor**, run:
+
+   ```sql
+   create table drinks (
+     id bigint generated always as identity primary key,
+     created_at timestamptz not null default now(),
+     name text not null check (char_length(name) <= 60),
+     layers jsonb not null,
+     boba int not null default 0 check (boba between 0 and 18),
+     ice int not null default 0 check (ice between 0 and 6),
+     foam boolean not null default false
+   );
+   alter table drinks enable row level security;
+   create policy "anyone can read" on drinks for select using (true);
+   create policy "anyone can add" on drinks for insert with check (true);
+   ```
+
+2. Under **Project Settings → API**, copy the Project URL and the `anon` public key.
+3. Paste both into `drinkWall` in `src/data/site.ts`, then rebuild and deploy.
+
+The wall then shows the 18 newest drinks from everyone. The anon key is safe to publish: the policies above only allow reading and adding drinks.

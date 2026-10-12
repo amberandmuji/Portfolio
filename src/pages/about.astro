@@ -82,8 +82,10 @@ const hobbies = [
 <style>
   .wrap { width: min(1152px, 100% - 2 * var(--gutter)); margin-inline: auto; }
   .intro { display: grid; grid-template-columns: 346px minmax(0, 1fr); gap: 56px; align-items: start; padding-top: clamp(48px, 8vw, 136px); }
-  .portrait { border-radius: 40px; overflow: hidden; aspect-ratio: 346 / 385; background: var(--img-bg); box-shadow: 1px 1px 20px 1px rgb(0 0 0 / .05); }
-  .portrait img { width: 100%; height: 100%; object-fit: cover; }
+  /* Photo-print look: white border, soft shadow, a little spin on hover */
+  .portrait { border-radius: 40px; overflow: hidden; aspect-ratio: 346 / 385; background: var(--img-bg); border: 8px solid #fff; box-shadow: 0 2px 6px rgb(12 12 14 / .06), 0 10px 30px rgb(12 12 14 / .08); transition: transform 500ms var(--ease-spring), box-shadow var(--dur-2); }
+  .portrait img { width: 100%; height: 100%; object-fit: cover; border-radius: 32px; }
+  @media (hover: hover) { .portrait:hover { transform: rotate(-3deg) scale(1.02); box-shadow: 0 4px 10px rgb(12 12 14 / .08), 0 22px 44px rgb(12 12 14 / .14); } }
   .text { padding-top: 20px; }
   h1 { font-size: var(--fs-section); letter-spacing: -0.04em; line-height: 1.4; }
   .bio { display: flex; flex-direction: column; gap: 20px; margin-top: 20px; font-size: var(--fs-bio); letter-spacing: -0.02em; line-height: 1.5; color: var(--ink-2); }
@@ -101,9 +103,12 @@ const hobbies = [
 
   .hobbies { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; }
   .hobby { margin: 0; }
-  .hobby img { width: 100%; aspect-ratio: 264 / 396; object-fit: cover; border-radius: 16px; background: var(--img-bg); box-shadow: 1px 1px 20px 1px rgb(0 0 0 / .05); transition: transform var(--dur-2) var(--ease-spring), box-shadow var(--dur-2); }
+  .hobby img { width: 100%; aspect-ratio: 264 / 396; object-fit: cover; border-radius: 16px; background: var(--img-bg); border: 6px solid #fff; box-shadow: 0 2px 6px rgb(12 12 14 / .06), 0 8px 24px rgb(12 12 14 / .07); transition: transform 500ms var(--ease-spring), box-shadow var(--dur-2); }
   .hobby figcaption { margin-top: 12px; font-size: var(--fs-bio); letter-spacing: -0.02em; line-height: 1.5; }
-  @media (hover: hover) { .hobby:hover img { transform: translateY(-4px) scale(1.02); box-shadow: var(--shadow-2); } }
+  @media (hover: hover) {
+    .hobby:hover img { transform: rotate(-4deg) scale(1.04); box-shadow: 0 4px 10px rgb(12 12 14 / .08), 0 20px 40px rgb(12 12 14 / .14); }
+    .hobby:nth-child(even):hover img { transform: rotate(4deg) scale(1.04); }
+  }
 
   /* Tablet (810–1199) */
   @media (max-width: 1199px) { .hobbies { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
