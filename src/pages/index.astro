@@ -3,19 +3,23 @@ import Base from '../layouts/Base.astro';
 import WorkCard from '../components/WorkCard.astro';
 import MatchaGame from '../components/MatchaGame.astro';
 import Playground from '../components/Playground.astro';
+import Avatar from '../components/Avatar.astro';
 import { selectedWorks, playground, passion, testimonials } from '../data/site';
 ---
 <Base>
   <!-- Full-width layout with 36px page edges, measured from the live Framer page at 1440px -->
   <section class="hero edge">
-    <h1 class="hello t-name">
-      <span>Hello!</span>
-      <span>I'm Amber</span>
-    </h1>
-    <p class="intro">
-      Product Designer with an engineering background, shipping across B2B and B2C including fintech and healthcare with
-      data-driven design and AI tools.
-    </p>
+    <div class="hero-text">
+      <h1 class="hello t-name">
+        <span>Hello!</span>
+        <span>I'm Amber</span>
+      </h1>
+      <p class="intro">
+        Product Designer with an engineering background, shipping across B2B and B2C including fintech and healthcare with
+        data-driven design and AI tools.
+      </p>
+    </div>
+    <div class="hero-avatar"><Avatar /></div>
   </section>
 
   <section id="projects" class="block edge">
@@ -57,7 +61,12 @@ import { selectedWorks, playground, passion, testimonials } from '../data/site';
 
 <style>
   .edge { padding-inline: var(--edge); }
-  .hero { padding-block: clamp(64px, 10vw, 147px) 0; }
+  .hero { padding-block: clamp(40px, 6vw, 96px) 0; display: grid; grid-template-columns: minmax(0, 1fr) clamp(280px, 30vw, 400px); align-items: center; gap: clamp(32px, 5vw, 96px); }
+  .hero-avatar { justify-self: end; width: 100%; }
+  @media (max-width: 809px) {
+    .hero { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+    .hero-avatar { justify-self: start; max-width: 230px; order: -1; }
+  }
   .hello { display: flex; flex-direction: column; gap: 19px; }
   .intro { max-width: 958px; margin-top: 20px; font-size: var(--fs-bio); letter-spacing: -0.02em; line-height: 1.5; color: var(--ink); }
 

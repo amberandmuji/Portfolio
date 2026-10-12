@@ -1,0 +1,285 @@
+---
+// Illustrated avatar with a Figma-style "inspect" view.
+// At rest the eyes follow the cursor. Hovering (or the Inspect toggle) turns the
+// drawing into a blueprint: every shape becomes an outline, the background becomes
+// a grid, and redlines, hex codes and radius callouts fade in.
+// All measurements are real values from this SVG's own coordinates.
+---
+<div class="avatar" data-avatar>
+  <svg class="art" viewBox="0 0 400 440" role="img" aria-label="Illustrated portrait of Amber holding an iced matcha latte">
+    <defs>
+      <clipPath id="av-frame"><rect x="0" y="0" width="400" height="250" /><circle cx="200" cy="250" r="170" /></clipPath>
+      <clipPath id="av-eye-l"><ellipse cx="0" cy="0" rx="13" ry="10" /></clipPath>
+      <clipPath id="av-eye-r"><ellipse cx="0" cy="0" rx="13" ry="10" /></clipPath>
+      <pattern id="av-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+        <path d="M20 0H0V20" fill="none" stroke="#d3e3ff" stroke-width=".8" />
+      </pattern>
+      <linearGradient id="av-hair" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#5e2e18" /><stop offset=".45" stop-color="#7a3e22" /><stop offset="1" stop-color="#a65a30" />
+      </linearGradient>
+      <linearGradient id="av-hair-long" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#6e381e" /><stop offset=".6" stop-color="#8b4826" /><stop offset="1" stop-color="#b0632f" />
+      </linearGradient>
+      <linearGradient id="av-drink" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#e9f1da" /><stop offset=".35" stop-color="#c9dca6" /><stop offset="1" stop-color="#9fbf6c" />
+      </linearGradient>
+    </defs>
+
+    <!-- backdrop -->
+    <rect class="grid" x="0" y="0" width="400" height="440" fill="url(#av-grid)" />
+    <circle class="backdrop" cx="200" cy="250" r="170" fill="#e6f0fd" />
+
+    <g clip-path="url(#av-frame)">
+      <!-- hair behind -->
+      <path fill="#55290f" d="M200 80C128 80 94 132 94 204c0 64-6 128-16 236h244c-10-108-16-172-16-236 0-72-34-124-106-124Z" />
+
+      <!-- neck -->
+      <path fill="#f3caae" d="M183 258v58q17 12 34 0v-58Z" />
+      <path fill="#e6b294" d="M183 272q17 24 34 0v18q-17 18-34 0Z" />
+
+      <!-- jacket -->
+      <path fill="#b0682f" d="M34 440c4-62 32-98 86-112l50-16h60l50 16c54 14 82 50 86 112Z" />
+      <path fill="#9a5726" d="M120 328c-18 26-22 70-20 112h-16c-2-44 6-86 36-112Zm160 0c18 26 22 70 20 112h16c2-44-6-86-36-112Z" />
+      <!-- tee -->
+      <path fill="#8a4b2a" d="M174 316q26 22 52 0l14 124h-80Z" />
+      <path fill="none" stroke="#6f3a1f" stroke-width="5" stroke-linecap="round" d="M175 317q25 20 50 0" />
+      <!-- zipper -->
+      <path fill="none" stroke="#d8d2c8" stroke-width="2.4" stroke-dasharray="2.5 2" d="M177 330l-14 110M223 330l14 110" />
+      <!-- collar -->
+      <path fill="#c27a3e" d="M170 309l-40 18 20 46 28-44Zm60 0 40 18-20 46-28-44Z" />
+
+      <!-- front hair -->
+      <path fill="url(#av-hair-long)" d="M128 150c-16 50-16 110-10 150 4 40-6 80-18 120h28c12-40 14-80 12-120-4-40-4-90 6-130Z" />
+      <path fill="url(#av-hair-long)" d="M272 150c18 50 24 110 24 150 4 50 24 90 40 116l-26 4c-20-30-30-70-34-120-2-40-8-90-20-130Z" />
+
+      <!-- ears -->
+      <ellipse fill="#f0c3a6" cx="276" cy="210" rx="9" ry="14" />
+      <circle fill="none" stroke="#d9b26a" stroke-width="1.8" cx="277" cy="226" r="4" />
+
+      <!-- face -->
+      <path fill="#f6d3bc" d="M200 110c50 0 76 35 76 85 0 45-26 87-76 93-50-6-76-48-76-93 0-50 26-85 76-85Z" />
+      <ellipse fill="#f2a08e" opacity=".45" cx="155" cy="238" rx="14" ry="8" />
+      <ellipse fill="#f2a08e" opacity=".45" cx="245" cy="238" rx="14" ry="8" />
+
+      <!-- brows -->
+      <path fill="none" stroke="#5e3420" stroke-width="3.2" stroke-linecap="round" d="M153 182q14-6 27-1M220 181q13-5 27 1" />
+
+      <!-- eyes -->
+      <g class="eye" transform="translate(168 203)">
+        <ellipse fill="#fff" rx="13" ry="10" />
+        <g clip-path="url(#av-eye-l)"><g class="pupil" data-pupil>
+          <circle fill="#4a2a1a" r="8" /><circle fill="#1b0f09" r="4" /><circle fill="#fff" cx="-2.6" cy="-3" r="2.4" />
+        </g></g>
+        <path fill="none" stroke="#2a1810" stroke-width="3" stroke-linecap="round" d="M-15-3q15-11 30-1" />
+      </g>
+      <g class="eye" transform="translate(232 203)">
+        <ellipse fill="#fff" rx="13" ry="10" />
+        <g clip-path="url(#av-eye-r)"><g class="pupil" data-pupil>
+          <circle fill="#4a2a1a" r="8" /><circle fill="#1b0f09" r="4" /><circle fill="#fff" cx="-2.6" cy="-3" r="2.4" />
+        </g></g>
+        <path fill="none" stroke="#2a1810" stroke-width="3" stroke-linecap="round" d="M-15-4q15-10 30 1" />
+      </g>
+
+      <!-- nose + mouth -->
+      <path fill="none" stroke="#d69c84" stroke-width="2" stroke-linecap="round" d="M199 226q-4 10 2 12" />
+      <path fill="#b6564c" d="M183 249q17 22 34 0q-17 5-34 0Z" />
+      <path fill="#fff" d="M186.5 250.6q13.5 3.6 27 0l-1.4 3.4q-12 3.4-24.2 0Z" />
+
+      <!-- top hair + see-through bangs -->
+      <path fill="url(#av-hair)" d="M200 84c-58 0-84 38-82 92 4-10 8-18 14-22q-2 14 6 24q4-18 14-26q-2 16 6 28q6-20 16-28q0 16 8 26q6-18 16-26q4 16 12 26q4-16 14-26q4 14 14 24q2-14 12-24q8 10 10 22q6-12 4-22q12 8 18 26c4-56-22-94-82-94Z" />
+      <path fill="none" stroke="#c0733e" stroke-width="5" stroke-linecap="round" opacity=".55" d="M152 106q48-18 96 0" />
+      <path fill="none" stroke="#55290f" stroke-width="1.4" stroke-linecap="round" opacity=".55" d="M172 98q-12 22-18 50M204 92q-2 26-6 60M234 98q10 22 14 52" />
+      <path fill="none" stroke="#7a3e22" stroke-width="1.3" stroke-linecap="round" opacity=".8" d="M184 160q-3 10-6 16M214 158q4 9 4 17M150 170q-2 8-6 14" />
+
+      <!-- arm + iced matcha latte -->
+      <path fill="#9a5726" d="M150 388c22-8 56-6 80 6l8 46h-88Z" />
+      <path fill="url(#av-drink)" d="M101 376h62l-5 64h-52Z" />
+      <path fill="#fff" fill-opacity=".35" stroke="#c9d3db" stroke-width="1.5" d="M98 360h68l-7 80h-54Z" />
+      <path fill="#fff" fill-opacity=".9" stroke="#c9d3db" stroke-width="1.5" d="M101 348q31-22 62 0Z" />
+      <rect fill="#fff" stroke="#c9d3db" stroke-width="1.5" x="94" y="347" width="76" height="14" rx="7" />
+      <ellipse fill="#c9d3db" cx="120" cy="341" rx="7" ry="2.5" />
+      <!-- hand -->
+      <rect fill="#f3caae" stroke="#e1a98a" stroke-width="1.2" x="114" y="392" width="54" height="12" rx="6" />
+      <rect fill="#f3caae" stroke="#e1a98a" stroke-width="1.2" x="116" y="405" width="52" height="12" rx="6" />
+      <rect fill="#f3caae" stroke="#e1a98a" stroke-width="1.2" x="120" y="418" width="48" height="12" rx="6" />
+      <rect fill="#f3caae" stroke="#e1a98a" stroke-width="1.2" x="142" y="378" width="28" height="12" rx="6" transform="rotate(-14 156 384)" />
+    </g>
+
+    <!-- ===== Inspect overlay ===== -->
+    <g class="ann" font-size="10" font-weight="500" aria-hidden="true">
+      <!-- selection box around the face -->
+      <g class="sel">
+        <rect x="124" y="110" width="152" height="178" fill="none" stroke="#0d99ff" stroke-width="1.2" />
+        <rect x="121.5" y="107.5" width="5" height="5" fill="#fff" stroke="#0d99ff" />
+        <rect x="273.5" y="107.5" width="5" height="5" fill="#fff" stroke="#0d99ff" />
+        <rect x="121.5" y="285.5" width="5" height="5" fill="#fff" stroke="#0d99ff" />
+        <rect x="273.5" y="285.5" width="5" height="5" fill="#fff" stroke="#0d99ff" />
+        <rect x="171" y="90" width="58" height="15" rx="3" fill="#0d99ff" />
+        <text x="200" y="101" text-anchor="middle" fill="#fff">152 × 178</text>
+      </g>
+      <!-- redline: gap between the eyes -->
+      <g class="red">
+        <path d="M181 218v-6M219 218v-6M181 215h38" stroke="#f24822" stroke-width="1" fill="none" />
+        <rect x="190" y="219" width="20" height="13" rx="3" fill="#f24822" />
+        <text x="200" y="229" text-anchor="middle" fill="#fff">38</text>
+      </g>
+      <!-- redline: chin to neckline -->
+      <g class="red">
+        <path d="M253 288h10M253 318h10M258 288v30" stroke="#f24822" stroke-width="1" fill="none" />
+        <rect x="265" y="296.5" width="20" height="13" rx="3" fill="#f24822" />
+        <text x="275" y="306.5" text-anchor="middle" fill="#fff">30</text>
+      </g>
+      <!-- hex codes -->
+      <g class="hex">
+        <path d="M86 157h34" stroke="#8a94a6" stroke-width=".8" stroke-dasharray="2 2" />
+        <circle cx="121" cy="157" r="2" fill="#8a94a6" />
+        <rect x="6" y="148" width="80" height="18" rx="4" fill="#fff" stroke="#dde3ea" />
+        <rect x="12" y="153" width="8" height="8" rx="2" fill="#7a3e22" />
+        <text x="25" y="161" fill="#3a4250">Hair #7A3E22</text>
+      </g>
+      <g class="hex">
+        <path d="M262 246h40" stroke="#8a94a6" stroke-width=".8" stroke-dasharray="2 2" />
+        <circle cx="262" cy="246" r="2" fill="#8a94a6" />
+        <rect x="302" y="237" width="92" height="18" rx="4" fill="#fff" stroke="#dde3ea" />
+        <rect x="308" y="242" width="8" height="8" rx="2" fill="#f6d3bc" stroke="#e2b89f" stroke-width=".6" />
+        <text x="321" y="250" fill="#3a4250">Skin #F6D3BC</text>
+      </g>
+      <g class="hex">
+        <path d="M296 378h6" stroke="#8a94a6" stroke-width=".8" stroke-dasharray="2 2" />
+        <circle cx="296" cy="378" r="2" fill="#8a94a6" />
+        <rect x="302" y="369" width="92" height="18" rx="4" fill="#fff" stroke="#dde3ea" />
+        <rect x="308" y="374" width="8" height="8" rx="2" fill="#b0682f" />
+        <text x="321" y="382" fill="#3a4250">Suede #B0682F</text>
+      </g>
+      <g class="hex">
+        <path d="M86 410h28" stroke="#8a94a6" stroke-width=".8" stroke-dasharray="2 2" />
+        <circle cx="114" cy="410" r="2" fill="#8a94a6" />
+        <rect x="2" y="401" width="84" height="18" rx="4" fill="#fff" stroke="#dde3ea" />
+        <rect x="8" y="406" width="8" height="8" rx="2" fill="#b9d08f" />
+        <text x="21" y="414" fill="#3a4250">Matcha #B9D08F</text>
+      </g>
+      <!-- radius callouts -->
+      <g class="rad">
+        <path d="M309 112q14 10 22 24" stroke="#9747ff" stroke-width="1.4" fill="none" stroke-linecap="round" />
+        <rect x="318" y="94" width="66" height="15" rx="3" fill="#9747ff" />
+        <text x="351" y="105" text-anchor="middle" fill="#fff">Radius 170</text>
+      </g>
+      <g class="rad">
+        <path d="M94 354q0-7 7-7" stroke="#9747ff" stroke-width="1.4" fill="none" stroke-linecap="round" />
+        <path d="M80 338l14 10" stroke="#9747ff" stroke-width=".8" />
+        <rect x="24" y="326" width="56" height="15" rx="3" fill="#9747ff" />
+        <text x="52" y="337" text-anchor="middle" fill="#fff">Radius 7</text>
+      </g>
+    </g>
+  </svg>
+
+  <button class="insp" type="button" aria-pressed="false" data-inspect>
+    <span class="knob" aria-hidden="true"></span>
+    <span class="lbl">Inspect</span>
+  </button>
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-avatar]');
+  if (root) {
+    const svg = root.querySelector('svg')!;
+    const btn = root.querySelector<HTMLButtonElement>('[data-inspect]')!;
+    const pupils = [...root.querySelectorAll<SVGGElement>('[data-pupil]')];
+    const eyes = [...root.querySelectorAll<SVGGElement>('.eye')];
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let pinned = false;
+
+    const set = (on: boolean) => root.classList.toggle('inspect', on);
+    root.querySelector('.art')!.addEventListener('pointerenter', (e) => { if ((e as PointerEvent).pointerType === 'mouse') set(true); });
+    root.querySelector('.art')!.addEventListener('pointerleave', (e) => { if ((e as PointerEvent).pointerType === 'mouse' && !pinned) set(false); });
+    btn.addEventListener('click', () => {
+      pinned = !pinned;
+      btn.setAttribute('aria-pressed', String(pinned));
+      set(pinned);
+    });
+
+    // Eyes follow the cursor (eased), with an occasional blink
+    let tx = 0, ty = 0, x = 0, y = 0, raf = 0;
+    function aim(cx: number, cy: number) {
+      const ctm = svg.getScreenCTM(); if (!ctm) return;
+      const p = new DOMPoint(cx, cy).matrixTransform(ctm.inverse());
+      const ex = 200, ey = 203;
+      const dx = p.x - ex, dy = p.y - ey, d = Math.hypot(dx, dy) || 1;
+      const k = Math.min(1, d / 160);
+      tx = dx / d * 5 * k; ty = dy / d * 3.5 * k;
+      if (!raf) raf = requestAnimationFrame(step);
+    }
+    function step() {
+      x += (tx - x) * 0.18; y += (ty - y) * 0.18;
+      pupils.forEach((p) => p.setAttribute('transform', `translate(${x.toFixed(2)} ${y.toFixed(2)})`));
+      raf = Math.abs(tx - x) + Math.abs(ty - y) > 0.02 ? requestAnimationFrame(step) : 0;
+    }
+    addEventListener('pointermove', (e) => aim(e.clientX, e.clientY), { passive: true });
+
+    if (!reduce) {
+      const blink = () => {
+        eyes.forEach((g) => g.classList.add('blink'));
+        setTimeout(() => eyes.forEach((g) => g.classList.remove('blink')), 140);
+        setTimeout(blink, 2600 + Math.random() * 3200);
+      };
+      setTimeout(blink, 1800);
+    }
+  }
+</script>
+
+<style>
+  .avatar { position: relative; width: 100%; max-width: 380px; }
+  .art { display: block; width: 100%; height: auto; overflow: visible; font-family: inherit; }
+
+  /* Colour → outline morph. Shapes without their own stroke get an invisible blue one that fades in. */
+  .art :is(path, rect, circle, ellipse):not([stroke]) { stroke: rgb(13 153 255 / 0); stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .art * { transition: fill 420ms var(--ease-out), stroke 420ms var(--ease-out), fill-opacity 420ms, opacity 420ms; }
+  .grid { opacity: 0; }
+  .backdrop { transition: fill 420ms var(--ease-out), stroke 420ms; }
+
+  .inspect .art > g:not(.ann) :is(path, rect, circle, ellipse):not([stroke]) { fill: transparent; stroke: #0d99ff; }
+  .inspect .art > g:not(.ann) [stroke] { stroke: #0d99ff; stroke-width: 1; fill: transparent; stroke-dasharray: none; }
+  .inspect .art > g:not(.ann) [fill-opacity] { fill-opacity: 0; }
+  .inspect .art > g:not(.ann) [opacity] { opacity: .6; }
+  .inspect .grid { opacity: 1; }
+  .inspect .backdrop { fill: #f4f8ff; stroke: #9747ff; stroke-dasharray: 4 3; }
+
+  .eye { transition: transform 120ms ease-in-out; }
+  .eye :global(*) { transition: none; }
+  .eye.blink > ellipse, .eye.blink > g { transform: scaleY(.1); }
+  .eye > ellipse, .eye > g { transition: transform 90ms ease-in-out; }
+
+  /* Annotation layer */
+  .ann > g { opacity: 0; transform: translateY(4px); transition: opacity 260ms var(--ease-out), transform 260ms var(--ease-out); }
+  .inspect .ann > g { opacity: 1; transform: none; }
+  .inspect .ann > g:nth-child(2) { transition-delay: 60ms; }
+  .inspect .ann > g:nth-child(3) { transition-delay: 100ms; }
+  .inspect .ann > g:nth-child(4) { transition-delay: 140ms; }
+  .inspect .ann > g:nth-child(5) { transition-delay: 170ms; }
+  .inspect .ann > g:nth-child(6) { transition-delay: 200ms; }
+  .inspect .ann > g:nth-child(7) { transition-delay: 230ms; }
+  .inspect .ann > g:nth-child(8) { transition-delay: 260ms; }
+  .inspect .ann > g:nth-child(9) { transition-delay: 290ms; }
+  .ann text { font-variant-numeric: tabular-nums; letter-spacing: 0; }
+  .ann * { transition: none; }
+
+  /* Toggle */
+  .insp {
+    display: flex; margin: 4px auto 0; align-items: center; gap: 8px;
+    padding: 6px 12px 6px 6px; border-radius: 999px;
+    background: rgb(255 255 255 / .85); backdrop-filter: blur(8px);
+    border: 1px solid rgb(12 12 14 / .08); box-shadow: 0 4px 14px rgb(12 12 14 / .06);
+    font-size: 13px; font-weight: 500; color: var(--ink); letter-spacing: -0.01em;
+    transition: transform 200ms var(--ease-out), box-shadow 200ms;
+  }
+  .insp:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgb(12 12 14 / .1); }
+  .insp:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .knob { position: relative; width: 28px; height: 16px; border-radius: 999px; background: #d9dee5; transition: background 220ms; }
+  .knob::after { content: ''; position: absolute; left: 2px; top: 2px; width: 12px; height: 12px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgb(0 0 0 / .2); transition: transform 220ms var(--ease-spring); }
+  .insp[aria-pressed='true'] .knob { background: #0d99ff; }
+  .insp[aria-pressed='true'] .knob::after { transform: translateX(12px); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .art *, .ann > g { transition: none !important; }
+  }
+</style>

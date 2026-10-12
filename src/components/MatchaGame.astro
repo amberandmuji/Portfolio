@@ -28,7 +28,7 @@ const wall = site.drinkWall;
         <div class="lid" aria-hidden="true"></div>
         <div class="straw" aria-hidden="true"></div>
         <div class="inside" aria-hidden="true">
-          <div class="liquid" data-liquid><div class="blend" data-blend></div><div class="blend" data-uniform></div></div>
+          <div class="liquid" data-liquid><div class="blend" data-blend></div></div>
           <div class="pearls" data-pearls></div>
           <div class="cubes" data-cubes></div>
           <div class="foam" data-foam></div>
@@ -122,7 +122,7 @@ const wall = site.drinkWall;
 
   let cup = [];
 
-  const liquidEl = $('[data-liquid]'), blendEl = $('[data-blend]'), uniformEl = $('[data-uniform]'), pearlsEl = $('[data-pearls]');
+  const liquidEl = $('[data-liquid]'), blendEl = $('[data-blend]'), pearlsEl = $('[data-pearls]');
   const cubesEl = $('[data-cubes]'), foamEl = $('[data-foam]'), streamEl = $('[data-stream]');
   const status = $('[data-status]'), glass = $('[data-glass]');
 
@@ -178,35 +178,70 @@ const wall = site.drinkWall;
     return `linear-gradient(${dir}, ${stops.join(', ')})`;
   }
 
-  // Stage 1: layers swirl into each other but every ingredient keeps its colour.
-  // s (0–1) is how far the swirl has gone: edges soften and streaks reach further;
-  // phase drifts the streaks around with the straw so they move like liquid.
-  function marbled(layers, H, s = 1, phase = 0) {
-    if (layers.length < 2) return blendedGradient(layers, H);
-    const blobs = []; const stops = []; let y = 0;
-    const soft = 1 + s * 9;
-    layers.forEach((l, li) => {
-      const lo = y / H * 100, hi = (y + l.h) / H * 100, mid = (lo + hi) / 2; y += l.h;
-      stops.push(`${l.c} ${(lo + (li ? soft : 0)).toFixed(1)}%`, `${l.c} ${(hi - (li < layers.length - 1 ? soft : 0)).toFixed(1)}%`);
-      if (s < 0.02) return;
-      for (let j = 0; j < 4; j++) {
-        const n = li * 4 + j;
-        const dir = n % 2 ? 1 : -1;                              // neighbouring streaks swirl opposite ways
-        const x = 50 + Math.sin(phase * dir * (0.7 + rand(n, 25) * 0.6) + rand(n, 21) * 6.28) * 40;
-        const reach = ((hi - lo) / 2 + 14) * s;                  // streaks poke further into neighbours as you stir
-        const pos = 100 - Math.max(3, Math.min(97, mid + (rand(n, 22) - 0.5) * 2 * reach + Math.cos(phase * 0.6 + n) * 3 * s));
-        const w = (22 + rand(n, 23) * 26) * (0.35 + 0.65 * s), h = (5 + rand(n, 24) * 6) * (0.5 + 0.5 * s);
-        blobs.push(`radial-gradient(ellipse ${w.toFixed(1)}% ${h.toFixed(1)}% at ${x.toFixed(1)}% ${pos.toFixed(1)}%, ${l.c} 0 45%, transparent 85%)`);
-      }
-    });
-    return `${blobs.length ? blobs.join(', ') + ', ' : ''}linear-gradient(to top, ${stops.join(', ')})`;
+  // ---------- Colour mixing (done in OKLab so blends stay bright instead of turning muddy) ----------
+  const toLin = (v) => (v /= 255) <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+  const toSrgb = (v) => 255 * (v <= 0.0031308 ? 12.92 * v : 1.055 * v ** (1 / 2.4) - 0.055);
+  function hexToLab(hex) {
+    const n = parseInt(hex.slice(1), 16);
+    const r = toLin((n >> 16) & 255), g = toLin((n >> 8) & 255), bl = toLin(n & 255);
+    const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * bl);
+    const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * bl);
+    const q = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * bl);
+    return [0.2104542553 * l + 0.793617785 * m - 0.0040720468 * q, 1.9779984951 * l - 2.428592205 * m + 0.4505937099 * q, 0.0259040371 * l + 0.7827717662 * m - 0.808675766 * q];
   }
-  // Stage 2: everything blends into one colour, weighted by how much of each was poured
-  function averageColor(layers) {
+  function labToRgb([L, A, B]) {
+    const l = (L + 0.3963377774 * A + 0.2158037573 * B) ** 3, m = (L - 0.1055613458 * A - 0.0638541728 * B) ** 3, q = (L - 0.0894841775 * A - 1.291485548 * B) ** 3;
+    return [4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * q, -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * q, -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * q];
+  }
+  function labToHex(lab) {
+    let [L, A, B] = lab;
+    for (let i = 0; i < 24; i++) {                            // pull chroma in until the colour fits sRGB
+      const rgb = labToRgb([L, A, B]);
+      if (rgb.every((v) => v >= -0.001 && v <= 1.001)) break;
+      A *= 0.94; B *= 0.94;
+    }
+    return '#' + labToRgb([L, A, B]).map((v) => Math.round(Math.max(0, Math.min(255, toSrgb(Math.max(0, v))))).toString(16).padStart(2, '0')).join('');
+  }
+  // The finished drink: lightness is a straight weighted average, chroma is averaged as a
+  // magnitude (so colours don't cancel into brown) and the hue leans toward the most vivid ingredient. Matcha + milk → pale matcha green, not grey-brown.
+  function mixLab(layers) {
     const tot = layers.reduce((a, l) => a + l.h, 0) || 1;
-    const rgb = [0, 0, 0];
-    layers.forEach((l) => { const n = parseInt(l.c.slice(1), 16); [16, 8, 0].forEach((sh, k) => { rgb[k] += ((n >> sh) & 255) * l.h / tot; }); });
-    return '#' + rgb.map((v) => Math.round(v).toString(16).padStart(2, '0')).join('');
+    const items = layers.map((l) => { const [L, a, b] = hexToLab(l.c), c = Math.hypot(a, b); return { L, c, hue: Math.atan2(b, a), w: l.h / tot }; });
+    const lead = items.reduce((x, y) => (y.w * y.c ** 1.6 > x.w * x.c ** 1.6 ? y : x));
+    let L = 0, C = 0, hx = 0, hy = 0;
+    items.forEach((it) => {
+      L += it.L * it.w;
+      // only colours that sit near the lead colour on the wheel steer the hue;
+      // opposite ones (strawberry vs matcha) would otherwise cancel into brown
+      const near = Math.cos(it.hue - lead.hue) > 0.2 || it.c < 0.03;
+      C += it.c * it.w * (near ? 1 : 0.45);
+      if (near) { const pull = it.w * it.c ** 1.6; hx += Math.cos(it.hue) * pull; hy += Math.sin(it.hue) * pull; }
+    });
+    const hue = Math.hypot(hx, hy) > 1e-6 ? Math.atan2(hy, hx) : lead.hue;
+    return [Math.min(0.96, L + 0.01), C * Math.cos(hue), C * Math.sin(hue)];
+  }
+  function averageColor(layers) { return layers.length ? labToHex(mixLab(layers)) : '#e9eef1'; }
+
+  // Stirring, drawn as a single gradient:
+  //   s – layer lines soften gradually until each colour fades smoothly into the next
+  //   k – every layer then drifts toward the finished colour until the cup is one shade
+  //   phase – the softened lines sway gently while you stir, like liquid moving
+  function stirred(layers, H, s = 0, k = 0, phase = 0) {
+    if (!layers.length) return 'none';
+    const fin = k > 0 ? mixLab(layers) : null;
+    const col = (c) => k > 0 ? labToHex(hexToLab(c).map((v, i) => v + (fin[i] - v) * k)) : c;
+    if (layers.length === 1) return col(layers[0].c);
+    const pct = layers.map((l) => l.h / H * 100);
+    const stops = []; let y = 0;
+    layers.forEach((l, i) => {
+      const c = col(l.c);
+      const lo = y, hi = y + pct[i]; y = hi;
+      const wLo = i ? s * Math.min(pct[i - 1], pct[i]) / 2 : 0;
+      const wHi = i < layers.length - 1 ? s * Math.min(pct[i], pct[i + 1]) / 2 : 0;
+      const sway = (j) => Math.sin(phase + j * 1.7) * 2.2 * s * (1 - k);
+      stops.push(`${c} ${(lo + wLo + (i ? sway(i) : 0)).toFixed(2)}%`, `${c} ${(hi - wHi + (i < layers.length - 1 ? sway(i + 1) : 0)).toFixed(2)}%`);
+    });
+    return `linear-gradient(to top, ${stops.join(', ')})`;
   }
 
   function sync(listEl, n, make) {
@@ -224,8 +259,7 @@ const wall = site.drinkWall;
     liquidEl.style.height = m.liquidH + 'px';
     liquidEl.style.background = layeredGradient(m.layers);
     liquidEl.style.setProperty('--top', m.layers.length ? m.layers[m.layers.length - 1].c : 'transparent');
-    blendEl.style.background = marbled(m.layers, m.liquidH, 0);
-    uniformEl.style.background = m.layers.length ? averageColor(m.layers) : 'none';
+    blendEl.style.background = stirred(m.layers, m.liquidH);
     liquidEl.classList.toggle('has', m.liquidH > 0);
 
     // Boba: sinks to the floor
@@ -391,7 +425,7 @@ const wall = site.drinkWall;
     li.style.setProperty('--dy', `${((rand(n, 32) - 0.5) * 14).toFixed(0)}px`);
     li.style.setProperty('--tape-rot', `${((rand(n, 33) - 0.5) * 16).toFixed(1)}deg`);
     li.style.setProperty('--tape', TAPES[Math.floor(rand(n, 34) * TAPES.length)]);
-    const avg = d.layers.length ? averageColor(d.layers.map((l) => ({ c: l.c, h: l.h }))) : '#e9eef1';
+    const avg = averageColor(d.layers);
     li.style.setProperty('--photo', `color-mix(in srgb, ${avg} 22%, #fbfaf7)`);
     const card = document.createElement('div'); card.className = 'polaroid';
     const photo = document.createElement('div'); photo.className = 'photo';
@@ -517,10 +551,8 @@ const wall = site.drinkWall;
   const smooth = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
   function draw() {
     const m = model();
-    const s = smooth(0, 0.55, shown);
-    blendEl.style.background = marbled(m.layers, m.liquidH, s, phase);
+    blendEl.style.background = stirred(m.layers, m.liquidH, smooth(0, 0.6, shown), smooth(0.4, 1, shown), phase);
     blendEl.style.opacity = shown > 0.001 ? '1' : '0';
-    uniformEl.style.opacity = smooth(0.42, 1, shown).toFixed(3);
     glass.style.setProperty('--stir', pos.toFixed(3));
     glass.style.setProperty('--lag', lag.toFixed(3));
     glass.style.setProperty('--slosh', (vel * 6).toFixed(2));
