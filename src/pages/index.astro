@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import WorkCard from '../components/WorkCard.astro';
 import MatchaGame from '../components/MatchaGame.astro';
 import Playground from '../components/Playground.astro';
-import Avatar from '../components/Avatar.astro';
+import Terminal from '../components/Terminal.astro';
 import { selectedWorks, playground, passion, testimonials } from '../data/site';
 ---
 <Base>
@@ -19,7 +19,7 @@ import { selectedWorks, playground, passion, testimonials } from '../data/site';
         data-driven design and AI tools.
       </p>
     </div>
-    <div class="hero-avatar"><Avatar /></div>
+    <div class="hero-term"><Terminal /></div>
   </section>
 
   <section id="projects" class="block edge">
@@ -61,11 +61,11 @@ import { selectedWorks, playground, passion, testimonials } from '../data/site';
 
 <style>
   .edge { padding-inline: var(--edge); }
-  .hero { padding-block: clamp(40px, 6vw, 96px) 0; display: grid; grid-template-columns: minmax(0, 1fr) clamp(280px, 30vw, 400px); align-items: center; gap: clamp(32px, 5vw, 96px); }
-  .hero-avatar { justify-self: end; width: 100%; }
+  .hero { padding-block: clamp(40px, 6vw, 96px) 0; display: grid; grid-template-columns: minmax(0, 1fr) clamp(320px, 32vw, 460px); align-items: center; gap: clamp(32px, 5vw, 96px); }
+  .hero-term { justify-self: end; width: 100%; }
   @media (max-width: 809px) {
     .hero { grid-template-columns: minmax(0, 1fr); gap: 24px; }
-    .hero-avatar { justify-self: start; max-width: 230px; order: -1; }
+    .hero-term { justify-self: stretch; max-width: 460px; }
   }
   .hello { display: flex; flex-direction: column; gap: 19px; }
   .intro { max-width: 958px; margin-top: 20px; font-size: var(--fs-bio); letter-spacing: -0.02em; line-height: 1.5; color: var(--ink); }

@@ -1,0 +1,178 @@
+---
+// A small terminal that types `npx render-amber`, logs a few steps, then prints
+// Amber's portrait as a grid of asterisks, row by row.
+// The grid comes from tools/ascii-portrait.py (background removed, local contrast,
+// Floyd–Steinberg dithered to 3 levels: 0 empty, 1 dim, 2 bright).
+import grid from '../data/amber-ascii.json';
+const stars = grid.rows.reduce((n, r) => n + r.replace(/0/g, '').length, 0);
+const steps = [
+  'loading portrait.jpg',
+  'removing background',
+  `sampling ${grid.cols} × ${grid.rows.length} grid`,
+];
+---
+<div class="term" data-term>
+  <div class="bar">
+    <span class="lights" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span class="title">amber — zsh</span>
+    <button class="replay" type="button" aria-label="Replay the animation" data-replay>
+      <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M13.5 8a5.5 5.5 0 1 1-1.8-4.07M13.5 2.5v3.2h-3.2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+    </button>
+  </div>
+  <div class="body">
+    <p class="ln cmd"><span class="ps">~</span><span class="ps2">$</span> <span data-typed></span><span class="caret" data-caret></span></p>
+    {steps.map((s) => <p class="ln log" data-step><span class="arrow">›</span> {s}<span class="ok"> ✓</span></p>)}
+    <canvas class="art" data-art role="img" aria-label="Amber's portrait drawn with asterisks" style={`aspect-ratio:${grid.cols}/${grid.rows.length}`}></canvas>
+    <p class="ln log done" data-done><span class="okc">✓</span> rendered {stars.toLocaleString('en-US')} stars in <span data-time>1.42</span>s</p>
+    <p class="ln cmd" data-end><span class="ps">~</span><span class="ps2">$</span> <span class="caret blink"></span></p>
+  </div>
+</div>
+
+<script define:vars={{ grid }}>
+  const root = document.querySelector('[data-term]');
+  const typed = root.querySelector('[data-typed]');
+  const caret = root.querySelector('[data-caret]');
+  const stepsEl = [...root.querySelectorAll('[data-step]')];
+  const doneEl = root.querySelector('[data-done]');
+  const endEl = root.querySelector('[data-end]');
+  const timeEl = root.querySelector('[data-time]');
+  const canvas = root.querySelector('[data-art]');
+  const ctx = canvas.getContext('2d');
+  const COMMAND = 'npx render-amber';
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const rows = grid.rows, COLS = grid.cols, ROWS = rows.length;
+
+  let shown = 0;            // rows printed so far
+  let run = 0;              // bumps on replay so stale timers stop
+  let pointer = null;       // canvas-space pointer for the hover glow
+  let cell = 4, dpr = 1;
+
+  function size() {
+    dpr = Math.min(2, window.devicePixelRatio || 1);
+    const w = canvas.clientWidth;
+    cell = w / COLS;
+    canvas.width = Math.round(w * dpr);
+    canvas.height = Math.round(cell * ROWS * dpr);
+    draw();
+  }
+  function draw() {
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    const big = `600 ${(cell * 1.55).toFixed(2)}px Inter Variable, Inter, system-ui, sans-serif`;
+    const small = `500 ${(cell * 1.2).toFixed(2)}px Inter Variable, Inter, system-ui, sans-serif`;
+    const R = cell * 12;
+    for (let y = 0; y < shown; y++) {
+      const r = rows[y];
+      const cy = y * cell + cell * 0.82;               // '*' sits high in the em box, nudge it down
+      for (let x = 0; x < COLS; x++) {
+        const k = r.charCodeAt(x) - 48;
+        if (!k) continue;
+        const cx = x * cell + cell / 2;
+        let glow = 0;
+        if (pointer) { const d = Math.hypot(cx - pointer.x, cy - pointer.y); if (d < R) glow = Math.min(1, (1 - d / R) * 1.4); }
+        ctx.font = k === 2 ? big : small;
+        if (glow > 0) ctx.fillStyle = `rgba(${Math.round(232 - 175 * glow)}, ${Math.round(236 - 90 * glow)}, ${Math.round(241 + 6 * glow)}, ${k === 2 ? 1 : 0.5 + 0.5 * glow})`;
+        else ctx.fillStyle = k === 2 ? 'rgb(232 236 241)' : 'rgb(232 236 241 / .42)';
+        ctx.fillText('*', cx, cy);
+      }
+    }
+  }
+
+  const wait = (ms, id) => new Promise((res, rej) => setTimeout(() => (id === run ? res() : rej()), ms));
+  function reset() {
+    typed.textContent = ''; caret.hidden = false;
+    stepsEl.forEach((s) => s.classList.remove('on', 'ok-on'));
+    doneEl.classList.remove('on'); endEl.classList.remove('on');
+    shown = 0; draw();
+  }
+  function finish() {
+    typed.textContent = COMMAND; caret.hidden = true;
+    stepsEl.forEach((s) => s.classList.add('on', 'ok-on'));
+    shown = ROWS; draw();
+    doneEl.classList.add('on'); endEl.classList.add('on');
+  }
+  async function play() {
+    const id = ++run;
+    reset();
+    if (reduce) return finish();
+    try {
+      await wait(500, id);
+      for (const ch of COMMAND) { typed.textContent += ch; await wait(38 + Math.random() * 55, id); }
+      await wait(320, id);
+      caret.hidden = true;
+      const t0 = performance.now();
+      for (const s of stepsEl) { s.classList.add('on'); await wait(260 + Math.random() * 160, id); s.classList.add('ok-on'); await wait(90, id); }
+      // print the portrait a row at a time
+      await new Promise((res, rej) => {
+        let last = 0;
+        const tick = (t) => {
+          if (id !== run) return rej();
+          if (t - last > 16) { shown = Math.min(ROWS, shown + 1); last = t; draw(); }
+          shown < ROWS ? requestAnimationFrame(tick) : res();
+        };
+        requestAnimationFrame(tick);
+      });
+      timeEl.textContent = ((performance.now() - t0) / 1000).toFixed(2);
+      await wait(160, id);
+      doneEl.classList.add('on');
+      await wait(220, id);
+      endEl.classList.add('on');
+    } catch { /* replaced by a newer run */ }
+  }
+
+  // hover: stars near the pointer light up in blue
+  canvas.addEventListener('pointermove', (e) => {
+    const r = canvas.getBoundingClientRect();
+    pointer = { x: e.clientX - r.left, y: e.clientY - r.top };
+    if (!draw._q) { draw._q = true; requestAnimationFrame(() => { draw._q = false; draw(); }); }
+  });
+  canvas.addEventListener('pointerleave', () => { pointer = null; draw(); });
+  root.querySelector('[data-replay]').addEventListener('click', play);
+
+  new ResizeObserver(size).observe(canvas);
+  document.fonts?.ready.then(draw);
+  // start when the terminal scrolls into view
+  const io = new IntersectionObserver((ents) => { if (ents.some((e) => e.isIntersecting)) { io.disconnect(); play(); } }, { threshold: 0.3 });
+  io.observe(root);
+</script>
+
+<style>
+  .term {
+    width: 100%; max-width: 460px; border-radius: 12px; overflow: hidden;
+    background: #0e1014; color: #e8ecf1;
+    border: 1px solid rgb(255 255 255 / .06);
+    box-shadow: 0 1px 2px rgb(12 12 14 / .08), 0 24px 60px -12px rgb(12 12 14 / .28);
+    font-size: 13px; line-height: 20px; letter-spacing: 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .bar { position: relative; display: flex; align-items: center; height: 36px; padding: 0 12px; background: #16191f; border-bottom: 1px solid rgb(255 255 255 / .05); }
+  .lights { display: flex; gap: 7px; }
+  .lights i { width: 11px; height: 11px; border-radius: 50%; background: #ff5f57; }
+  .lights i:nth-child(2) { background: #febc2e; }
+  .lights i:nth-child(3) { background: #28c840; }
+  .title { position: absolute; left: 50%; transform: translateX(-50%); font-size: 12px; color: #8b93a1; font-weight: 500; }
+  .replay { margin-left: auto; padding: 0; border: 0; background: transparent; cursor: pointer; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 6px; color: #8b93a1; transition: color 150ms, background 150ms, transform 300ms var(--ease-out); }
+  .replay:hover { color: #e8ecf1; background: rgb(255 255 255 / .06); }
+  .replay:active { transform: rotate(-90deg); }
+  .replay:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  .body { padding: 14px 16px 16px; }
+  .ln { margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ps { color: #7aa2f7; font-weight: 600; }
+  .ps2 { color: #6ee7a8; font-weight: 600; margin-left: 6px; }
+  .log { color: #8b93a1; opacity: 0; transform: translateY(2px); transition: opacity 180ms, transform 180ms; }
+  .log.on { opacity: 1; transform: none; }
+  .arrow { color: #6ee7a8; }
+  .ok { color: #6ee7a8; opacity: 0; transition: opacity 150ms; }
+  .ok-on .ok { opacity: 1; }
+  .okc { color: #6ee7a8; }
+  .done { color: #e8ecf1; }
+  .art { display: block; width: 100%; margin: 10px 0 8px; cursor: crosshair; }
+  [data-end] { opacity: 0; }
+  [data-end].on { opacity: 1; }
+  .caret { display: inline-block; width: 7px; height: 15px; margin-left: 2px; vertical-align: -2px; background: #e8ecf1; }
+  .caret[hidden] { display: none; }
+  .caret.blink { animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+</style>
