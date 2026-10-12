@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node scripts/apply-base.mjs",
     "preview": "astro preview",
     "pull-assets": "node scripts/pull-assets.mjs"
   },

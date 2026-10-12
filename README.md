@@ -52,7 +52,8 @@ Breakpoints match Framer's defaults: phone below 810px, tablet from 810 to 1199p
 ## Deploy (GitHub Pages)
 
 1. Push this folder to a new GitHub repo on `main`.
-2. In the repo, go to **Settings → Pages → Source** and choose **GitHub Actions**. `.github/workflows/deploy.yml` builds and publishes on every push.
+2. In the repo, go to **Settings → Pages → Source** and choose **GitHub Actions**. `.github/workflows/deploy.yml` builds and publishes on every push. (If Source is left on "Deploy from a branch", GitHub tries to build it as a Jekyll site and fails.)
+   The site works at `https://<user>.github.io/<repo>/` as well as on a custom domain: the workflow reads the Pages address and sets `BASE_PATH` for you.
 3. Under **Settings → Pages → Custom domain**, enter `amberliang.works`. `public/CNAME` already contains it.
 4. At your DNS provider, add these records:
    - Four `A` records for `@` pointing to `185.199.108.153`, `185.199.109.153`, `185.199.110.153` and `185.199.111.153`.

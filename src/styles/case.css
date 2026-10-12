@@ -120,7 +120,8 @@
 .cs-next.half { grid-template-columns: minmax(0, 1fr) minmax(0, 360px); }
 
 /* Fixed left section menu (desktop only, as on the Framer site) */
-.cs-toc { position: fixed; left: 40px; top: 116px; z-index: 20; display: flex; flex-direction: column; gap: 10px; }
+/* link text lines up with the "Amber Liang" brand in the header (links have 4px padding) */
+.cs-toc { position: fixed; left: calc(var(--edge) - 4px); top: 116px; z-index: 20; display: flex; flex-direction: column; gap: 10px; }
 .cs-toc a { padding: 4px; border-radius: 6px; color: rgb(11 12 14 / .8); transition: color var(--dur-1), transform var(--dur-2) var(--ease-spring); }
 .cs-toc a:hover { color: var(--ink); transform: translateX(3px); }
 .cs-toc a.on { color: var(--ink); }
