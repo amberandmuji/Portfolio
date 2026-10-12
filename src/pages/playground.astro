@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import Playground from '../components/Playground.astro';
+import PlaygroundList from '../components/PlaygroundList.astro';
 import WorkCard from '../components/WorkCard.astro';
 import { playground, passion } from '../data/site';
 ---
@@ -8,7 +8,7 @@ import { playground, passion } from '../data/site';
   <section class="edge pg-page">
     <h1 class="section-title">Vibe Coding Playground</h1>
     <p class="lede">Small things I build with AI tools to try ideas fast. Click one to play with it.</p>
-    <Playground cards={playground} />
+    <PlaygroundList cards={playground} />
   </section>
 
   <section class="edge past">
