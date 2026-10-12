@@ -152,7 +152,9 @@ figure.cs-ba { margin-inline: 0; margin-bottom: 0; }
 .ai-card img { width: 100%; height: auto; border-radius: 12px; }
 
 /* Final design (homepage redesign) */
-.fd-hero { grid-template-columns: 430fr 322fr; padding: 60px; gap: 62px; }
+/* .cs-card.fd-hero so the 60px padding beats .cs-card.round's 12px, matching the cards below */
+.cs-card.fd-hero { grid-template-columns: 430fr 322fr; padding: 60px; gap: 62px; }
+.fd-hero img.phone { box-shadow: none; filter: drop-shadow(0 10px 20px rgb(12 12 14 / .1)); }
 .fd-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 44px; margin-top: 56px; }
 .fd-pair .cs-card { margin-top: 0; padding: 60px; display: flex; flex-direction: column; gap: 60px; justify-content: space-between; }
 .fd-pair img { width: 72%; margin-inline: auto; height: auto; filter: drop-shadow(0 10px 20px rgb(12 12 14 / .08)); }
@@ -162,6 +164,7 @@ figure.cs-ba { margin-inline: 0; margin-bottom: 0; }
 
 @media (max-width: 809px) {
   .ai-card, .fd-hero, .cart-card { grid-template-columns: minmax(0, 1fr); padding: 20px; gap: 24px; }
+  .cs-card.fd-hero { grid-template-columns: minmax(0, 1fr); padding: 24px; gap: 24px; }
   .fd-pair { grid-template-columns: minmax(0, 1fr); gap: 24px; }
   .fd-pair .cs-card { padding: 24px; gap: 24px; }
   .fd-hero .phone, .cart-card .phone { max-width: 260px; margin-inline: auto; }
