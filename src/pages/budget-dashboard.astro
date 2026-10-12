@@ -3,9 +3,9 @@ import Case from '../layouts/Case.astro';
 import { selectedWorks } from '../data/site';
 const next = selectedWorks.find((c) => c.href === '/shopping-cart-redesign')!;
 const steps = [
-  { t: 'Understanding different user types', p: 'The Budget Dashboard caters to two main user groups—general users with limited finance knowledge who need a straightforward view of their budget, and advanced users who want to manage their finances in detail, utilizing more in-depth tracking and analytical features.', i: { src: 'https://framerusercontent.com/images/pg4SGbAceI4Xp6ogsi3ahpwmU.png?width=2373&height=1377', w: 2373, h: 1377 } },
+  { t: 'Understanding different user types', p: 'The Budget Dashboard caters to two main user groups—general users with limited finance knowledge who need a straightforward view of their budget, and advanced users who want to manage their finances in detail, utilizing more in-depth tracking and analytical features.', i: { src: '/assets/budget-dashboard/user-types.png', w: 2373, h: 1377 } },
   { t: 'Map out early hypothesis and IA to test', p: 'With insights from research, I began the design process by structuring the initial Information Architecture for the overall experience to discuss key functionalities with stakeholders.', i: { src: '/assets/budget-dashboard/information-architecture.png', w: 2373, h: 1377 } },
-  { t: 'Explore wireframes', p: 'I iterated through 4 layout ideas for the budget dashboard, ultimately choosing a design that balances high-level insights with accessible details, enhancing user engagement and clarity.', i: { src: 'https://framerusercontent.com/images/jUpqLGacujPKKopz0tPC0RQtLg.png?width=2373&height=1377', w: 2373, h: 1377 } },
+  { t: 'Explore wireframes', p: 'I iterated through 4 layout ideas for the budget dashboard, ultimately choosing a design that balances high-level insights with accessible details, enhancing user engagement and clarity.', i: { src: '/assets/budget-dashboard/wireframes.png', w: 2373, h: 1377 } },
   { t: 'Iterate through  usability testing feedback - 1', p: 'As I moved into prototyping using Figma, I worked closely with product managers and engineers to find a balance between user needs and business requirements.', i: { src: 'https://framerusercontent.com/images/Ti72LGCAUY1mFOJuV4UBSmU1Af0.png?width=2373&height=1377', w: 2373, h: 1377 } },
   { t: 'Iterate through usability testing feedback - 2', p: 'Based on feedback from the design lead and engineering team, I iterated on the initial budget interface to reduce visual clutter and integrate real-time tracking features.', i: { src: '/assets/budget-dashboard/usability-feedback-2.png', w: 2373, h: 1377 } },
   { t: 'Final version with design system implementation', p: 'After finalizing the designs, I recognized the need for a scalable design system. I refined the visuals to ensure consistency, improving cohesion across the product.', i: { src: 'https://framerusercontent.com/images/7jYb06tRUZGY0PglmbACHD9R48.png?width=2373&height=1377', w: 2373, h: 1377 } },
@@ -13,7 +13,7 @@ const steps = [
 ---
 <Case
   title="Web-to-Mobile Budgeting Dashboard"
-  hero="https://framerusercontent.com/images/j3Xj6uWVPPbqXOrneqBr7qnLnTc.png?width=2882&height=1525"
+  hero="/assets/budget-dashboard/hero.png"
   heroBg="rgb(201 231 243)"
   heading="Rebuilding Budgeting for Web-to-Mobile: A Dual-Persona Dashboard with +20% Engagement"
   meta={[
@@ -53,7 +53,7 @@ const steps = [
   <section class="cs-c cs-sec">
     <h2 class="cs-h">What's Shepherd Money?</h2>
     <p class="cs-p">An ai-powered personalized financial planning platform</p>
-    <div class="cs-media"><img src="https://framerusercontent.com/images/LbjKhDOubfwbLy2YpinZQuSP8UA.png?width=2946&height=1428" alt="" width="2946" height="1428" loading="lazy" /></div>
+    <div class="cs-media"><img src="/assets/budget-dashboard/shepherd-money.png" alt="" width="2946" height="1428" loading="lazy" /></div>
     <p class="cs-p" style="margin-top:12px">Shepherd Money helps users manage every aspect of their finances—from budgeting and net worth tracking to personalized investment strategies—all with a focus on tailored insights and ease of use.</p>
   </section>
 

@@ -66,7 +66,7 @@ const next = selectedWorks.find((c) => c.href === '/home-page-redesign')!;
         <div class="cs-persona amber">
           <p class="who">Target User 2</p>
           <h4>Hospital Staff<br />(External Partner)</h4>
-          <img src="https://framerusercontent.com/images/O54ij97qmAGDJBeEbazUA9Yk.png?width=624&height=624" alt="" loading="lazy" />
+          <img src="/assets/pcc-client-portal/persona-hospital-staff.webp" alt="" loading="lazy" />
           <p class="task">Task</p>
           <p>Request PCC data for administrative filings and return files</p>
         </div>
@@ -95,7 +95,7 @@ const next = selectedWorks.find((c) => c.href === '/home-page-redesign')!;
       <h3 class="cs-h">Finding the Middle Ground Within Constraints</h3>
       <p class="cs-p">I proposed a third-party portal for full flexibility, but healthcare data regulations required SharePoint unless we built a compliant data center. After exploring alternatives with the operations and development teams, I pivoted to an MVP using SharePoint's supported features, while development evaluates a new platform for the next launch.</p>
     </div>
-    <div class="cs-w cs-media"><img src="https://framerusercontent.com/images/Qgv6OQt4CUaFfKQyvqgcfRN8lk.png?width=1575&height=772" alt="" width="1575" height="772" loading="lazy" /></div>
+    <div class="cs-w cs-media"><img src="/assets/pcc-client-portal/middle-ground.png" alt="" width="1575" height="772" loading="lazy" /></div>
   </section>
 
   <section class="cs-sub">
@@ -141,10 +141,10 @@ const next = selectedWorks.find((c) => c.href === '/home-page-redesign')!;
     <div class="cs-w cs-media" style="margin-top:56px"><img class="shadow" src="/assets/pcc-client-portal/final-before-after.png" alt="" width="2890" height="1350" loading="lazy" /></div>
 
     {[
-      { tone: 'blue', view: 'Internal View', name: 'Client Portal Home Screen', lead: 'One dashboard for PCC staff: partner sites, files distributed, uploads received, and alerts, with push and review in a click.', video: 'https://framerusercontent.com/assets/M6L5iGx6fvPgNV69Vl4vRP3w.mp4', solved: 'Staff wasted hours hunting for files and links scattered across inboxes,  now everything lives in one view.' },
+      { tone: 'blue', view: 'Internal View', name: 'Client Portal Home Screen', lead: 'One dashboard for PCC staff: partner sites, files distributed, uploads received, and alerts, with push and review in a click.', video: '/assets/pcc-client-portal/home-screen.mp4', solved: 'Staff wasted hours hunting for files and links scattered across inboxes,  now everything lives in one view.' },
       { tone: 'blue', view: 'Internal View', name: 'Send files to partners', lead: "Drop a batch in the Central Library; a Power Automate flow routes each file to the right partner's read-only From PCC folder and emails them.", video: '/assets/pcc-client-portal/send-files.mp4', solved: 'Staff manually added users and sent files one by one, automation replaces the repetitive provisioning work.' },
       { tone: 'blue', view: 'Internal View', name: 'Receive files from partners', lead: 'New uploads trigger a notification card to responsive staff in the Master Inbox, so staff process every submission from one place instead of 20 sites.', video: '/assets/pcc-client-portal/receive-files.mp4', solved: 'Incoming files were lost across email and scattered folders, a single inbox catches every submission.' },
-      { tone: 'blue', view: 'Internal View', name: 'Partner list directory', lead: 'Every partner gets its own site with inheritance broken, so none can see another, each listed with its permission group setting.', video: 'https://framerusercontent.com/assets/pe6gyP21ZpGEQ7BplWTHvhiv0.mp4', solved: "Partners were locked out by SharePoint's default permissions, isolated sites give each one reliable, scoped access." },
+      { tone: 'blue', view: 'Internal View', name: 'Partner list directory', lead: 'Every partner gets its own site with inheritance broken, so none can see another, each listed with its permission group setting.', video: '/assets/pcc-client-portal/partner-directory.mp4', solved: "Partners were locked out by SharePoint's default permissions, isolated sites give each one reliable, scoped access." },
       { tone: 'amber', view: 'External View', name: 'What partners see: their space only', lead: `Separate read-only "From PCC" and Upload folders keep partner data private and PCC's originals safe from overwrites.`, video: 'https://framerusercontent.com/assets/T4NJDP43vSudH3DGohZE3smwaE.mp4', solved: '' },
     ].map((f) => (
       <div class="cs-w cs-card">
