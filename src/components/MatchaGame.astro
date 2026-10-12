@@ -28,7 +28,7 @@ const wall = site.drinkWall;
         <div class="lid" aria-hidden="true"></div>
         <div class="straw" aria-hidden="true"></div>
         <div class="inside" aria-hidden="true">
-          <div class="liquid" data-liquid><div class="blend" data-blend></div></div>
+          <div class="liquid" data-liquid><div class="blend" data-blend></div><div class="blend" data-uniform></div></div>
           <div class="pearls" data-pearls></div>
           <div class="cubes" data-cubes></div>
           <div class="foam" data-foam></div>
@@ -100,7 +100,6 @@ const wall = site.drinkWall;
   <div class="wall">
     <div class="wall-head">
       <h3 data-wall-title>The drink wall</h3>
-      <span class="wall-sub" data-wall-sub></span>
     </div>
     <ol class="wall-grid" data-wall></ol>
   </div>
@@ -123,7 +122,7 @@ const wall = site.drinkWall;
 
   let cup = [];
 
-  const liquidEl = $('[data-liquid]'), blendEl = $('[data-blend]'), pearlsEl = $('[data-pearls]');
+  const liquidEl = $('[data-liquid]'), blendEl = $('[data-blend]'), uniformEl = $('[data-uniform]'), pearlsEl = $('[data-pearls]');
   const cubesEl = $('[data-cubes]'), foamEl = $('[data-foam]'), streamEl = $('[data-stream]');
   const status = $('[data-status]'), glass = $('[data-glass]');
 
@@ -179,6 +178,32 @@ const wall = site.drinkWall;
     return `linear-gradient(${dir}, ${stops.join(', ')})`;
   }
 
+  // Stage 1: layers swirl into each other but every ingredient keeps its colour (marbled streaks over a soft gradient)
+  function marbled(layers, H) {
+    if (layers.length < 2) return blendedGradient(layers, H);
+    const blobs = []; const stops = []; let y = 0;
+    layers.forEach((l, li) => {
+      const lo = y / H * 100, hi = (y + l.h) / H * 100, mid = (lo + hi) / 2; y += l.h;
+      stops.push(`${l.c} ${(lo + (li ? 6 : 0)).toFixed(1)}%`, `${l.c} ${(hi - (li < layers.length - 1 ? 6 : 0)).toFixed(1)}%`);
+      for (let j = 0; j < 4; j++) {
+        const n = li * 4 + j;
+        const x = 8 + rand(n, 21) * 84;
+        const reach = (hi - lo) / 2 + 14;                       // streaks poke into the neighbouring layers
+        const pos = 100 - Math.max(3, Math.min(97, mid + (rand(n, 22) - 0.5) * 2 * reach));
+        const w = 22 + rand(n, 23) * 26, h = 5 + rand(n, 24) * 6;
+        blobs.push(`radial-gradient(ellipse ${w.toFixed(0)}% ${h.toFixed(0)}% at ${x.toFixed(0)}% ${pos.toFixed(0)}%, ${l.c} 0 55%, transparent 80%)`);
+      }
+    });
+    return `${blobs.join(', ')}, linear-gradient(to top, ${stops.join(', ')})`;
+  }
+  // Stage 2: everything blends into one colour, weighted by how much of each was poured
+  function averageColor(layers) {
+    const tot = layers.reduce((a, l) => a + l.h, 0) || 1;
+    const rgb = [0, 0, 0];
+    layers.forEach((l) => { const n = parseInt(l.c.slice(1), 16); [16, 8, 0].forEach((sh, k) => { rgb[k] += ((n >> sh) & 255) * l.h / tot; }); });
+    return '#' + rgb.map((v) => Math.round(v).toString(16).padStart(2, '0')).join('');
+  }
+
   function sync(listEl, n, make) {
     while (listEl.children.length > n) listEl.lastElementChild.remove();
     while (listEl.children.length < n) {
@@ -194,7 +219,8 @@ const wall = site.drinkWall;
     liquidEl.style.height = m.liquidH + 'px';
     liquidEl.style.background = layeredGradient(m.layers);
     liquidEl.style.setProperty('--top', m.layers.length ? m.layers[m.layers.length - 1].c : 'transparent');
-    blendEl.style.background = blendedGradient(m.layers, m.liquidH);
+    blendEl.style.background = marbled(m.layers, m.liquidH);
+    uniformEl.style.background = m.layers.length ? averageColor(m.layers) : 'none';
     liquidEl.classList.toggle('has', m.liquidH > 0);
 
     // Boba: sinks to the floor
@@ -340,7 +366,6 @@ const wall = site.drinkWall;
     let list = reached ? others : mine;
     if (list.length < 4) list = [...list, ...HOUSE];
     $('[data-wall-title]').textContent = reached ? 'Drinks other visitors made' : 'The drink wall';
-    $('[data-wall-sub]').textContent = reached ? 'Newest first' : 'Your drinks and a few house recipes from other guests';
     drawWall(list.map(clean).filter(Boolean).slice(0, 18));
   }
 
@@ -353,8 +378,18 @@ const wall = site.drinkWall;
     return `${Math.floor(s / 86400)} d ago`;
   }
 
-  function miniCup(d) {
+  const TAPES = ['#c1deaf', '#fae4d0', '#dce4ea', '#f6d6dc', '#fbe7a6', '#d7e9fb'];
+  function miniCup(d, idx) {
     const li = document.createElement('li');
+    const n = idx + (d.t ? Math.floor(d.t / 1000) % 97 : d.name.length);
+    li.style.setProperty('--rot', `${((rand(n, 31) - 0.5) * 11).toFixed(1)}deg`);
+    li.style.setProperty('--dy', `${((rand(n, 32) - 0.5) * 14).toFixed(0)}px`);
+    li.style.setProperty('--tape-rot', `${((rand(n, 33) - 0.5) * 16).toFixed(1)}deg`);
+    li.style.setProperty('--tape', TAPES[Math.floor(rand(n, 34) * TAPES.length)]);
+    const avg = d.layers.length ? averageColor(d.layers.map((l) => ({ c: l.c, h: l.h }))) : '#e9eef1';
+    li.style.setProperty('--photo', `color-mix(in srgb, ${avg} 22%, #fbfaf7)`);
+    const card = document.createElement('div'); card.className = 'polaroid';
+    const photo = document.createElement('div'); photo.className = 'photo';
     const cupEl = document.createElement('div'); cupEl.className = 'mini';
     const fill = document.createElement('div'); fill.className = 'mini-fill';
     let y = 0; const stops = [];
@@ -373,19 +408,26 @@ const wall = site.drinkWall;
       cupEl.appendChild(c);
     }
     if (d.foam) { const f = document.createElement('i'); f.className = 'mini-foam'; f.style.bottom = d.layers.length ? '76%' : '3px'; cupEl.appendChild(f); }
-    const name = document.createElement('span'); name.className = 'mini-name'; name.textContent = d.name;
-    const meta = document.createElement('span'); meta.className = 'mini-meta';
-    meta.textContent = d.house ? 'House recipe' : d.mine ? `You · ${ago(d.t)}` : ago(d.t);
-    li.append(cupEl, name, meta);
+    const label = `${d.name}${d.house ? ' (house recipe)' : d.mine ? ` (yours, ${ago(d.t)})` : d.t ? ` (${ago(d.t)})` : ''}`;
+    li.title = label;
+    li.setAttribute('aria-label', label);
+    photo.append(cupEl); card.append(photo); li.append(card);
     return li;
   }
   function drawWall(list) {
     const ol = $('[data-wall]'); ol.textContent = '';
-    list.forEach((d, i) => { const li = miniCup(d); li.style.setProperty('--i', i); ol.appendChild(li); });
+    list.forEach((d, i) => { const li = miniCup(d, i); li.style.setProperty('--i', i); ol.appendChild(li); });
+    // An open spot at the end invites the visitor to pin their own drink
+    const slot = document.createElement('li'); slot.className = 'slot'; slot.style.setProperty('--i', list.length);
+    const btn = document.createElement('button'); btn.type = 'button'; btn.setAttribute('aria-label', 'Make a drink and pin it here');
+    btn.innerHTML = '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+    btn.addEventListener('click', () => { const first = root.querySelector('[data-add]'); root.querySelector('.panel').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' }); if (first && !first.closest('[hidden]')) first.focus({ preventScroll: true }); });
+    slot.append(btn); ol.appendChild(slot);
   }
 
   async function share() {
     const d = snapshot();
+    if (mix >= 1 && d.layers.length) d.layers = [{ c: averageColor(model().layers), h: 1 }];
     const btn = $('[data-share]');
     btn.disabled = true;
     writeLocal([{ ...d, t: Date.now() }, ...readLocal()]);
@@ -425,7 +467,7 @@ const wall = site.drinkWall;
       $('[data-build]').hidden = true;
       $('[data-result]').hidden = false;
       $('[data-drink-name]').textContent = d.name;
-      mix = 0; blendEl.style.opacity = '0';
+      setMix(0);
       celebrate(m);
       const sh = $('[data-share]'); sh.disabled = false; sh.textContent = 'Add to the drink wall';
       status.textContent = m.layers.length > 1 ? 'Cheers! Drag the straw to stir it up.' : 'Cheers! Drag the straw to give it a stir.';
@@ -434,7 +476,7 @@ const wall = site.drinkWall;
       cup = [];
       glass.classList.remove('is-served', 'mixed');
       glass.tabIndex = -1;
-      blendEl.style.opacity = '';
+      setMix(0);
       glass.style.removeProperty('--stir');
       $('[data-build]').hidden = false;
       $('[data-result]').hidden = true;
@@ -444,7 +486,7 @@ const wall = site.drinkWall;
   });
 
   // ---------- Celebrate + stir ----------
-  let mix = 0;
+  let mix = 0, hold = 0;
   function celebrate(m) {
     if (reduce) return;
     const stage = glass.parentElement;
@@ -463,12 +505,21 @@ const wall = site.drinkWall;
       setTimeout(() => bit.remove(), 1400);
     }
   }
+  function setMix(v) {
+    mix = v;
+    blendEl.style.opacity = String(Math.min(1, mix * 2));          // 0–50%: layers swirl, colours stay distinct
+    uniformEl.style.opacity = String(Math.max(0, (mix - 0.5) * 2)); // 50–100%: everything blends into one colour
+  }
   function addMix(amount) {
     if (mix >= 1) return;
-    mix = Math.min(1, mix + amount);
-    blendEl.style.opacity = String(mix);
-    if (mix >= 1) { glass.classList.add('mixed'); status.textContent = 'Perfectly mixed!'; }
-    else if (mix > 0.05) status.textContent = 'Stirring…';
+    const before = mix;
+    if (hold > Date.now()) return;                            // pause on the swirled stage so it can be seen
+    let next = Math.min(1, mix + amount);
+    if (before < 0.5 && next > 0.5) { next = 0.5; hold = Date.now() + 700; }
+    setMix(next);
+    if (mix >= 1) { glass.classList.remove('mixed'); void glass.offsetWidth; glass.classList.add('mixed'); status.textContent = 'Perfectly mixed!'; }
+    else if (before < 0.5 && mix >= 0.5) { glass.classList.remove('mixed'); void glass.offsetWidth; glass.classList.add('mixed'); status.textContent = 'The layers are swirling. Keep stirring to blend it all.'; }
+    else if (mix < 0.5 && mix > 0.03) status.textContent = 'Stirring…';
   }
 
   let dragging = false, lastX = 0, pos = 0;
@@ -481,7 +532,7 @@ const wall = site.drinkWall;
     const dx = e.clientX - lastX; lastX = e.clientX;
     pos = Math.max(-1, Math.min(1, pos + dx / 45));
     glass.style.setProperty('--stir', pos.toFixed(3));
-    addMix(Math.abs(dx) / 700);
+    addMix(Math.abs(dx) / (mix < 0.5 ? 700 : 1400));
   });
   const stop = () => {
     if (!dragging) return;
@@ -495,7 +546,7 @@ const wall = site.drinkWall;
     if (!glass.classList.contains('is-served') || !['ArrowLeft', 'ArrowRight'].includes(e.key)) return;
     e.preventDefault();
     glass.style.setProperty('--stir', e.key === 'ArrowLeft' ? '-0.8' : '0.8');
-    addMix(0.12);
+    addMix(0.08);
     clearTimeout(glass._t); glass._t = setTimeout(() => glass.style.setProperty('--stir', '0'), 250);
   });
 
@@ -658,13 +709,46 @@ const wall = site.drinkWall;
   @keyframes swirl { 25% { transform: rotate(-4deg) translateY(-6px); } 55% { transform: rotate(3deg) translateY(-4px); } }
 
   /* ---------- Drink wall ---------- */
-  .wall { max-width: 920px; margin: 56px auto 0; }
+  .wall { max-width: 980px; margin: 64px auto 0; }
   .wall-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-  .wall h3 { font-size: var(--fs-small); line-height: 1.4; }
+  .wall h3 { font-size: var(--fs-small); line-height: 1.4; width: 100%; text-align: center; }
   .wall-sub { color: var(--muted); font-size: 0.875rem; }
-  .wall-grid { list-style: none; margin: 16px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 18px 14px; }
-  .wall-grid :global(li) { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; min-width: 0; animation: rise-in 500ms var(--ease-out) both; animation-delay: calc(var(--i) * 40ms); }
-  .wall-grid :global(li.fresh .mini) { outline: 3px solid rgb(57 146 247 / .35); outline-offset: 3px; }
+  .wall-grid {
+    list-style: none; margin: 22px 0 0; padding: 8px 4px 16px;
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 26px 22px;
+  }
+  .wall-grid :global(li) {
+    position: relative; transform: translateY(var(--dy, 0)) rotate(var(--rot, 0deg));
+    animation: pin-in 600ms var(--ease-spring) both; animation-delay: calc(var(--i) * 45ms);
+    transition: transform 400ms var(--ease-spring), z-index 0s;
+  }
+  .wall-grid :global(li:hover) { transform: translateY(calc(var(--dy, 0) - 6px)) rotate(0deg) scale(1.06); z-index: 2; }
+  @keyframes pin-in { from { opacity: 0; transform: translateY(-24px) rotate(calc(var(--rot, 0deg) * 2)) scale(.9); } }
+  .wall-grid :global(.polaroid) {
+    position: relative; width: 104px; padding: 7px 7px 26px; background: #fff; border-radius: 2px;
+    box-shadow: 0 1px 2px rgb(12 12 14 / .08), 0 8px 18px rgb(12 12 14 / .1);
+  }
+  .wall-grid :global(.polaroid::before) { /* washi tape */
+    content: ''; position: absolute; left: 50%; top: -9px; width: 46px; height: 16px; margin-left: -23px;
+    background: var(--tape); opacity: .85; transform: rotate(var(--tape-rot, 0deg));
+    box-shadow: 0 1px 1px rgb(12 12 14 / .06);
+    -webkit-mask: linear-gradient(90deg, transparent 0 2px, #000 2px calc(100% - 2px), transparent calc(100% - 2px));
+            mask: linear-gradient(90deg, transparent 0 2px, #000 2px calc(100% - 2px), transparent calc(100% - 2px));
+  }
+  .wall-grid :global(.photo) {
+    display: grid; place-items: end center; height: 96px; padding-bottom: 8px;
+    background: radial-gradient(ellipse at 50% 30%, #fff, var(--photo) 75%);
+    box-shadow: inset 0 0 0 1px rgb(12 12 14 / .04);
+  }
+  .wall-grid :global(li.fresh) { animation: pin-fresh 700ms var(--ease-spring) both; }
+  @keyframes pin-fresh { 0% { opacity: 0; transform: translateY(-40px) rotate(-14deg) scale(1.2); } 60% { opacity: 1; } }
+  .wall-grid :global(li.slot button) {
+    display: grid; place-items: center; width: 104px; height: 129px; border-radius: 4px; cursor: pointer;
+    border: 1.5px dashed rgb(12 12 14 / .2); background: rgb(255 255 255 / .4); color: var(--muted);
+    transition: background var(--dur-1), color var(--dur-1), border-color var(--dur-1), transform 400ms var(--ease-spring);
+  }
+  .wall-grid :global(li.slot) { --rot: 3deg; }
+  .wall-grid :global(li.slot button:hover) { background: #fff; color: var(--ink); border-color: rgb(12 12 14 / .35); }
   .wall-grid :global(.mini) {
     position: relative; width: 52px; height: 74px; overflow: hidden;
     clip-path: polygon(0 0, 100% 0, 88% 100%, 12% 100%);
