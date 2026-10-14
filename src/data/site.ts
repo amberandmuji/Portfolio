@@ -9,7 +9,7 @@ export const site = {
   ogImage: 'https://framerusercontent.com/images/2tbs2krqVM7Dv2BTvGuq46njxI.png',
   email: 'amberliangdesign@gmail.com',
   linkedin: 'https://www.linkedin.com/in/amberamberliang/',
-  resume: 'https://drive.google.com/file/d/1A_y0yWqywBqdfvFAxsPZsVOIBvwer2c1/view?usp=sharing',
+  resume: 'https://drive.google.com/file/d/1B1iFskVtiSw0BICH--nvuxB43YP7hQ0W/view?usp=sharing',
   // Google Analytics 4 Measurement ID (GA4 → Admin → Data streams → your web stream), e.g. 'G-AB12CD34EF'.
   // Leave empty to load no analytics.
   ga4: 'G-KCQ4D6LHYN',
