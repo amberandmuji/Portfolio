@@ -31,7 +31,7 @@ export type Card = { href: string; title: string; tags: string[]; media?: string
 export const selectedWorks: Card[] = [
   {
     href: '/pcc-client-portal',
-    title: 'Automated Partner File Portal I 12% Less Manual Work',
+    title: 'Automated Partner File Portal I 83% Less Provisioning Time',
     tags: ['B2B', '0 to 1', 'Workflow Automation'],
     media: '/assets/home/pcc-client-portal.mp4',
     poster: '/assets/home/pcc-client-portal-poster.webp',
