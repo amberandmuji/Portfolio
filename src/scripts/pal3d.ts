@@ -377,7 +377,7 @@ function buildFigure(M: Mats) {
     mesh(lathe(prof(.9, 1.25), 48, .8, Math.PI * 2 - 1.6), M.scalp, head, [0, 0, 0], [1, 1, .97]); }  // sides and back only: the forehead stays open under the thin fringe
   // smooth back-of-head shell (like the sculpted crown in the reference): the long locks emerge from under it
   { const prof: [number, number][] = []; for (let th = 0; th <= 1.72; th += .04) { const q = sp(th, 0, R + .017 + .03 * THREE.MathUtils.smootherstep(th, 1.0, 1.72)); /* flares to meet the locks' outline */ prof.push([Math.max(.0001, q.z / .97), q.y]); }
-    mesh(lathe(prof, 64, Math.PI - 1.95, 3.9), M.scalp, hairSwayPre, [0, 0, 0], [1, 1, .97]); }
+    mesh(lathe(prof, 96, Math.PI - 2.4, 4.8), M.scalp, hairSwayPre, [0, 0, 0], [1, 1, .97]); }   // wraps round to the temples, so the side hair flows out of it without a crease
   const onHead = () => C;
   const hairMesh = (g: THREE.BufferGeometry, parent: THREE.Object3D = head) => mesh(g, M.hair, parent);
   const hairSway = hairSwayPre;
@@ -389,13 +389,15 @@ function buildFigure(M: Mats) {
   // then straight down past the face/shoulders with a gentle flare — so the outline flows from the crown without a
   // step, and neighbouring locks run side by side instead of crossing. Bangs fall straight down from the front of the
   // crown; a strand bump map adds the fine combed grooves.
-  const lockPath = (ph: number, o: { th0: number; r0: number; r: number; end: number; flare?: number; wave?: number; flick?: number; seed?: number }) => {
+  const lockPath = (ph: number, o: { th0: number; r0: number; r: number; end: number; flare?: number; wave?: number; flick?: number; seed?: number; flush?: boolean }) => {
     const pts: THREE.Vector3[] = [];
-    pts.push(sp(o.th0, ph, o.r0));
+    pts.push(sp(o.th0, ph, o.flush ? R + .012 : o.r0));
     // over the crown the lock stays just under the smooth scalp shell (so the top reads as one clean dome, like the
     // reference) and rises out of it around the back of the head, joining the outline without a step
     // a long, shallow ramp out of the shell so the outline continues without a ledge
-    const ramp = (th: number) => th < 1.0 ? R - .03 : R - .03 + (o.r - R + .03) * THREE.MathUtils.smootherstep(th, 1.0, 1.75);
+    // side locks near the face lie flush on the shell from the crown down (no edge where they come out); back locks emerge from under it
+    const base = o.flush ? R + .021 : R - .03;
+    const ramp = (th: number) => th < 1.0 ? base : base + (o.r - base) * THREE.MathUtils.smootherstep(th, 1.0, 1.75);
     for (const th of [o.th0 + .35, .95, 1.2, 1.4, 1.6]) if (th > o.th0 + .1) pts.push(sp(th, ph, ramp(th)));
     pts.push(sp(1.75, ph, o.r));
     const top = sp(Math.PI / 2, ph, o.r + .003);
@@ -424,7 +426,7 @@ function buildFigure(M: Mats) {
   bangs(12, .76, 0, [.04, -.02, .05, .0, .06, .02, .05, -.01, .04, .02, .03, -.01]);   // one thin layer; the forehead shows between strands
   // face-framing curtain locks: from the side of the crown straight down past the cheeks to the chest
   for (const sg of [-1, 1]) for (const [ph, end, w, seed] of [[.92, -.28, .07, 1], [1.06, -.32, .08, 2.3], [1.22, -.34, .085, 3.1]] as [number, number, number, number][]) {
-    hairMesh(clump(lockPath(sg * ph, { th0: .2, r0: R - .05, r: R + .03, end, flare: .02, wave: .002, flick: 0, seed }),
+    hairMesh(clump(lockPath(sg * ph, { th0: .2, r0: R - .05, r: R + .03, end, flare: .02, wave: .002, flick: 0, seed, flush: true }),
       { w0: w * .85, w1: .0015, t0: .014, t1: .004, centre: sideOf, root: ROOT, tip: TIP, ombre: .62, seg: 40, groove: .14 }), hairSway);
   }
   // dark inner shell so the panels never look see-through
@@ -438,7 +440,7 @@ function buildFigure(M: Mats) {
   }
   for (let i = 0; i < NL1; i++) {
     const t = -1 + 2 * i / (NL1 - 1), ph = Math.PI + t * 1.95 + rnd(i + 90) * .03;
-    hairMesh(clump(lockPath(ph, { th0: .16 + Math.abs(rnd(i + 11)) * .08, r0: R - .05, r: R + .04, end: -.33 - .06 * Math.abs(rnd(i + 53)) - (Math.abs(t) < .45 ? .03 : 0), flare: .035, wave: .009, flick: (((i * 7 + 3) % 5) - 2) * .03, seed: i * 1.3 }),
+    hairMesh(clump(lockPath(ph, { flush: Math.abs(t) > .7, th0: .16 + Math.abs(rnd(i + 11)) * .08, r0: R - .05, r: R + .04, end: -.33 - .06 * Math.abs(rnd(i + 53)) - (Math.abs(t) < .45 ? .03 : 0), flare: .035, wave: .009, flick: (((i * 7 + 3) % 5) - 2) * .03, seed: i * 1.3 }),
       { w0: .07 + .02 * Math.abs(rnd(i)), w1: .0015, t0: .016, t1: .005, centre: sideOf, root: ROOT, tip: TIP, ombre: .62, seg: 44 }), hairSway);
   }
   // a soft highlight band on the crown
