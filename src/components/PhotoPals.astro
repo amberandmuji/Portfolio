@@ -270,6 +270,7 @@ const { hobbies } = Astro.props;
     pal.removeAttribute('style'); pal.className = 'pal';
     P3.dropAll();
     perch.append(pal); pose('sit'); P3.yaw(0); P3.ground(false); home = null;
+    hint.classList.remove('gone');   // the caption comes back with her
   }
 
   /* ---------- dragging ---------- */

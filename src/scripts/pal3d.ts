@@ -97,6 +97,16 @@ function fabricTexture(kind: 'rib' | 'twill' | 'knit', size = 128) {
   g.putImageData(img, 0, 0);
   const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(4, 4); return t;
 }
+/** fine strand grooves running along each lock (used as a bump map; u goes around the lock, v along it) */
+function strandTexture(size = 256) {
+  const c = document.createElement('canvas'); c.width = size; c.height = 8;
+  const g = c.getContext('2d')!;
+  for (let x = 0; x < size; x++) {
+    const n = .5 + .28 * Math.sin(x / size * Math.PI * 2 * 9) + .22 * Math.sin(x / size * Math.PI * 2 * 23 + 1.3) + (Math.random() - .5) * .35;
+    const v = Math.max(0, Math.min(255, n * 255)); g.fillStyle = `rgb(${v},${v},${v})`; g.fillRect(x, 0, 1, 8);
+  }
+  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; return t;
+}
 function blushTexture() {
   const c = document.createElement('canvas'); c.width = c.height = 64;
   const g = c.getContext('2d')!, r = g.createRadialGradient(32, 32, 0, 32, 32, 32);
@@ -131,8 +141,8 @@ function makeMaterials() {
     shoe: new THREE.MeshPhysicalMaterial({ color: '#5a3c2a', roughness: .5, sheen: .3, sheenColor: new THREE.Color('#9a7060'), clearcoat: .25, clearcoatRoughness: .5 }),
     lace: new THREE.MeshPhysicalMaterial({ color: '#f4efe6', roughness: .8 }),
     sole: new THREE.MeshPhysicalMaterial({ color: '#2e221b', roughness: .7 }),
-    hair: new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: .62, sheen: .5, sheenColor: new THREE.Color('#c08260'), sheenRoughness: .45, clearcoat: .3, clearcoatRoughness: .45, side: THREE.DoubleSide }),
-    scalp: new THREE.MeshPhysicalMaterial({ color: '#2f1d17', roughness: .75, sheen: .4, sheenColor: new THREE.Color('#9a6a50'), side: THREE.DoubleSide }),
+    hair: new THREE.MeshPhysicalMaterial({ vertexColors: true, bumpMap: strandTexture(), bumpScale: 1.1, roughness: .58, sheen: .5, sheenColor: new THREE.Color('#c08260'), sheenRoughness: .45, clearcoat: .3, clearcoatRoughness: .45, side: THREE.DoubleSide }),
+    scalp: new THREE.MeshPhysicalMaterial({ color: '#24150f', roughness: .58, sheen: .5, sheenColor: new THREE.Color('#c08260'), clearcoat: .3, clearcoatRoughness: .45, bumpMap: (() => { const t = strandTexture(); t.repeat.set(16, 1); return t; })(), bumpScale: 1.1, side: THREE.DoubleSide }),
     eye: new THREE.MeshPhysicalMaterial({ color: '#2a1a14', roughness: .5, sheen: .3, sheenColor: new THREE.Color('#6a4a40') }),
     glint: new THREE.MeshBasicMaterial({ color: '#ffffff' }),
     lip: new THREE.MeshPhysicalMaterial({ color: '#b65a50', roughness: .6 }),
@@ -165,18 +175,18 @@ function mesh(geo: THREE.BufferGeometry, mat: THREE.Material, parent?: THREE.Obj
 const group = (parent: THREE.Object3D, pos: V3 = [0, 0, 0]) => { const g = new THREE.Group(); g.position.set(...pos); parent.add(g); return g; };
 
 /** A tapered, flattened hair clump along a curve. `centre(p)` gives the point the clump lies "on" (for its normal). */
-function clump(points: THREE.Vector3[], o: { w0: number; w1: number; t0: number; t1: number; centre: (p: THREE.Vector3) => THREE.Vector3; root: string; tip: string; seg?: number; ombre?: number }) {
+function clump(points: THREE.Vector3[], o: { w0: number; w1: number; t0: number; t1: number; centre: (p: THREE.Vector3) => THREE.Vector3; root: string; tip: string; seg?: number; ombre?: number; fullRoot?: boolean; groove?: number; toneVar?: number }) {
   const seg = Math.round((o.seg ?? 28) * 1.5), radial = 18;
   const curve = new THREE.CatmullRomCurve3(points, false, 'centripetal');
-  const pos: number[] = [], col: number[] = [], idx: number[] = [];
-  const tone = .86 + Math.random() * .3;   // each lock a slightly different shade, like painted strands
+  const pos: number[] = [], col: number[] = [], idx: number[] = [], uv: number[] = [];
+  const tone = 1 - (o.toneVar ?? .3) / 2 + Math.random() * (o.toneVar ?? .3);   // each lock a slightly different shade, like painted strands
   const cRoot = new THREE.Color(o.root).multiplyScalar(tone), cTip = new THREE.Color(o.tip).multiplyScalar(tone), c = new THREE.Color();
   for (let i = 0; i <= seg; i++) {
     const u = i / seg, P = curve.getPoint(u), T = curve.getTangent(u);
     const N = P.clone().sub(o.centre(P)).normalize();
     N.sub(T.clone().multiplyScalar(N.dot(T))).normalize();
     const B = new THREE.Vector3().crossVectors(T, N).normalize();
-    const taper = Math.pow(u, 1.25), tipRound = u > .9 ? Math.sqrt(Math.max(0, 1 - ((u - .9) / .1) ** 2)) : (u < .08 ? .35 + .65 * Math.sin(u / .08 * Math.PI / 2) : 1);
+    const taper = Math.pow(u, 1.25), tipRound = u > .9 ? Math.sqrt(Math.max(0, 1 - ((u - .9) / .1) ** 2)) : (u < .08 && !o.fullRoot ? .35 + .65 * Math.sin(u / .08 * Math.PI / 2) : 1);
     const w = (o.w0 + (o.w1 - o.w0) * taper) * tipRound + .0015, t = (o.t0 + (o.t1 - o.t0) * u) * tipRound + .001;
     const om = THREE.MathUtils.smoothstep(u, o.ombre ?? .5, 1);
     c.copy(cRoot).lerp(cTip, om);
@@ -185,8 +195,8 @@ function clump(points: THREE.Vector3[], o: { w0: number; w1: number; t0: number;
       // rounded-rectangle (superellipse) section: flat faces with soft edges, like sculpted ribbon locks
       const ca = Math.cos(a), sa = Math.sin(a), ex = .55;
       const p = P.clone().addScaledVector(B, Math.sign(ca) * Math.abs(ca) ** ex * w).addScaledVector(N, Math.sign(sa) * Math.abs(sa) ** ex * t);
-      const groove = .78 + .22 * Math.pow(Math.abs(Math.sin(a)), .5);   // edges darker = carved grooves between clumps
-      pos.push(p.x, p.y, p.z); col.push(c.r * groove, c.g * groove, c.b * groove);
+      const gs = o.groove ?? .22, groove = 1 - gs + gs * Math.pow(Math.abs(Math.sin(a)), .5);   // edges darker = carved grooves between clumps
+      pos.push(p.x, p.y, p.z); col.push(c.r * groove, c.g * groove, c.b * groove); uv.push(j / radial, u);
     }
   }
   for (let i = 0; i < seg; i++) for (let j = 0; j < radial; j++) {
@@ -196,6 +206,7 @@ function clump(points: THREE.Vector3[], o: { w0: number; w1: number; t0: number;
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
   g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+  g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
   g.setIndex(idx); g.computeVertexNormals();
   return g;
 }
@@ -290,7 +301,7 @@ function buildFigure(M: Mats) {
     const k = side < 0 ? 'l' : 'r';
     const sh = J[k + 'sh'] = group(body, [side * .225, 1.11, -.005]);
     sh.scale.setScalar(.92);
-    { const pts: THREE.Vector3[] = []; for (let a = 0; a <= Math.PI * 2 + .01; a += .12) pts.push(v(Math.cos(a) * .078, -.03, Math.sin(a) * .078 * .95)); stitches(pts, sh); }
+    { const pts: THREE.Vector3[] = []; for (let a = 0; a <= Math.PI * 2 + .01; a += .12) pts.push(v(Math.cos(a) * .0745, -.03, Math.sin(a) * .0745 * .95)); stitches(pts, sh); }
     mesh(new THREE.SphereGeometry(.072, 24, 16), M.suede, sh, [-side * .018, -.005, 0], [1, 1, .95]);   // small cap, sunk into the torso so the shoulder line stays smooth
     mesh(lathe([[.066, .02], [.074, -.02], [.08, -.08], [.08, -.15], [.074, -.21], [.07, -.245]], 48), M.suede, sh, [0, 0, 0], [1, 1, .95]);
     const el = J[k + 'el'] = group(sh, [0, -.235, 0]);
@@ -356,50 +367,79 @@ function buildFigure(M: Mats) {
   const ROOT = '#2a1914', TIP = '#8f4e2e';
   mesh(new THREE.SphereGeometry(R + .012, 40, 24, Math.PI * 1.5 - 1.75, 3.5, 1.2, 1.2), M.scalp, head, [C.x, C.y, C.z - .006], [1.02, 1, 1]);
   // crown lift: hair sits a little higher on top of the head for volume (fades out by the temples)
-  const lift = (th: number) => .04 * Math.cos(Math.min(th, 1.4) / 1.4 * Math.PI / 2) ** 2;
-  const dome = (th: number) => 1 + .2 * Math.max(0, Math.cos(th)) ** 2;   // taller, rounder crown (an egg-shaped dome, not a flat top)
+  const lift = (th: number) => .04 * Math.cos(Math.min(th, 1.5) / 1.5 * Math.PI / 2) ** 1.2;
+  const dome = (th: number) => 1 + .07 * Math.max(0, Math.cos(th)) ** 2;   // taller, rounder crown (an egg-shaped dome, not a flat top)
   const sp = (th: number, ph: number, r: number) => { const rr = r + lift(th); return v(rr * Math.sin(th) * Math.sin(ph), C.y + rr * Math.cos(th) * dome(th), rr * Math.sin(th) * Math.cos(ph) * .97); };
+  const hairSwayPre = group(head, [0, 0, 0]);   // long hair swings with her movement (pivot at the neck top)
   // scalp cap following exactly the same dome as the locks, so their roots sit on it and the crown reads round
-  { const prof: [number, number][] = []; for (let th = 0; th <= 1.25; th += .05) { const q = sp(th, 0, R + .016); prof.push([Math.max(.0001, q.z / .97), q.y]); }
-    mesh(lathe(prof, 48), M.scalp, head, [0, 0, 0], [1, 1, .97]); }
+  { const prof = (a: number, b: number) => { const p: [number, number][] = []; for (let th = a; th <= b + 1e-6; th += .05) { const q = sp(th, 0, R + .016); p.push([Math.max(.0001, q.z / .97), q.y]); } return p; };
+    mesh(lathe(prof(0, .95), 48), M.scalp, head, [0, 0, 0], [1, 1, .97]);                          // crown
+    mesh(lathe(prof(.9, 1.25), 48, .8, Math.PI * 2 - 1.6), M.scalp, head, [0, 0, 0], [1, 1, .97]); }  // sides and back only: the forehead stays open under the thin fringe
+  // smooth back-of-head shell (like the sculpted crown in the reference): the long locks emerge from under it
+  { const prof: [number, number][] = []; for (let th = 0; th <= 1.72; th += .04) { const q = sp(th, 0, R + .017 + .03 * THREE.MathUtils.smootherstep(th, 1.0, 1.72)); /* flares to meet the locks' outline */ prof.push([Math.max(.0001, q.z / .97), q.y]); }
+    mesh(lathe(prof, 64, Math.PI - 1.95, 3.9), M.scalp, hairSwayPre, [0, 0, 0], [1, 1, .97]); }
   const onHead = () => C;
   const hairMesh = (g: THREE.BufferGeometry, parent: THREE.Object3D = head) => mesh(g, M.hair, parent);
-  const hairSway = group(head, [0, .02, -.02]);   // pivot near the nape; long hair swings with her movement
+  const hairSway = hairSwayPre;
   // Hair shape after the reference sculpt: smooth crown with a soft part, pointed wispy bangs that get longer
   // towards the sides (curtain), long face-framing pieces, and many long clumps that flare slightly and end in
   // tapered, gently waving tips. Each clump is darker at its edges, which reads as carved grooves.
   const rnd = (i: number) => (Math.sin(i * 12.9898) * 43758.5453) % 1;
-  const BANGS: [number, number, number][] = [   // [angle around the face, tip height (theta), width]
-    [-1.0, 1.72, .075], [-.62, 1.6, .088], [-.22, 1.52, .09], [.16, 1.56, .086], [.52, 1.64, .084], [.92, 1.76, .072],
-  ];
-  BANGS.forEach(([ph, tip, w], i) => {
-    const fan = ph * .16, part = .1;     // fan outward from a part just off centre
-    hairMesh(clump([sp(.1, part + ph * .15, R + .012), sp(.5, part * .5 + ph * .62, R + .024), sp(.95, ph * .9, R + .032), sp(tip - .2, ph + fan * .6, R + .038), sp(tip, ph + fan, R + .03)],
-      { w0: w, w1: .012, t0: .016, t1: .007, centre: onHead, root: ROOT, tip: '#4a2a1d', ombre: .75, seg: 26 }));
-    void i;
-  });
-  // a few fine wisps on top
-  [-.35, .3].forEach((ph) => hairMesh(clump([sp(.15, ph * .2, R + .03), sp(.7, ph * .8, R + .042), sp(1.25, ph, R + .044), sp(1.5, ph * 1.1, R + .04)],
-    { w0: .02, w1: .002, t0: .008, t1: .003, centre: onHead, root: ROOT, tip: '#5a3222', ombre: .6, seg: 18 })));
-  // long face-framing pieces in front of the shoulders
-  for (const s of [-1, 1]) for (const [ph, len, off, w] of [[1.1, -.58, 0, .12], [1.3, -.62, .03, .1], [.96, -.46, -.025, .05]] as [number, number, number, number][]) {
-    const P = s * ph;
-    hairMesh(clump([sp(.35, P * .55, R + .012), sp(1.05, P, R + .028), sp(1.6, P * 1.02, R + .034),
-      v(s * (.25 + off), .0, .11), v(s * (.28 + off), -.16, .13), v(s * (.27 + off), -.32, .15), v(s * (.3 + off), -.46, .14), v(s * (.29 + off), len, .13)],
-      { w0: w, w1: .003, t0: .02, t1: .006, centre: (p) => (p.y > .1 ? C : v(0, p.y, -.05)), root: ROOT, tip: TIP, ombre: .65, seg: 34 }), hairSway);
+  // Hair after the reference: every lock follows one continuous path — over the dome along its own meridian,
+  // then straight down past the face/shoulders with a gentle flare — so the outline flows from the crown without a
+  // step, and neighbouring locks run side by side instead of crossing. Bangs fall straight down from the front of the
+  // crown; a strand bump map adds the fine combed grooves.
+  const lockPath = (ph: number, o: { th0: number; r0: number; r: number; end: number; flare?: number; wave?: number; flick?: number; seed?: number }) => {
+    const pts: THREE.Vector3[] = [];
+    pts.push(sp(o.th0, ph, o.r0));
+    // over the crown the lock stays just under the smooth scalp shell (so the top reads as one clean dome, like the
+    // reference) and rises out of it around the back of the head, joining the outline without a step
+    // a long, shallow ramp out of the shell so the outline continues without a ledge
+    const ramp = (th: number) => th < 1.0 ? R - .03 : R - .03 + (o.r - R + .03) * THREE.MathUtils.smootherstep(th, 1.0, 1.75);
+    for (const th of [o.th0 + .35, .95, 1.2, 1.4, 1.6]) if (th > o.th0 + .1) pts.push(sp(th, ph, ramp(th)));
+    pts.push(sp(1.75, ph, o.r));
+    const top = sp(Math.PI / 2, ph, o.r + .003);
+    const r0 = Math.hypot(top.x, top.z / .97), seed = o.seed ?? 0;
+    const steps = 5;
+    for (let k = 1; k <= steps; k++) {
+      const f = k / steps, y = top.y + (o.end - top.y) * f;
+      const r = r0 + (o.flare ?? .05) * f * f + (o.wave ?? .006) * Math.sin(f * 7 + seed);
+      const a = ph + (o.wave ?? .006) * 2 * Math.sin(f * 5 + seed * 1.7) + (o.flick ?? 0) * f ** 3;
+      pts.push(v(Math.sin(a) * r, y, Math.cos(a) * r * .97));
+    }
+    return pts;
+  };
+  const sideOf = (p: THREE.Vector3) => v(0, p.y > C.y ? p.y * .2 + C.y * .8 : p.y, 0);   // lock normals face away from the head / the fall axis
+  // bangs: straight down from the front of the crown, roots a little apart, tips at the brows; longer at the sides
+  const bangs = (n: number, spread: number, layer: number, lens: number[]) => {
+    for (let i = 0; i < n; i++) {
+      const u = -1 + 2 * i / (n - 1), side = Math.abs(u);
+      const ph = u * spread;
+      const tip = 1.43 + layer * .015 + side * side * .2 + lens[i % lens.length] * .12;   // a neat, gently curved fringe line
+      const pts = [sp(.16, ph * .4, R - .004), sp(.55, ph * .8, R + .012), sp(.95, ph * .96, R + .02), sp(1.22, ph, R + .021), sp(tip - .14, ph * 1.005, R + .018), sp(tip, ph * 1.01, R + .015)];
+      hairMesh(clump(pts, { w0: .028, w1: .003, t0: .007, t1: .003, centre: onHead,
+        root: '#2c1912', tip: layer ? '#4e2e1d' : '#462919', ombre: .85, seg: 40, groove: .1, toneVar: .1 }));
+    }
+  };
+  bangs(12, .76, 0, [.04, -.02, .05, .0, .06, .02, .05, -.01, .04, .02, .03, -.01]);   // one thin layer; the forehead shows between strands
+  // face-framing curtain locks: from the side of the crown straight down past the cheeks to the chest
+  for (const sg of [-1, 1]) for (const [ph, end, w, seed] of [[.92, -.28, .07, 1], [1.06, -.32, .08, 2.3], [1.22, -.34, .085, 3.1]] as [number, number, number, number][]) {
+    hairMesh(clump(lockPath(sg * ph, { th0: .2, r0: R - .05, r: R + .03, end, flare: .02, wave: .002, flick: 0, seed }),
+      { w0: w * .85, w1: .0015, t0: .014, t1: .004, centre: sideOf, root: ROOT, tip: TIP, ombre: .62, seg: 40, groove: .14 }), hairSway);
   }
-  // dark inner shell so the panels never look see-through, then broad ribbon panels with S-curves
-  // (kept short and inside the panels so it never peeks out below the hair over the jacket)
-  mesh(new THREE.CylinderGeometry(.262, .31, .4, 48, 1, true, Math.PI * .5 + .2, Math.PI * 2 - .4 - Math.PI * .7), new THREE.MeshPhysicalMaterial({ color: '#3a2418', roughness: .85, side: THREE.DoubleSide }), hairSway, [0, -.06, -.02], [1.04, 1, .74]);
-  const n = 9;
-  for (let i = 0; i < n; i++) {
-    const t = -1 + 2 * i / (n - 1), ph = Math.PI + t * 2.0;
-    const len = -.52 - .06 * Math.abs(rnd(i + 3)) - (Math.abs(t) < .4 ? .05 : 0);
-    const sway = .03 * Math.sin(i * 2.3), flick = (i % 3 - 1) * .05;
-    const rr = (y: number) => (y > .02 ? R + .03 : .3 + (-.02 - y) * .12);
-    const fall = (y: number, k = 0) => v(Math.sin(ph) * rr(y) * 1.05 + k, y, Math.cos(ph) * rr(y) * .76 - .03);
-    hairMesh(clump([sp(.22, ph, R + .012), sp(.9, ph, R + .026), sp(1.5, ph, R + .034), fall(-.04), fall(-.2, sway), fall(-.38, -sway), fall(len, flick)],
-      { w0: .19 + .03 * Math.abs(rnd(i)), w1: .03, t0: .03, t1: .014, centre: (p) => (p.y > .1 ? C : v(0, p.y, 0)), root: ROOT, tip: TIP, ombre: .65, seg: 36 }), hairSway);
+  // dark inner shell so the panels never look see-through
+  mesh(new THREE.CylinderGeometry(.262, .29, .26, 48, 1, true, Math.PI * .5 + .2, Math.PI * 2 - .4 - Math.PI * .7), new THREE.MeshPhysicalMaterial({ color: '#2e1c14', roughness: .85, side: THREE.DoubleSide }), hairSway, [0, .0, -.02], [1.04, 1, .74]);
+  // long hair: an inner layer of broad locks and an outer layer of thinner ones, all following the same smooth fall
+  const NL0 = 12, NL1 = 20;
+  for (let i = 0; i < NL0; i++) {
+    const t = -1 + 2 * i / (NL0 - 1), ph = Math.PI + t * 1.75;
+    hairMesh(clump(lockPath(ph, { th0: .14, r0: R - .05, r: R + .026, end: -.3 - .04 * Math.abs(rnd(i + 3)) - (Math.abs(t) < .5 ? .03 : 0), flare: .025, wave: .007, flick: (((i * 7) % 5) - 2) * .02, seed: i }),
+      { w0: .11, w1: .016, t0: .022, t1: .01, centre: sideOf, root: ROOT, tip: TIP, ombre: .62, seg: 40, groove: .16 }), hairSway);
+  }
+  for (let i = 0; i < NL1; i++) {
+    const t = -1 + 2 * i / (NL1 - 1), ph = Math.PI + t * 1.95 + rnd(i + 90) * .03;
+    hairMesh(clump(lockPath(ph, { th0: .16 + Math.abs(rnd(i + 11)) * .08, r0: R - .05, r: R + .04, end: -.33 - .06 * Math.abs(rnd(i + 53)) - (Math.abs(t) < .45 ? .03 : 0), flare: .035, wave: .009, flick: (((i * 7 + 3) % 5) - 2) * .03, seed: i * 1.3 }),
+      { w0: .07 + .02 * Math.abs(rnd(i)), w1: .0015, t0: .016, t1: .005, centre: sideOf, root: ROOT, tip: TIP, ombre: .62, seg: 44 }), hairSway);
   }
   // a soft highlight band on the crown
   mesh(new THREE.TorusGeometry(.2, .012, 8, 40, Math.PI * .7), new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: .1, depthWrite: false }), head, [0, C.y + .1, .03], [1, 1, .9], [-1.05, 0, Math.PI * .15]);
