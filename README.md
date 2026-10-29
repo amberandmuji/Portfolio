@@ -107,3 +107,10 @@ In GA4: mark `resume_click` and `contact_click` as **Key events** (Admin → Eve
 ### Daily summary email (free)
 
 `tools/ga4-daily-email.gs` is a Google Apps Script that reads GA4 every morning and emails a short job-hunt summary (highlights incl. visits from job platforms like Greenhouse, Lever, Workday and LinkedIn, visitors, sources, cities, pages, resume/contact clicks, reading depth). Setup steps are at the top of the file: paste it into script.google.com, add the "Google Analytics Data API" service, set your property ID, run `sendDailyReport` once, then `createDailyTrigger`.
+
+## Mini Amber (About page photo game)
+
+`src/components/PhotoPals.astro` renders the "Outside of work" photos. A small 3D Amber (three.js, `src/scripts/pal3d.ts`) sits on the top-right frame; drag her into a photo and she plays a scene sized to that photo. three.js loads only when the photos come near the viewport; until then (or without WebGL) a still render is shown (`public/assets/about/mini-amber.webp`).
+
+- Poses are joint angles in `POSES` (pal3d.ts); scenes and where she stands in each photo are in `SCENES` (PhotoPals.astro), as fractions of the photo.
+- The look comes from matte physically based materials, a warm key + rim light, wrap lighting with a warm terminator and faint film grain (shader patch at the top of pal3d.ts).

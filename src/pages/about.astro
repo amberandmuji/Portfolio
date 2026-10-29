@@ -2,16 +2,17 @@
 import Base from '../layouts/Base.astro';
 import Terminal from '../components/Terminal.astro';
 import MatchaGame from '../components/MatchaGame.astro';
+import PhotoPals from '../components/PhotoPals.astro';
 
 const hobbies = [
-  { label: 'Espresso and Matcha', src: '/assets/about/espresso-matcha.webp' },
-  { label: 'Bouldering', src: '/assets/about/bouldering.webp' },
-  { label: 'Dance', src: '/assets/about/dance.webp' },
-  { label: 'Music festivals', src: '/assets/about/music-festivals.webp' },
-  { label: 'Standup Comedy', src: '/assets/about/standup-comedy.webp' },
-  { label: 'Play with My Doggy', src: '/assets/about/doggy.webp' },
-  { label: 'Reading', src: '/assets/about/reading.webp' },
-  { label: 'Movies', src: '/assets/about/movies.webp' },
+  { key: 'matcha', label: 'Espresso and Matcha', src: '/assets/about/espresso-matcha.webp' },
+  { key: 'climb', label: 'Bouldering', src: '/assets/about/bouldering.webp' },
+  { key: 'dance', label: 'Dance', src: '/assets/about/dance.webp' },
+  { key: 'festival', label: 'Music festivals', src: '/assets/about/music-festivals.webp' },
+  { key: 'comedy', label: 'Standup Comedy', src: '/assets/about/standup-comedy.webp' },
+  { key: 'dog', label: 'Play with My Doggy', src: '/assets/about/doggy.webp' },
+  { key: 'reading', label: 'Reading', src: '/assets/about/reading.webp' },
+  { key: 'movies', label: 'Movies', src: '/assets/about/movies.webp' },
 ];
 ---
 <Base title="About — Amber's portfolio">
@@ -30,14 +31,7 @@ const hobbies = [
 
   <section class="wrap hob">
     <h2 class="section-title" data-reveal>Outside of work, I  enjoy…</h2>
-    <div class="hobbies" data-stagger>
-      {hobbies.map((h) => (
-        <figure class="hobby" data-reveal>
-          <img src={h.src} alt={h.label} width="264" height="396" loading="lazy" decoding="async" />
-          <figcaption>{h.label}</figcaption>
-        </figure>
-      ))}
-    </div>
+    <PhotoPals hobbies={hobbies} />
   </section>
 
   <MatchaGame story="Growing up in Taiwan, the home of boba tea, a cup of bubble tea was always my little everyday joy. I built this tiny drink bar to share that feeling with you, so mix your favorite and pin it to the wall!" />
@@ -51,25 +45,15 @@ const hobbies = [
   .bio { display: flex; flex-direction: column; gap: 20px; margin-top: 20px; font-size: var(--fs-bio); letter-spacing: -0.02em; line-height: 1.5; color: var(--ink-2); }
 
   .hob { margin-top: clamp(96px, 12vw, 172px); }
-  .hob .section-title { margin-bottom: 24px; }
+  .hob .section-title { margin-bottom: clamp(56px, 6vw, 72px); }   /* room for mini Amber perched on the top-right frame */
 
-  .hobbies { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; }
-  .hobby { margin: 0; }
-  .hobby img { width: 100%; aspect-ratio: 264 / 396; object-fit: cover; border-radius: 16px; background: var(--img-bg); border: 6px solid #fff; box-shadow: 0 2px 6px rgb(12 12 14 / .06), 0 8px 24px rgb(12 12 14 / .07); transition: transform 500ms var(--ease-spring), box-shadow var(--dur-2); }
-  .hobby figcaption { margin-top: 12px; font-size: var(--fs-bio); letter-spacing: -0.02em; line-height: 1.5; }
-  @media (hover: hover) {
-    .hobby:hover img { transform: rotate(-4deg) scale(1.04); box-shadow: 0 4px 10px rgb(12 12 14 / .08), 0 20px 40px rgb(12 12 14 / .14); }
-    .hobby:nth-child(even):hover img { transform: rotate(4deg) scale(1.04); }
-  }
 
-  /* Tablet (810–1199) */
-  @media (max-width: 1199px) { .hobbies { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
   /* Phone (< 810) */
   @media (max-width: 809px) {
     .intro { grid-template-columns: minmax(0, 1fr); gap: 28px; }
     .term-col { justify-self: stretch; }
       .ai { margin-top: 80px; }
     .hob { margin-top: 96px; }
-    .hobbies { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .hob .section-title { margin-bottom: 104px; }   /* room for the caption and arrow above mini Amber */
   }
 </style>

@@ -1,0 +1,474 @@
+---
+// "Outside of work" photos with a tiny pixel Amber perched on the top-right frame.
+// Drag her into a photo (Gorogoa-style: the frame opens up, a silhouette shows where she fits,
+// she snaps into the picture) and she plays with what's in it.
+// The figure is a live 3D model: src/scripts/pal3d.ts (three.js)
+import '@fontsource/caveat/500.css';
+
+interface Hobby { key: string; label: string; src: string }
+interface Props { hobbies: Hobby[] }
+const { hobbies } = Astro.props;
+
+---
+<div class="hobbies" data-pals data-stagger>
+  {hobbies.map((h, i) => (
+    <figure class="hobby" data-reveal data-scene={h.key}>
+      <div class="frame">
+        <img src={h.src} alt={h.label} width="264" height="396" loading="lazy" decoding="async" />
+        <div class="scene" data-layer aria-hidden="true"></div>
+        {i === 3 && (
+          <div class="perch" data-perch>
+            <div class="hint" data-hint aria-hidden="true">
+              <p>Drag me to the photos!</p>
+              <svg class="curl" viewBox="0 0 60 40"><path d="M8 11 C11 18 16 24 23 27 C32 31 42 28 40 21 C38 15 29.5 18 31 25 C33 35 46 37 57 31" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M50 30.2 L57 31 L53.9 37.3" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <button type="button" class="pal" data-pal data-pose="sit" aria-label="Mini Amber. Drag her into a photo, or press Enter to send her into the next one.">
+              <img class="pal3d poster" src="/assets/about/mini-amber.webp" alt="" aria-hidden="true" /><canvas class="pal3d" aria-hidden="true"></canvas>
+            </button>
+          </div>
+        )}
+      </div>
+      <figcaption>{h.label}</figcaption>
+    </figure>
+  ))}
+</div>
+
+<script>
+  const root = document.querySelector('[data-pals]');
+  const pal = root.querySelector('[data-pal]');
+  const perch = root.querySelector('[data-perch]');
+  const hint = root.querySelector('[data-hint]');
+  const svg = pal.querySelector('canvas');   // hop() animates this
+  svg.style.visibility = 'hidden';
+  // three.js loads when the photos come near the viewport; until then calls are remembered
+  const queue = [];
+  let P3 = new Proxy({}, { get: (_, k) => (...a) => { queue.push([k, a]); return k === 'snapshot' ? '' : undefined; } });
+  // the 3D engine (~140 KB gzipped) never blocks the page: it's fetched once the browser is idle after load,
+  // or sooner if the photos scroll near; it's only started when they do
+  let p3d = null;
+  const load3d = () => (p3d ||= import('../scripts/pal3d'));
+  addEventListener('load', () => (window.requestIdleCallback || setTimeout)(() => load3d(), { timeout: 4000 }), { once: true });
+  const io3d = new IntersectionObserver(async (ents) => {
+    if (!ents.some((e) => e.isIntersecting)) return;
+    io3d.disconnect();
+    let real;
+    try { const { createPal } = await load3d(); real = createPal(svg); }
+    catch { return; }                       // no WebGL: she stays as the still picture
+    svg.style.visibility = 'visible';
+    real.snap(pal.dataset.pose || 'sit');
+    queue.forEach(([k, a]) => real[k]?.(...a));
+    P3 = real; pal.querySelector('.poster')?.remove();   // drop the still picture for good (it would trail behind her while dragged)
+  }, { rootMargin: '600px 0px' });
+  io3d.observe(root);
+  const AR = 100 / 160;   // figure width / height
+  const figures = [...root.querySelectorAll('.hobby')];
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const CANCEL = Symbol('cancel');
+
+  const pose = (name) => { P3.pose(name); pal.dataset.pose = name; };
+
+  /* ---------- props (soft, toy-like) ---------- */
+  const PROPS = {
+    heart: ['0 0 24 22', `<path d="M12 21C5 15.5 1 12 1 7 1 3.5 3.8 1 7 1c2.2 0 4 1.3 5 3 1-1.7 2.8-3 5-3 3.2 0 6 2.5 6 6 0 5-4 8.5-11 14Z" fill="#f2546a"/><ellipse cx="6.6" cy="6" rx="2.6" ry="1.8" fill="#fff" opacity=".55" transform="rotate(-30 6.6 6)"/>`],
+    note: ['0 0 16 22', `<ellipse cx="5.4" cy="17.6" rx="4.6" ry="3.4" transform="rotate(-20 5.4 17.6)" fill="currentColor"/><rect x="8.4" y="2" width="1.9" height="16" fill="currentColor"/><path d="M10.3 2c2.6 1.6 4.8 3.4 4.4 7-1-2-2.4-3-4.4-3.4Z" fill="currentColor"/>`],
+    note2: ['0 0 22 22', `<ellipse cx="4.6" cy="17.8" rx="3.9" ry="2.9" transform="rotate(-20 4.6 17.8)" fill="currentColor"/><ellipse cx="16.6" cy="15.8" rx="3.9" ry="2.9" transform="rotate(-20 16.6 15.8)" fill="currentColor"/><path d="M7.2 18V4.2L19.2 1.6V16H17.4V5.4L9 7.2V18Z" fill="currentColor"/>`],
+    hat: ['0 0 60 27', `<path d="M15.5 19C15.5 9 19.5 2 30 2s14.5 7 14.5 17Z" fill="#9b6235"/><path d="M15.8 14.6h28.4v4H15.8Z" fill="#3a2418"/><path d="M1 13.5c4 8 54 8 58 0 1 5-6 11-29 11S0 18.5 1 13.5Z" fill="#b5763f"/><path d="M21 6c2-2.5 5-3.4 8-3.4" stroke="#fff" stroke-opacity=".35" stroke-width="2" fill="none" stroke-linecap="round"/>`],
+    mic: ['0 0 10 22', `<rect x="3.3" y="8.4" width="3.4" height="13" rx="1.6" fill="#2b2b30"/><circle cx="5" cy="5" r="4.6" fill="#9aa3ad"/><path d="M1.6 3.6h6.8M1 5.4h8M1.6 7.2h6.8" stroke="#6b737c" stroke-width=".6"/><circle cx="3.4" cy="3.2" r="1.2" fill="#fff" opacity=".6"/>`],
+    book: ['0 0 40 22', `<path d="M1 4.5 20 6.5 39 4.5V20L20 22 1 20Z" fill="#4a6fb5"/><path d="M3 3c6-1.6 12-1 17 2.2v14c-5-2.6-11-3-17-1.6Z" fill="#fffaf2"/><path d="M37 3c-6-1.6-12-1-17 2.2v14c5-2.6 11-3 17-1.6Z" fill="#f4ede1"/><path d="M6 7.5c3-.6 6-.4 10 .8M6 10.5c3-.6 6-.4 10 .8M6 13.5c3-.6 6-.4 10 .8M24 8.3c4-1.2 7-1.4 10-.8M24 11.3c4-1.2 7-1.4 10-.8" stroke="#c9bfae" stroke-width=".9" fill="none"/>`],
+    book2: ['0 0 40 22', `<path d="M1 4.5 20 6.5 39 4.5V20L20 22 1 20Z" fill="#4a6fb5"/><path d="M3 3c6-1.6 12-1 17 2.2v14c-5-2.6-11-3-17-1.6Z" fill="#fffaf2"/><path d="M37 3c-6-1.6-12-1-17 2.2v14c5-2.6 11-3 17-1.6Z" fill="#f4ede1"/><path d="M20 5.2C23 1 28 .2 31 .6V15c-4 .2-8 1.6-11 4.2Z" fill="#fff"/><path d="M6 7.5c3-.6 6-.4 10 .8M6 10.5c3-.6 6-.4 10 .8M6 13.5c3-.6 6-.4 10 .8" stroke="#c9bfae" stroke-width=".9" fill="none"/>`],
+    popcorn: ['0 0 28 32', `<circle cx="7" cy="9" r="4.2" fill="#fff4cf"/><circle cx="13" cy="6" r="4.6" fill="#fff8e0"/><circle cx="20" cy="8" r="4.4" fill="#ffefc0"/><circle cx="16.5" cy="3.6" r="3" fill="#fff8e0"/><path d="M3 10h22l-3 21H6Z" fill="#fff"/><path d="M7.5 10h4l-.8 21H8.6ZM16.5 10h4l-2 21h-2.6Z" fill="#e5484d"/><path d="M3 10h22l-.3 2.4H3.3Z" fill="#c8352f"/>`],
+    kernel: ['0 0 10 10', `<circle cx="3.6" cy="5.6" r="3" fill="#fff4cf"/><circle cx="6.6" cy="4" r="3" fill="#fff8e0"/><circle cx="6.4" cy="7" r="2.4" fill="#ffe8a8"/>`],
+    spark: ['0 0 20 20', `<path d="M10 0c1 7 3 9 10 10-7 1-9 3-10 10C9 13 7 11 0 10c7-1 9-3 10-10Z" fill="#ffd34d"/>`],
+    flag: ['0 0 14 20', `<rect x="1" y="1" width="1.6" height="19" rx=".8" fill="#5b4a42"/><path d="M2.6 1.6 13 5.4 2.6 9.6Z" fill="#e5484d"/>`],
+    plop: ['0 0 20 10', `<ellipse cx="10" cy="5" rx="9" ry="3.6" fill="none" stroke="#fff" stroke-width="1.6" opacity=".9"/>`],
+  };
+  const propSvg = (name, color) => {
+    const [vb, body] = PROPS[name], [, , w, h] = vb.split(' ');
+    return `<svg viewBox="${vb}" style="aspect-ratio:${w}/${h};color:${color || '#2b1d1a'}">${body}</svg>`;
+  };
+
+  /* ---------- the scenes: where she stands in each photo (x, feet y, height as fractions) ---------- */
+  // sized to what's in each photo: as tall as the dancers / the dog, small enough for the chair, etc.
+  const SCENES = {
+    matcha:   { at: [0.14, 0.935], h: 0.34, start: 'stand', play: matcha },
+    climb:    { at: [0.38, 0.84], h: 0.25, start: 'climb_a', play: climb },
+    dance:    { at: [0.13, 0.835], h: 0.315, start: 'stand', play: dance },
+    festival: { at: [0.36, 0.995], h: 0.27, start: 'stand', yaw: 180, play: festival },
+    comedy:   { at: [0.86, 0.965], h: 0.22, start: 'sit_laugh', yaw: -150, play: comedy },
+    dog:      { at: [0.86, 0.925], h: 0.65, start: 'stand', yaw: -25, play: dog },
+    reading:  { at: [0.5, 0.46], h: 0.42, rot: 25, start: 'lie_read', play: reading },   // lying along the sloping torn strip, planted foot on the tear
+    movies:   { at: [0.27, 0.995], h: 0.46, start: 'stand', play: movies },
+  };
+
+  /* ---------- helpers bound to the current run ---------- */
+  let run = 0, home = null;          // home = { fig, layer, scene } while she is inside a photo
+  const live = (id) => { if (id !== run) throw CANCEL; };
+  const wait = (ms, id) => new Promise((res, rej) => setTimeout(() => (id === run ? res() : rej(CANCEL)), ms));
+  const place = (x, y, h, rot = 0) => { Object.assign(pal.style, { left: x * 100 + '%', top: '', bottom: (1 - y) * 100 + '%', height: h * 100 + '%', rotate: rot ? rot + 'deg' : '', transformOrigin: '50% 100%' }); };
+  async function move(x, y, ms, id, easing = 'ease-in-out') {
+    live(id);
+    const from = { left: pal.style.left, bottom: pal.style.bottom };
+    const to = { left: x * 100 + '%', bottom: (1 - y) * 100 + '%' };
+    Object.assign(pal.style, to);
+    await pal.animate([from, to], { duration: ms, easing }).finished.catch(() => {});
+    live(id);
+  }
+  const hop = (px = 14, ms = 320) => svg.animate([{ translate: '0 0' }, { translate: `0 -${px}%`, offset: .45 }, { translate: '0 0' }], { duration: ms, easing: 'ease-out' }).finished.catch(() => {});
+  function held(name) {   // 3D props she holds (hat, mic, book, popcorn)
+    P3.hold(name, true);
+    return { remove: () => P3.hold(name, false) };
+  }
+  function float(layer, name, x, y, size, { color, rise = 0.12, ms = 1300, delay = 0, drift = 0 } = {}) {
+    const el = document.createElement('span');
+    el.className = 'fx'; el.innerHTML = propSvg(name, color);
+    Object.assign(el.style, { left: x * 100 + '%', top: y * 100 + '%', width: size * 100 + '%' });
+    layer.append(el);
+    const H = layer.clientHeight, W = layer.clientWidth;
+    el.animate([
+      { opacity: 0, transform: 'translate(-50%,-50%) scale(.4)' },
+      { opacity: 1, transform: 'translate(-50%,-70%) scale(1)', offset: .2 },
+      { opacity: 0, transform: `translate(calc(-50% + ${drift * W}px), calc(-50% - ${rise * H}px)) scale(.9)` },
+    ], { duration: ms, delay, easing: 'ease-out', fill: 'both' }).finished.then(() => el.remove(), () => el.remove());
+  }
+  function overlaySvg(layer) {
+    const W = layer.clientWidth, H = layer.clientHeight;
+    layer.insertAdjacentHTML('beforeend', `<svg class="fx-svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}"></svg>`);
+    return [layer.lastElementChild, W, H];
+  }
+  // where her mouth is, as fractions of the photo
+  const mouth = (s) => [s.at[0], s.at[1] - s.h * (1.332 / 1.65)];
+
+  /* ---------- scenes ---------- */
+  async function matcha(id, layer, s) {
+    // 1. ta-da: she conjures a straw
+    pose('stand_happy'); float(layer, 'spark', s.at[0], s.at[1] - s.h * 1.02, 0.06, { rise: .02, ms: 900 });
+    await hop(8); await wait(400, id);
+    // 2. both hands bring a straw to her mouth; it grows over the rim into the cup
+    pose('sip2');
+    const [o, W, H] = overlaySvg(layer);
+    const [mx, my] = mouth(s);
+    const P = (x, y) => `${(x * W).toFixed(1)},${(y * H).toFixed(1)}`;
+    const top = 0.405, sx = mx + 0.045;
+    const d = `M${P(mx + 0.006, my + 0.006)} L${P(sx - 0.015, my + 0.006)} Q${P(sx, my + 0.006)} ${P(sx, my - 0.01)} L${P(sx, top + 0.04)} Q${P(sx, top)} ${P(sx + 0.04, top)} L${P(0.385, top)} Q${P(0.43, top)} ${P(0.43, top + 0.035)} L${P(0.43, 0.66)}`;
+    const sw = Math.max(4, W * 0.022);
+    // a round-looking straw: soft shadow, white tube with pink stripes, a highlight line and a darker edge
+    o.innerHTML = `
+      <defs><mask id="straw-m" maskUnits="userSpaceOnUse"><path d="${d}" fill="none" stroke="#fff" stroke-width="${sw * 2.4}" stroke-linecap="round" class="grow"/></mask></defs>
+      <clipPath id="straw-c" clipPathUnits="userSpaceOnUse"><path clip-rule="evenodd" d="M0,0 H${W} V${H} H0 Z M${(0.25 * W).toFixed(1)},${(0.515 * H).toFixed(1)} H${W} V${H} H${(0.25 * W).toFixed(1)} Z"/></clipPath>
+      <g clip-path="url(#straw-c)"><g mask="url(#straw-m)">
+        <path d="${d}" fill="none" stroke="rgb(40 20 10 / .28)" stroke-width="${sw + 2.5}" stroke-linecap="round" stroke-linejoin="round" transform="translate(1.5 2)"/>
+        <path d="${d}" fill="none" stroke="#e2d6cf" stroke-width="${sw + 1.2}" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="${d}" fill="none" stroke="#fffdfb" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="${d}" fill="none" stroke="#7cb342" stroke-width="${sw * 0.55}" stroke-linecap="round" stroke-linejoin="round" class="tea" opacity=".9"/>
+        <path d="${d}" fill="none" stroke="#ee8fae" stroke-width="${sw}" stroke-dasharray="${sw * .7} ${sw * 1.3}" stroke-linejoin="round" opacity=".85"/>
+        <path d="${d}" fill="none" stroke="#fff" stroke-opacity=".75" stroke-width="${sw * .22}" stroke-linecap="round" stroke-linejoin="round" transform="translate(-${sw * .22} -${sw * .22})"/>
+      </g></g>`;
+    const grow = o.querySelector('.grow'), tea = o.querySelector('.tea');
+    const L = grow.getTotalLength();
+    grow.style.strokeDasharray = tea.style.strokeDasharray = `${L} ${L}`;
+    await grow.animate([{ strokeDashoffset: L }, { strokeDashoffset: 0 }], { duration: 1000, easing: 'cubic-bezier(.4,0,.2,1)', fill: 'forwards' }).finished;
+    live(id);
+    float(layer, 'plop', 0.43, 0.515, 0.09, { rise: .01, ms: 600 });   // plop
+    await wait(250, id);
+    // 3. sip: green tea climbs the straw from the cup to her mouth, both hands on the straw
+    tea.animate([{ strokeDashoffset: -L }, { strokeDashoffset: 0 }], { duration: 1500, easing: 'ease-in', fill: 'forwards' });
+    for (let i = 0; i < 5; i++) { pose(i % 2 ? 'sip2b' : 'sip2'); await wait(360, id); }
+    // 4. happy
+    pose('stand_happy');
+    float(layer, 'heart', s.at[0], s.at[1] - s.h * 1.05, 0.07);
+    float(layer, 'heart', s.at[0] + 0.07, s.at[1] - s.h * 0.95, 0.05, { delay: 250 });
+    await hop(8); await wait(1200, id);
+  }
+
+  async function climb(id, layer, s) {
+    // up the blue holds, then hands on the top edge of the wall
+    P3.ground(false);
+    const holds = [[0.38, 0.70], [0.41, 0.61], [0.41, 0.48], [0.43, 0.37]];
+    let f = 0;
+    const tick = setInterval(() => { if (pal.dataset.pose?.startsWith('climb_')) pose(++f % 2 ? 'climb_b' : 'climb_a'); }, 300);
+    try {
+      pose('climb_a');
+      for (const [x, y] of holds) { await move(x, y, 900, id); await wait(250, id); }
+    } finally { clearInterval(tick); }
+    pose('climb_top'); await wait(500, id);
+    for (let i = 0; i < 2; i++) { await hop(3, 400); live(id); }
+  }
+
+  async function dance(id, layer, s) {
+    held('hat');
+    await wait(300, id);
+    for (let i = 0; i < 12; i++) {
+      pose(i % 2 ? 'dance_b' : 'dance_a');
+      if (i % 4 === 0) float(layer, i % 8 ? 'note' : 'note2', s.at[0] + .1, s.at[1] - s.h * 1.05, 0.04, { color: '#ffffff', drift: .04 });
+      hop(4, 300); await wait(320, id);
+    }
+    pose('cheer'); await hop(8); await wait(600, id);
+    pose('stand_happy');
+  }
+
+  async function festival(id, layer, s) {
+    // back to us, facing the stage, jumping up and down
+    for (let i = 0; i < 10; i++) {
+      pose(i % 2 ? 'cheer' : 'held');
+      if (i % 3 === 0) float(layer, i % 2 ? 'note' : 'note2', 0.5 + (i % 3 - 1) * .1, 0.6, 0.05, { color: '#ffffff', drift: (i % 2 ? -.05 : .05), rise: .1 });
+      await hop(12, 380); live(id);
+    }
+    pose('cheer'); await wait(500, id);
+  }
+
+  async function comedy(id, layer, s) {
+    // in the chair at the bottom right, laughing towards the stage
+    const spot = document.createElement('i'); spot.className = 'spot';
+    spot.style.setProperty('--x', '45%'); spot.style.setProperty('--y', '58%');
+    layer.append(spot);
+    spot.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 600, fill: 'forwards' });
+    await wait(500, id);
+    for (let i = 0; i < 12; i++) {
+      pose(i % 2 ? 'sit_laugh2' : 'sit_laugh');
+      hop(i % 3 === 0 ? 6 : 3, 260); await wait(280, id);
+    }
+    pose('sit_laugh'); await wait(600, id);
+  }
+
+  async function dog(id, layer, s) {
+    // as tall as the pup, patting its head
+    const fig = layer.closest('.hobby');
+    for (let i = 0; i < 8; i++) {
+      pose(i % 2 ? 'pet_up2' : 'pet_up');
+      if (i % 2 === 0) float(layer, 'heart', 0.5 + (i % 4 - 1.5) * 0.05, 0.24, 0.06, { delay: 100 });
+      await wait(340, id);
+    }
+    fig.querySelector('.frame').animate([{ rotate: '0deg' }, { rotate: '-1deg' }, { rotate: '1deg' }, { rotate: '-.6deg' }, { rotate: '0deg' }], { duration: 600 });
+    pose('stand_happy'); await wait(700, id);
+  }
+
+  async function reading(id, layer, s) {
+    // lying on the torn paper strip, legs crossed, reading the same book as the photo; the top foot bobs
+    P3.ground(false); held('book'); P3.bookFaceViewer(true);
+    for (let i = 0; i < 10; i++) { pose(i % 2 ? 'lie_read2' : 'lie_read'); await wait(420, id); }
+    pose('lie_read'); await wait(600, id);
+  }
+
+  async function movies(id, layer, s) {
+    // looks left and right… then holds white flowers like the bride on the poster
+    for (const p of ['look_l', 'look_r', 'look_l', 'stand']) { pose(p); await wait(650, id); }
+    held('bouquet'); pose('bouquet');
+    float(layer, 'spark', s.at[0] + .08, s.at[1] - s.h * .62, 0.05, { rise: .03, ms: 900 });
+    await hop(5); await wait(1600, id);
+  }
+
+  /* ---------- perch: the top-right photo of the first row ---------- */
+  function perchFigure() {
+    const top = figures[0].offsetTop;
+    return figures.filter((f) => f.offsetTop === top).pop();
+  }
+  function mountPerch() {
+    const fig = perchFigure();
+    if (perch.parentElement !== fig.querySelector('.frame')) fig.querySelector('.frame').append(perch);
+  }
+  function sitOnPerch() {
+    pal.removeAttribute('style'); pal.className = 'pal';
+    P3.dropAll();
+    perch.append(pal); pose('sit'); P3.yaw(0); P3.ground(false); home = null;
+  }
+
+  /* ---------- dragging ---------- */
+  let dragging = false, start = null, target = null, swing = 0;
+  let tx = 0, ty = 0, cx = 0, cy = 0, dragRaf = 0;   // pointer target vs eased position while carried
+  let px = 0, py = 0;                                  // last pointer position (for edge auto-scroll)
+  const frameOf = (fig) => fig.querySelector('.frame');
+  const layerOf = (fig) => fig.querySelector('[data-layer]');
+  function figureAt(x, y) {
+    return figures.find((f) => { const r = layerOf(f).getBoundingClientRect(); return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom; });
+  }
+  function slotRect(fig) {
+    const s = SCENES[fig.dataset.scene], r = layerOf(fig).getBoundingClientRect();
+    const h = s.h * r.height, w = h * AR;
+    return { left: r.left + s.at[0] * r.width - w / 2, top: r.top + s.at[1] * r.height - h, height: h };
+  }
+  function clearScene(fig) {
+    if (!fig) return;
+    layerOf(fig).querySelectorAll(':scope > :not(.pal)').forEach((e) => e.remove());
+    fig.classList.remove('playing');
+  }
+  function showTarget(fig) {
+    if (target === fig) return;
+    target?.classList.remove('target');
+    target = fig; root.classList.toggle('aiming', !!fig);
+    fig?.classList.add('target');
+  }
+  // she follows the pointer on every animation frame with a little easing, and swings with her speed
+  function dragLoop() {
+    cx += (tx - cx) * .38; cy += (ty - cy) * .38;
+    swing += (Math.max(-16, Math.min(16, (tx - cx) * .5)) - swing) * .18;
+    pal.style.transform = `translate3d(${cx.toFixed(2)}px, ${cy.toFixed(2)}px, 0) rotate(${swing.toFixed(2)}deg)`;
+    // near the top or bottom of the window, scroll the page so every photo can be reached on small screens
+    const edge = Math.min(110, innerHeight * .16);
+    const v = py < edge ? -(1 - py / edge) : py > innerHeight - edge ? (1 - (innerHeight - py) / edge) : 0;
+    const now = performance.now(), dt = Math.min(.1, (now - (dragLoop.t || now)) / 1000); dragLoop.t = now;
+    if (v) { scrollBy(0, Math.sign(v) * Math.max(1, Math.round(Math.abs(v) ** 1.6 * 1100 * dt))); showTarget(figureAt(px, py)); }   // up to ~1100px/s, time-based
+    if (dragging) dragRaf = requestAnimationFrame(dragLoop);
+  }
+  function lift(e) {
+    run++;                                   // stop any scene
+    const r = pal.getBoundingClientRect();
+    if (home) clearScene(home.fig);
+    P3.dropAll();
+    document.body.append(pal);
+    pal.className = 'pal dragging';
+    const h = Math.max(84, Math.min(120, r.height));
+    pal.removeAttribute('style');
+    cx = r.left + (r.width - h * AR) / 2; cy = r.top;           // start where she was, then glide to the pointer
+    tx = e.clientX - h * AR / 2; ty = e.clientY - h * .2; swing = 0; px = e.clientX; py = innerHeight / 2;
+    Object.assign(pal.style, { left: '0px', top: '0px', height: h + 'px' });
+    pose('held'); P3.yaw(0); P3.ground(false); hint.classList.add('gone'); root.classList.add('carrying');
+    dragging = true; home = null;
+    cancelAnimationFrame(dragRaf); dragLoop.t = 0; dragLoop();
+  }
+  pal.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    start = { x: e.clientX, y: e.clientY, id: e.pointerId };
+  });
+  // listen on window: moving her to <body> mid-drag would drop pointer capture
+  addEventListener('pointermove', (e) => {
+    if (!start || e.pointerId !== start.id) return;
+    if (!dragging) { if (Math.hypot(e.clientX - start.x, e.clientY - start.y) < 5) return; lift(e); }
+    const h = parseFloat(pal.style.height);
+    tx = e.clientX - h * AR / 2; ty = e.clientY - h * .2; px = e.clientX; py = e.clientY;
+    showTarget(figureAt(e.clientX, e.clientY));
+  });
+  const end = (e) => {
+    if (!start || e.pointerId !== start.id) return;
+    const wasDrag = dragging; start = null;
+    if (!wasDrag) return tap();
+    dragging = false; cancelAnimationFrame(dragRaf); root.classList.remove('carrying');
+    const fig = target; showTarget(null);
+    Object.assign(pal.style, { transform: '', left: cx + 'px', top: cy + 'px' });   // hand over to the fly animation from where she is
+    fig ? enter(fig) : flyHome();
+  };
+  addEventListener('pointerup', end);
+  addEventListener('pointercancel', end);
+
+  async function fly(rect, ms) {
+    const from = { left: pal.style.left, top: pal.style.top, height: pal.style.height };
+    const to = { left: rect.left + 'px', top: rect.top + 'px', height: rect.height + 'px' };
+    Object.assign(pal.style, to);
+    await pal.animate([from, to], { duration: reduce ? 1 : ms, easing: 'cubic-bezier(.34,1.3,.64,1)' }).finished.catch(() => {});
+  }
+  async function flyHome() {
+    const id = ++run;
+    const r = perch.getBoundingClientRect();
+    const h = perch.clientHeight;
+    pose('held');
+    await fly({ left: r.left + (r.width - h * AR) / 2, top: r.top, height: h }, 520);
+    if (id === run) sitOnPerch();
+  }
+  async function enter(fig) {
+    const id = ++run, s = SCENES[fig.dataset.scene], layer = layerOf(fig);
+    pose(s.start); P3.yaw(s.yaw || 0);
+    await fly(slotRect(fig), 380);
+    if (id !== run) return;
+    // into the picture
+    pal.removeAttribute('style'); pal.className = 'pal in-scene';
+    layer.append(pal); place(s.at[0], s.at[1], s.h, s.rot); P3.ground(true);
+    home = { fig, layer, scene: s };
+    fig.classList.add('playing');
+    layer.animate([{ boxShadow: 'inset 0 0 0 3px rgb(255 255 255 / .9)' }, { boxShadow: 'inset 0 0 0 0 rgb(255 255 255 / 0)' }], { duration: 600 });
+    play(fig, id);
+  }
+  async function play(fig, id = ++run) {
+    const s = SCENES[fig.dataset.scene], layer = layerOf(fig);
+    clearScene(fig); fig.classList.add('playing');
+    P3.dropAll();
+    place(s.at[0], s.at[1], s.h, s.rot); pose(s.start); P3.yaw(s.yaw || 0); P3.ground(true);
+    try { await s.play(id, layer, s); }
+    catch (err) { if (err !== CANCEL) throw err; return; }
+    if (id === run) fig.classList.remove('playing');
+  }
+  function tap() {
+    if (home) return play(home.fig);
+    hop(18, 360);                               // on the perch: a little hop
+    hint.animate([{ rotate: '-6deg' }, { rotate: '-1deg' }, { rotate: '-9deg' }, { rotate: '-6deg' }], { duration: 500 });
+  }
+  // keyboard: Enter / Space sends her into the next photo
+  pal.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    e.preventDefault();
+    const i = home ? figures.indexOf(home.fig) : -1;
+    const next = figures[(i + 1) % figures.length];
+    if (home) clearScene(home.fig);
+    const r = pal.getBoundingClientRect();
+    document.body.append(pal); pal.className = 'pal dragging';
+    Object.assign(pal.style, { left: r.left + 'px', top: r.top + 'px', height: r.height + 'px' });
+    hint.classList.add('gone');
+    next.scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
+    enter(next).then(() => pal.focus({ preventScroll: true }));
+  });
+
+  // keep the perch on the top-right photo as the grid reflows
+  mountPerch();
+  let rz = 0;
+  addEventListener('resize', () => { cancelAnimationFrame(rz); rz = requestAnimationFrame(mountPerch); });
+</script>
+
+<style>
+  .hobbies { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; }
+  .hobby { margin: 0; }
+  .frame { position: relative; transition: transform 400ms var(--ease-out); }
+  .frame > img { display: block; width: 100%; aspect-ratio: 264 / 396; object-fit: cover; border-radius: 16px; background: var(--img-bg); border: 6px solid #fff; box-shadow: 0 2px 6px rgb(12 12 14 / .06), 0 8px 24px rgb(12 12 14 / .07); transition: box-shadow var(--dur-2), filter 300ms; }
+  .hobby figcaption { margin-top: 12px; font-size: var(--fs-bio); letter-spacing: -0.02em; line-height: 1.5; }
+
+  /* the picture's inside: everything she does is clipped to the photo */
+  .scene { position: absolute; inset: 6px; border-radius: 10px; overflow: hidden; pointer-events: none; }
+
+  /* Gorogoa-ish focus while carrying her: the photo under her opens up, the rest step back */
+  .hobbies.carrying .frame > img { filter: saturate(.75) brightness(.92); }
+  .hobbies.carrying .hobby.target .frame { transform: scale(1.05); }
+  .hobbies.carrying .hobby.target .frame > img { filter: none; box-shadow: 0 6px 14px rgb(12 12 14 / .1), 0 28px 56px rgb(12 12 14 / .2); }
+  .hobby.playing .frame { transform: scale(1.03); }
+  .hobby.playing .frame > img { box-shadow: 0 6px 14px rgb(12 12 14 / .1), 0 24px 48px rgb(12 12 14 / .16); }
+
+  /* perch on the top-right frame: feet dangle over the edge */
+  /* frame edge meets her thighs, so the legs dangle over the front */
+  .perch { position: absolute; right: 8%; top: 0; z-index: 3; height: clamp(100px, 8.6vw, 124px); aspect-ratio: 100 / 160; translate: 0 -51.5%; }
+  .hint { position: absolute; right: 100%; margin-right: 14px; bottom: 50%; pointer-events: none; color: #2b6af2; transition: opacity 300ms, translate 300ms var(--ease-out); }
+  .hint p {
+    position: absolute; right: 0; bottom: 44px; margin: 0; white-space: nowrap;   /* the ! sits right above the arrow tip */
+    font-family: 'Caveat', cursive; font-weight: 500; font-size: clamp(19px, 1.7vw, 24px); line-height: 1; rotate: -6deg;
+  }
+  .hint .curl { position: absolute; right: 0; bottom: 0; width: 62px; height: 42px; overflow: visible; }
+  .hint.gone { opacity: 0; translate: 0 6px; }
+
+  .pal {
+    position: absolute; padding: 0; border: 0; background: none; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none;
+    aspect-ratio: 100 / 160; height: 100%; left: 0; top: 0; pointer-events: auto; z-index: 2;
+    filter: drop-shadow(0 2px 0 rgb(12 12 14 / .12));
+  }
+  .pal3d { position: absolute; left: -40%; top: -24%; width: 180%; height: 134%; pointer-events: none; }   /* overhang: see CANVAS in pal3d.ts */
+  .pal:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 6px; }
+  @keyframes wiggle { 25% { rotate: -6deg; } 75% { rotate: 6deg; } }
+  .pal.dragging { position: fixed; z-index: 1000; cursor: grabbing; transform-origin: 50% 8%; filter: none; will-change: transform; }
+  .pal.in-scene { top: auto; translate: -50% 0; filter: drop-shadow(0 2px 3px rgb(0 0 0 / .3)); }
+  :global(.held) { position: absolute; display: block; pointer-events: none; }
+  :global(.held svg), :global(.fx svg) { display: block; width: 100%; height: auto; }
+
+  :global(.fx) { position: absolute; z-index: 4; display: block; pointer-events: none; filter: drop-shadow(0 1px 0 rgb(0 0 0 / .3)); }
+  :global(.fx-svg) { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
+  :global(.bubble) {
+    position: absolute; z-index: 5; translate: -50% -100%; padding: 4px 10px 5px; white-space: nowrap; pointer-events: none;
+    font-size: clamp(10px, .85vw, 13px); font-weight: 600; letter-spacing: -0.01em; line-height: 1.2; color: var(--ink);
+    background: #fff; border-radius: 999px; box-shadow: 0 1px 2px rgb(12 12 14 / .12), 0 6px 16px rgb(12 12 14 / .18);
+  }
+  :global(.bubble.small) { font-size: clamp(9px, .75vw, 11.5px); }
+  :global(.bubble.laugh) { background: #ffe9a8; }
+  :global(.confetti) { position: absolute; top: 0; width: 5px; height: 8px; border-radius: 1px; pointer-events: none; }
+  :global(.spot) { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at var(--x) var(--y), transparent 0 9%, rgb(0 0 0 / .55) 24%); }
+
+  @media (max-width: 1199px) { .hobbies { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (max-width: 809px) {
+    .hobbies { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .perch { height: 88px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .frame { transition: none; } }
+</style>
