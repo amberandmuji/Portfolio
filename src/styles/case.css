@@ -40,6 +40,10 @@
 .cs-p.ink { color: var(--ink); }
 .cs-p + .cs-p { margin-top: 16px; }
 .cs-statement { margin-top: 56px; font-size: var(--fs-small); line-height: 1.4; text-wrap: pretty; }
+/* statement set larger than its section title, like a pull quote: the key point in full ink, the rest in muted grey */
+.cs-statement.big { margin-top: 20px; font-size: clamp(1.625rem, 1.1rem + 1.5vw, 2.25rem); font-weight: 500; line-height: 1.28; letter-spacing: -0.035em !important; color: var(--ink); text-wrap: balance; }
+.cs-statement.big span { color: var(--muted); }
+.cs-h:has(+ .cs-statement.big) { color: var(--muted); }
 .cs-media { margin-top: 40px; }
 .cs-media img, .cs-media video { width: 100%; height: auto; border-radius: var(--radius-m); }
 .cs-media.flat img { border-radius: 0; }
