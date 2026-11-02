@@ -1,0 +1,30 @@
+---
+// "Short on time?" shortcut between the challenge and the process: one card, the whole card is the link.
+---
+<a class="jump" href="#final-design" data-jump>
+  <span class="q">Short on time?</span>
+  <span class="go">Jump to the final design
+    <i aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4.5v11M5.5 11 10 15.5 14.5 11"/></svg></i>
+  </span>
+</a>
+
+<style>
+  .jump {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    margin-top: 72px; padding: 18px 18px 18px 22px; border-radius: 16px;
+    background: #fff; border: 1px solid rgb(12 12 14 / .08); color: var(--ink);
+    transition: border-color var(--dur-2), box-shadow var(--dur-2);
+  }
+  .q { font-size: var(--fs-bio); font-weight: 500; letter-spacing: -0.02em; }
+  .go { display: inline-flex; align-items: center; gap: 12px; font-size: var(--fs-body); letter-spacing: -0.01em; white-space: nowrap; }
+  /* minimal arrow: thin stroke in a hairline circle; fills in on hover */
+  .go i { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgb(12 12 14 / .18); transition: background var(--dur-2), border-color var(--dur-2), color var(--dur-2); }
+  .go svg { width: 18px; height: 18px; transition: translate 300ms var(--ease-out); }
+  @media (hover: hover) {
+    .jump:hover { border-color: rgb(12 12 14 / .16); box-shadow: 0 8px 24px -12px rgb(12 12 14 / .18); }
+    .jump:hover .go i { background: var(--ink); border-color: var(--ink); color: #fff; }
+    .jump:hover .go svg { translate: 0 2px; }
+  }
+  .jump:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  @media (max-width: 480px) { .jump { padding: 14px 14px 14px 18px; } .go { gap: 10px; } }
+</style>

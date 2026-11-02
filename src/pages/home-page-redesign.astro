@@ -2,6 +2,7 @@
 import Case from '../layouts/Case.astro';
 import { selectedWorks } from '../data/site';
 const next = selectedWorks.find((c) => c.href === '/shopping-cart-redesign')!;
+import JumpToFinal from '../components/JumpToFinal.astro';
 ---
 <Case
   title="Homepage Redesign"
@@ -46,6 +47,7 @@ const next = selectedWorks.find((c) => c.href === '/shopping-cart-redesign')!;
   <section class="cs-c cs-sec">
     <h2 class="cs-h">Unique Challenge</h2>
     <p class="cs-statement big">Balanced brand storytelling with usability, <span>limited engineering bandwidth meant designers used AI to build components directly.</span></p>
+    <JumpToFinal />
   </section>
 
   <section class="cs-sec" id="process">

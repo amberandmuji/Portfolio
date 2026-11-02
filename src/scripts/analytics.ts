@@ -9,6 +9,7 @@
    - case_study_progress { case_study, percent: 25|50|75|100 } how far someone read
    - playground_click    { project }                        "Try it out" on a vibe-coding project
    - toc_click           { case_study, section }            jumped to a section from the side menu
+   - jump_to_final       { case_study }                     used "Short on time? Jump to the final design"
    - drink_served / drink_shared                            played the matcha game
    - old_new_toggle      { case_study, view }               flipped the PCC old/new comparison
 */
@@ -45,6 +46,7 @@ document.addEventListener('click', (e) => {
   if (href.startsWith('mailto:')) return track('contact_click', { method: 'email', location: loc });
   if (/linkedin\.com/i.test(href)) return track('contact_click', { method: 'linkedin', location: loc });
   if (a.closest('.cs-toc')) return track('toc_click', { case_study: caseStudy, section: href.replace('#', '') });
+  if (a.closest('[data-jump]')) return track('jump_to_final', { case_study: caseStudy });
   if (a.closest('.pl')) {
     const title = a.closest('.row')?.querySelector('.title')?.textContent?.trim() || href;
     return track('playground_click', { project: title });

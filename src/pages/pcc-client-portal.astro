@@ -3,6 +3,7 @@ import Case from '../layouts/Case.astro';
 import OldNewToggle from '../components/OldNewToggle.astro';
 import { selectedWorks } from '../data/site';
 const next = selectedWorks.find((c) => c.href === '/home-page-redesign')!;
+import JumpToFinal from '../components/JumpToFinal.astro';
 ---
 <Case
   title="Automated Partner File Portal"
@@ -45,6 +46,7 @@ const next = selectedWorks.find((c) => c.href === '/home-page-redesign')!;
   <section class="cs-c cs-sec">
     <h2 class="cs-h">Unique Challenge</h2>
     <p class="cs-statement big">Integrate within existing SharePoint ecosystem <span>while complying with HIPAA and other healthcare data access regulations.</span></p>
+    <JumpToFinal />
   </section>
 
   <section class="cs-sec" id="process">
