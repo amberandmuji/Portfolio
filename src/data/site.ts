@@ -26,7 +26,7 @@ export const nav = [
   { label: 'Resume', href: site.resume, external: true },
 ];
 
-export type Card = { href: string; title: string; tags: string[]; media?: string; poster?: string; alt?: string; fit?: 'cover' | 'contain'; external?: boolean; desc?: string; kinds?: string[]; bg?: string; ratio?: string };
+export type Card = { href: string; title: string; tags: string[]; media?: string; poster?: string; alt?: string; fit?: 'cover' | 'contain'; external?: boolean; desc?: string; kinds?: string[]; bg?: string; ratio?: string; cta?: string };
 
 export const selectedWorks: Card[] = [
   {
@@ -60,6 +60,16 @@ export const selectedWorks: Card[] = [
 ];
 
 export const playground: Card[] = [
+  {
+    href: '/job-hunting-agent',
+    title: 'Job Hunting Agent',
+    tags: ['Claude Code'],
+    desc: 'An AI agent that finds design jobs at H-1B sponsors, tailors a one-page résumé to each posting using only what\u2019s true, and waits for my approval before anything is sent.',
+    kinds: ['AI agent', 'Job search tool'],
+    ratio: '16 / 9',
+    media: '/assets/job-hunting-agent/demo.mp4', poster: '/assets/job-hunting-agent/demo-poster.png',
+    cta: 'View case study',
+  },
   {
     href: 'https://amberandmuji.github.io/portfolio-apps/starside-campfire/',
     title: 'Starside Campfire',

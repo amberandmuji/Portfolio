@@ -13,7 +13,7 @@ interface Props {
   heading: string;
   meta: [Meta[], Meta[]];
   toc?: { label: string; id: string }[];
-  next: Card;
+  next?: Card;
   nextLayout?: 'default' | 'half';
 }
 const { title, description, hero, heroBg, heading, meta, toc, next, nextLayout = 'default' } = Astro.props;
@@ -47,12 +47,14 @@ const { title, description, hero, heroBg, heading, meta, toc, next, nextLayout =
       <slot />
     </div>
 
+    {next && (
     <section class="cs-c cs-sec">
       <div class:list={['cs-next', { half: nextLayout === 'half' }]}>
         <h2 class="cs-h">Next project</h2>
         <WorkCard card={next} cursor="View case study" />
       </div>
     </section>
+    )}
   </article>
   <script is:inline>
     // Reveal-on-scroll for each top-level block of the case study body

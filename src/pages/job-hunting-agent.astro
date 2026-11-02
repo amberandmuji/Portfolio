@@ -1,0 +1,135 @@
+---
+import Case from '../layouts/Case.astro';
+import JumpToFinal from '../components/JumpToFinal.astro';
+const A = '/assets/job-hunting-agent';
+---
+<Case
+  title="Job Hunting Agent"
+  description="An AI agent that finds design jobs at H-1B sponsors, tailors a one-page résumé to each posting using only what's true, and waits for approval before anything is sent."
+  hero={`${A}/hero.png`}
+  heroBg="rgb(214 227 255)"
+  heading="Job Hunting Agent: Sponsor-Aware Résumé Tailoring Across 148 Company Job Boards"
+  meta={[
+    [{ label: 'Product', value: 'Job Hunting Agent (personal tool)' }, { label: 'Skills', value: 'Product design, AI agent design, UX research, ATS research' }],
+    [{ label: 'Role', value: 'Designer & Builder' }, { label: 'Team', value: 'Solo, built with Claude Code' }],
+  ]}
+  toc={[
+    { label: 'Overview', id: 'overview' },
+    { label: 'Outcome', id: 'outcome' },
+    { label: 'Context', id: 'context' },
+    { label: 'Process', id: 'process' },
+    { label: 'Final Design', id: 'final-design' },
+    { label: 'Next Steps', id: 'next-steps' },
+  ]}
+>
+  <section class="cs-c cs-sec" id="outcome">
+    <h2 class="cs-h">Outcome</h2>
+    <div class="cs-metrics">
+      <div><b>148</b><span>Company job boards watched: 62 H-1B design sponsors and 86 growing startups</span></div>
+      <div><b>73–100%</b><span>Of each posting's keywords on the résumé, across 8 test postings</span></div>
+      <div><b>1 page</b><span>Every résumé, with all 10 ATS parse checks passing</span></div>
+    </div>
+  </section>
+
+  <section class="cs-c cs-sec" id="context">
+    <h2 class="cs-h">What's the Job Hunting Agent?</h2>
+    <p class="cs-p">It's a local app that finds design jobs, ranks them, writes a tailored one-page résumé for each, fills in the application, and then waits for me to approve before anything is sent. It runs on my computer, and my résumé facts stay in a private folder that never leaves it.</p>
+    <p class="cs-p">I'm an international student who will need H-1B sponsorship, so a job tool that only ranks by skills fit wasn't enough for me.</p>
+  </section>
+
+  <section class="cs-c cs-sec">
+    <h2 class="cs-h">Problem</h2>
+    <p class="cs-statement big"><span>Most job tools rank openings by fit,</span> but I also needed to know who sponsors, and a résumé that stays true to what I've done.</p>
+  </section>
+
+  <section class="cs-c cs-sec">
+    <h2 class="cs-h">Unique Challenge</h2>
+    <p class="cs-statement big">A tailored résumé is only useful if it's honest. <span>Every keyword, number and claim had to come from my own record, and the result still had to fit one page.</span></p>
+    <JumpToFinal />
+  </section>
+
+  <section class="cs-sec" id="process">
+    <div class="cs-c">
+      <h2 class="cs-h">Process</h2>
+      <div class="cs-sub">
+        <h3 class="cs-h">Starting From an Open-Source Agent, Then Rebuilding It</h3>
+        <p class="cs-p">I started from an open-source agent that finds jobs and asks before sending. I cut its self-update link to keep my data private, then built the rest myself: sponsor-aware scoring, evidence-based tailoring, posting filters, a Paste a job tab and the interface.</p>
+      </div>
+    </div>
+    <div class="cs-w cs-media"><img src={`${A}/mechanism.png`} alt="Diagram of the agent. On the left, what runs by itself: find jobs, filter and score, tailor, fill the form, send. On the right, where I stay in the loop: set up once, paste a job, answer new questions, and review and approve before anything is sent." width="1872" height="1732" loading="lazy" /></div>
+    <div class="cs-w"><p class="cs-caption">Solid arrows are the main flow. Dashed arrows are the things only I provide or decide. Nothing leaves my computer until I approve it.</p></div>
+  </section>
+
+  <section class="cs-sub">
+    <div class="cs-c">
+      <h3 class="cs-h">Turning an H-1B Dataset Into the Company List</h3>
+      <p class="cs-p">I gave the agent a dataset of design-role H-1B filings from FY2024 and FY2025 and used it to decide where to look. I kept employers with at least two filings, then checked each one against the public job boards by exact name so a lookalike company never slipped in.</p>
+    </div>
+    <div class="cs-w cs-media"><img src={`${A}/dataset-funnel.png`} alt="Bars drawn to scale: 950 employers in the dataset, 325 with two or more filings, 62 with a public job board I could match, and 86 startups I added." width="1872" height="696" loading="lazy" /></div>
+    <div class="cs-w"><p class="cs-caption">Total: 148 boards. The other sponsors, including Amazon, Microsoft and Google, run their own career sites, which led to the Paste a job tab below. I added the startups by hand across fintech, healthcare, e-commerce and AI, matching the sectors I've worked in.</p></div>
+  </section>
+
+  <section class="cs-sub">
+    <div class="cs-c">
+      <h3 class="cs-h">Making "No Sponsorship" a Hard Stop</h3>
+      <p class="cs-p">A posting that says it won't sponsor visas wastes my time, however good the fit. The first version missed one because the wording contained "U.S." and my pattern stopped at the period. Now the scorer reads my own sponsorship answers and treats a refusal as a blocker, and the job drops out of the queue.</p>
+    </div>
+    <div class="cs-w cs-media"><img src={`${A}/no-sponsorship.png`} alt="Example posting wording that refuses sponsorship, highlighted, with the result: hard blocker, fit score capped at 40, marked skip." width="1872" height="438" loading="lazy" /></div>
+  </section>
+
+  <section class="cs-sub">
+    <div class="cs-c">
+      <h3 class="cs-h">Tailoring That Only Claims What's in My Record</h3>
+      <p class="cs-p">The agent builds each résumé from my own bullets. Before it adds a keyword to the Skills line, it must find a line in my record that shows the same work. If it can't, the word stays off and the gap is listed for me to read.</p>
+    </div>
+    <div class="cs-w cs-media"><img src={`${A}/keyword-evidence.png`} alt="Product Analytics and Mobile Design were added, each tied to a line in my record. Accessibility (WCAG) and SQL were not added because my record has no evidence." width="1872" height="568" loading="lazy" /></div>
+    <div class="cs-w cs-media" style="margin-top:24px"><img src={`${A}/before-after.png`} alt="Before and after: 'clickable flows' became 'interactive prototypes' to match the posting's wording." width="1872" height="356" loading="lazy" /></div>
+    <div class="cs-w"><p class="cs-caption">Only same-meaning wording changes, so the page doesn't read as stuffed. Each rewritten bullet also passes a read-aloud check, and the résumé is measured in a real browser so it never spills onto a second page.</p></div>
+  </section>
+
+  <section class="cs-sub">
+    <div class="cs-c">
+      <h3 class="cs-h">Giving the Best-Matching Role More Room, With Its Numbers</h3>
+      <p class="cs-p">Each role used to get the same number of bullets. Now the role that best matches the posting can take a fifth, and the role that matches least gives one up so the page stays one page. Bullets with a measured result are favored, so the metrics stay on the page.</p>
+    </div>
+    <div class="cs-w cs-media"><img src={`${A}/bullet-rule.png`} alt="For a Shopify e-commerce posting the roles get 3, 5 and 3 bullets. For a healthcare UX posting they get 4, 4 and 3." width="1872" height="370" loading="lazy" /></div>
+    <div class="cs-w"><p class="cs-caption">No second role was far enough ahead on the healthcare posting, so the rule left it alone.</p></div>
+  </section>
+
+  <section class="cs-sub">
+    <div class="cs-c">
+      <h3 class="cs-h">Paste a Job, for Sites the Agent Can't Read</h3>
+      <p class="cs-p">Many large sponsors, like those on Workday, don't publish a board the agent can read. So I added a Paste a job tab: I paste the description, and I get the same scored, tailored one-page résumé. I apply myself, and nothing is filled in or sent for me.</p>
+    </div>
+  </section>
+
+  <section class="cs-sub">
+    <div class="cs-c">
+      <h3 class="cs-h">Showing How Old a Posting Is</h3>
+      <p class="cs-p">Some postings were months old. Each job now shows when it was posted, with filters for the past day, week or month, and postings older than 30 days are hidden. They're kept in the database, so the limit can be changed in one setting.</p>
+    </div>
+    <div class="cs-w cs-media"><img src={`${A}/posted-filters.png`} alt="Filter chips: Any time 21, Past 24 hours 1, Past week 8, Past month 21." width="1872" height="202" loading="lazy" /></div>
+    <div class="cs-w"><p class="cs-caption">The To do list went from 46 jobs to 21. Older than 30 days are hidden.</p></div>
+  </section>
+
+  <section class="cs-sec" id="final-design">
+    <div class="cs-c"><h2 class="cs-h">Final Design</h2></div>
+    <div class="cs-w cs-media" style="margin-top:56px">
+      <video data-autoplay muted loop playsinline preload="metadata" poster={`${A}/demo-poster.png`} aria-label="A five-second loop: paste a job description, the agent scores and tailors, then shows the keywords and a one-page résumé ready to approve.">
+        <source src={`${A}/demo.mp4`} type="video/mp4" />
+      </video>
+      <p class="cs-caption">A five-second loop of the flow, from pasting a posting to a résumé ready for approval.</p>
+    </div>
+    <div class="cs-w cs-media"><img src={`${A}/review-screen.png`} alt="The review screen: one job at a time, with Approve and Reject buttons and the note that nothing goes out before approval." width="1872" height="586" loading="lazy" /></div>
+    <div class="cs-w"><p class="cs-caption">The review screen: one job at a time, with the tailored résumé, the filled form and a cover letter, and nothing sent until I approve.</p></div>
+  </section>
+
+  <section class="cs-c cs-sec" id="next-steps">
+    <h2 class="cs-h">What I Learned &amp; Next Steps</h2>
+    <div class="cs-items">
+      <div><p>Most bullets already matched, so tailoring stayed light</p><p>In my tests the agent changed about one to three of eleven bullets per résumé, because my record already used the right words. The bigger lift came from choosing which bullets to show and which keywords to add with evidence.</p></div>
+      <div><p>A sponsor list doesn't promise a sponsored job</p><p>Past filings show a company has sponsored designers, not that a given opening will. So the posting's own wording still decides, and that's why a refusal blocks a job.</p></div>
+      <div><p>Next: measure whether it gets replies</p><p>I haven't yet tracked whether tailored résumés lead to more interviews. The next step is to log each application's outcome, then compare, and to read Workday boards directly so fewer sponsors need pasting.</p></div>
+    </div>
+  </section>
+</Case>

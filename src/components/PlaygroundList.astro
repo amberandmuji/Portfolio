@@ -11,7 +11,7 @@ const { cards } = Astro.props;
     const linkProps = card.href ? { href: card.href, ...(card.external ? { target: '_blank', rel: 'noopener' } : {}) } : {};
     return (
       <li class:list={['row', { flip: i % 2 === 1 }]} data-reveal>
-        <Tag class="media" {...linkProps} data-cursor={card.href ? 'Try it out!' : undefined} tabindex={card.href ? undefined : -1}
+        <Tag class="media" {...linkProps} data-cursor={card.href ? `${card.cta ?? 'Try it out'}!` : undefined} tabindex={card.href ? undefined : -1}
           style={[card.ratio && `aspect-ratio:${card.ratio}`, card.bg && `background:${card.bg}`].filter(Boolean).join(';') || undefined}>
           <video data-autoplay muted loop playsinline preload="metadata" poster={card.poster} aria-hidden="true" class:list={[card.fit === 'contain' && 'contain']}>
             <source src={card.media} type="video/mp4" />
@@ -23,7 +23,7 @@ const { cards } = Astro.props;
           {card.desc && <p class="desc">{card.desc}</p>}
           <div class="tags">{[...(card.kinds ?? []), ...card.tags].map((k) => <span class="tag">{k}</span>)}</div>
           {card.href
-            ? <a class="go" href={card.href} {...(card.external ? { target: '_blank', rel: 'noopener' } : {})}>Try it out <span aria-hidden="true">↗</span></a>
+            ? <a class="go" href={card.href} {...(card.external ? { target: '_blank', rel: 'noopener' } : {})}>{card.cta ?? 'Try it out'} <span aria-hidden="true">↗</span></a>
             : <span class="soon">In progress</span>}
         </div>
       </li>
