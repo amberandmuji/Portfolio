@@ -54,7 +54,7 @@
 /* Big numbers */
 .cs-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-top: 56px; }
 .cs-metrics.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.cs-metrics b { display: block; font-weight: 400; font-size: var(--fs-metric); letter-spacing: -0.02em; line-height: 1.6; font-variant-numeric: tabular-nums; }
+.cs-metrics b { white-space: nowrap; display: block; font-weight: 400; font-size: var(--fs-metric); letter-spacing: -0.02em; line-height: 1.6; font-variant-numeric: tabular-nums; }
 .cs-metrics span { display: block; color: var(--muted); max-width: 227px; }
 .cs-metrics.two span { max-width: 350px; }
 
