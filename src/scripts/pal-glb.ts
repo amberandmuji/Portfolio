@@ -179,6 +179,7 @@ export function createPal(canvas: HTMLCanvasElement, opts: { blink?: boolean } =
       if (!o.isMesh) return;
       o.frustumCulled = false;
       faceShader(o.material, U);
+      o.material.side = THREE.DoubleSide;   // the Meshy hair shell has small gaps: show its inner side there instead of the page behind her
     });
     const box = new THREE.Box3().setFromObject(model);
     model.scale.setScalar(HEAD_TOP / (box.max.y - box.min.y));
