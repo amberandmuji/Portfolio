@@ -383,12 +383,24 @@ const { hobbies } = Astro.props;
     pose(s.start); P3.yaw(s.yaw || 0);
     await fly(slotRect(fig), 380);
     if (id !== run) return;
-    // into the picture
+    // into the picture. FLIP: measure where she is on screen, move her into the photo, then glide from the old spot
+    // to the new one, so the hand-over never jumps (frame zoom, rotation, rounding all differ slightly)
+    const before = pal.getBoundingClientRect();
     pal.removeAttribute('style'); pal.className = 'pal in-scene';
-    layer.append(pal); place(s.at[0], s.at[1], s.h, s.rot); P3.ground(true);
+    layer.append(pal); place(s.at[0], s.at[1], s.h); P3.ground(true);
+    const after = pal.getBoundingClientRect();
+    if (s.rot) pal.style.rotate = s.rot + 'deg';
     home = { fig, layer, scene: s };
     fig.classList.add('playing');
     layer.animate([{ boxShadow: 'inset 0 0 0 3px rgb(255 255 255 / .9)' }, { boxShadow: 'inset 0 0 0 0 rgb(255 255 255 / 0)' }], { duration: 600 });
+    const dx = before.left + before.width / 2 - (after.left + after.width / 2), dy = before.bottom - after.bottom, k = before.height / (after.height || 1);
+    await pal.animate([
+      { transform: `translate(${dx}px, ${dy}px) scale(${k})`, rotate: '0deg', filter: 'none' },
+      { transform: 'none', rotate: (s.rot || 0) + 'deg', filter: 'drop-shadow(0 2px 3px rgb(0 0 0 / .3))' },
+    ], { duration: reduce ? 1 : 280, easing: 'cubic-bezier(.2,.8,.2,1)' }).finished.catch(() => {});
+    if (id !== run) return;
+    await wait(120, id).catch(() => {});   // a beat to land before the scene starts
+    if (id !== run) return;
     play(fig, id);
   }
   async function play(fig, id = ++run) {
@@ -445,8 +457,8 @@ const { hobbies } = Astro.props;
 
   /* perch on the top-right frame: feet dangle over the edge */
   /* frame edge meets her thighs, so the legs dangle over the front */
-  .perch { position: absolute; right: 8%; top: 0; z-index: 3; height: clamp(240px, 23vw, 340px); aspect-ratio: 100 / 160; translate: 0 -51.5%; }
-  .hint { position: absolute; right: 100%; margin-right: -22%; bottom: 57%; pointer-events: none; color: #2b6af2; transition: opacity 300ms, translate 300ms var(--ease-out); }
+  .perch { position: absolute; right: 8%; top: 0; z-index: 3; height: clamp(192px, 18.4vw, 272px); aspect-ratio: 100 / 160; translate: 0 -66%; }
+  .hint { position: absolute; right: 100%; margin-right: -10%; bottom: 57%; pointer-events: none; color: #2b6af2; transition: opacity 300ms, translate 300ms var(--ease-out); }
   .hint p {
     position: absolute; right: 0; bottom: 44px; margin: 0; white-space: nowrap;   /* the ! sits right above the arrow tip */
     font-family: 'Caveat', cursive; font-weight: 500; font-size: clamp(19px, 1.7vw, 24px); line-height: 1; rotate: -6deg;
@@ -482,7 +494,7 @@ const { hobbies } = Astro.props;
   @media (max-width: 1199px) { .hobbies { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
   @media (max-width: 809px) {
     .hobbies { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
-    .perch { height: 220px; }
+    .perch { height: 176px; }
   }
   @media (prefers-reduced-motion: reduce) { .frame { transition: none; } }
 </style>

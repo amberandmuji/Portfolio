@@ -162,6 +162,10 @@ export function createPal(canvas: HTMLCanvasElement, opts: { blink?: boolean } =
     mixer: THREE.AnimationMixer; actions: Record<string, THREE.AnimationAction>;
   } = null;
   let playing: THREE.AnimationAction | null = null;
+  // the clip being blended in or out, and how much of it shows (0 = hand-made pose, 1 = clip): eased every frame,
+  // so switching between poses and clips never snaps
+  let blendAct: THREE.AnimationAction | null = null, blendLock = false, clipW = 0;
+  const clipQ: THREE.Quaternion[] = [], clipHip = new THREE.Vector3(), restHip = new THREE.Vector3();
 
   const bodyQ = new THREE.Quaternion(), tq = new THREE.Quaternion(), tv = new THREE.Vector3(), tv2 = new THREE.Vector3();
   const localWorldQ = (o: THREE.Object3D, out: THREE.Quaternion) => {   // rotation relative to `body`
@@ -217,6 +221,7 @@ export function createPal(canvas: HTMLCanvasElement, opts: { blink?: boolean } =
     const lips = skinned.localToWorld(new THREE.Vector3(FACE.mouth.x, FACE.mouth.y, 0.148));
     by('Head').worldToLocal(lips); mouthAnchor.position.copy(lips); by('Head').add(mouthAnchor);
     rig = { bones, rest, restWorld, L: side(Ls), R: side(Rs), head: limb('Head', 'HeadTop_End'), spine: limb('Spine1', 'Spine2'), headTop: by('HeadTop_End'), hips: by('Hips'), mixer, actions };
+    restHip.copy(rig.hips.position);
     syncClip();
     onReady.forEach((f) => f()); onReady.length = 0;
   };
@@ -304,9 +309,24 @@ export function createPal(canvas: HTMLCanvasElement, opts: { blink?: boolean } =
     if (!rig) return;
     const want = CLIPS[poseName] ? rig.actions[CLIPS[poseName].clip] : null;
     if (want === playing) return;
-    playing?.fadeOut(.25);
-    if (want) want.reset().fadeIn(.25).play();
+    if (want && want !== blendAct) { blendAct?.stop(); want.reset().setEffectiveWeight(1).play(); blendAct = want; }
+    if (want) blendLock = !!CLIPS[poseName].lockFeet;
     playing = want;
+  }
+  /** pose the bones: hand-made pose, the clip, or a smooth mix of the two while switching */
+  function poseBones(t: number, dt: number) {
+    if (!rig) return;
+    clipW += ((playing ? 1 : 0) - clipW) * (1 - Math.exp(-dt * 8));   // ~0.35 s cross-fade
+    if (!playing && clipW < .003) { clipW = 0; blendAct?.stop(); blendAct = null; }
+    if (!blendAct) { rig.hips.position.copy(restHip); applyLimbs(cur, t); return; }
+    rig.mixer.update(dt);
+    rig.bones.forEach((b, i) => (clipQ[i] ||= new THREE.Quaternion()).copy(b.quaternion));
+    clipHip.copy(rig.hips.position);
+    applyLimbs(cur, t);   // hand-made pose (resets every bone from rest first)
+    rig.bones.forEach((b, i) => b.quaternion.slerp(clipQ[i], clipW));
+    rig.hips.position.lerpVectors(restHip, clipHip, clipW);
+    rig.bones[0].updateMatrixWorld(true);
+    if (blendLock) plantFeet();
   }
 
   function resize() {
@@ -314,6 +334,7 @@ export function createPal(canvas: HTMLCanvasElement, opts: { blink?: boolean } =
     if (!w || !h) return;
     renderer.setSize(w, h, false);
     camera.aspect = w / h; camera.updateProjectionMatrix();
+    renderer.render(scene, camera);   // a resize clears the canvas: redraw at once so she never blinks out while changing size
   }
 
   let last = performance.now(), raf = 0, visible = true, blinkAt = 2, blinkUntil = 0;
@@ -339,7 +360,7 @@ export function createPal(canvas: HTMLCanvasElement, opts: { blink?: boolean } =
     }
     curYaw += (extraYaw - curYaw) * k; curLean += (extraLean - curLean) * k;
     applyBody(cur, t);
-    if (playing && rig) { rig.mixer.update(dt); rig.bones[0].updateMatrixWorld(true); if (CLIPS[poseName]?.lockFeet) plantFeet(); } else applyLimbs(cur, t);
+    poseBones(t, dt);
     placeProps();
     updateFace(t, k);
     ground.visible = groundOn && cur.y > -.1;
@@ -375,7 +396,7 @@ export function createPal(canvas: HTMLCanvasElement, opts: { blink?: boolean } =
       if (!rig) return '';
       const saved = { cur: { ...cur }, target: { ...target }, name: poseName, yaw: curYaw, face: { ...face } }, was = playing;
       poseName = name; target = flat(poseOf(name)); cur = { ...target };
-      playing = null; curYaw = 0; applyBody(cur, 0); applyLimbs(cur, 0); placeProps();
+      playing = null; curYaw = 0; rig.hips.position.copy(restHip); applyBody(cur, 0); applyLimbs(cur, 0); placeProps();
       const gv = ground.visible; ground.visible = false;
       renderer.render(scene, camera);
       const url = canvas.toDataURL('image/png');
