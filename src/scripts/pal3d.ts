@@ -24,7 +24,7 @@ export function clayPatch() { if (!THREE.ShaderChunk.lights_physical_pars_fragme
 
 export const BOX_H = 1.65;
 // canvas overhang relative to the box: left/top offsets and size, as fractions of the box
-export const CANVAS = { left: -0.4, top: -0.24, w: 1.8, h: 1.34 };   // generous headroom so hair and raised arms are never clipped
+export const CANVAS = { left: -0.7, top: -0.24, w: 2.4, h: 1.34 };   // generous headroom so hair and raised arms are never clipped
 
 type V3 = [number, number, number];
 const v = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z);
