@@ -12,7 +12,7 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
    wrap lighting lets light reach past the terminator, tinted warm like light scattering under skin/felt,
    and a faint per-pixel grain gives the painterly film texture of an offline render. */
 const DIFFUSE = 'reflectedLight.directDiffuse += irradiance * BRDF_Lambert( material.diffuseColor );';
-if (!THREE.ShaderChunk.lights_physical_pars_fragment.includes('clayWrap')) {
+export function clayPatch() { if (!THREE.ShaderChunk.lights_physical_pars_fragment.includes('clayWrap')) {
   THREE.ShaderChunk.lights_physical_pars_fragment = THREE.ShaderChunk.lights_physical_pars_fragment.replace(DIFFUSE, `
     float clayNL = dot( geometryNormal, directLight.direction );
     float clayWrap = saturate( ( clayNL + 0.45 ) / 1.45 );
@@ -20,7 +20,7 @@ if (!THREE.ShaderChunk.lights_physical_pars_fragment.includes('clayWrap')) {
     reflectedLight.directDiffuse += clayWrap * clayTint * directLight.color * BRDF_Lambert( material.diffuseColor );`);
   THREE.ShaderChunk.opaque_fragment = THREE.ShaderChunk.opaque_fragment.replace('gl_FragColor = vec4( outgoingLight, diffuseColor.a );',
     'outgoingLight *= 1.0 + ( fract( sin( dot( gl_FragCoord.xy, vec2( 12.9898, 78.233 ) ) ) * 43758.5453 ) - 0.5 ) * 0.11;\ngl_FragColor = vec4( outgoingLight, diffuseColor.a );');
-}
+} }
 
 export const BOX_H = 1.65;
 // canvas overhang relative to the box: left/top offsets and size, as fractions of the box
@@ -122,7 +122,7 @@ function shadowTexture() {
   return new THREE.CanvasTexture(c);
 }
 
-function makeMaterials() {
+export function makeMaterials() {
   const grain = noiseTexture(128, .9);
   return {
     skin: new THREE.MeshPhysicalMaterial({ color: '#f0c3a2', roughness: .7, sheen: .35, sheenColor: new THREE.Color('#ffd5c4'), sheenRoughness: .5 }),
@@ -453,7 +453,7 @@ function buildFigure(M: Mats) {
 }
 
 /* ---------------- props ---------------- */
-function buildProps(M: Mats) {
+export function buildProps(M: Mats) {
   const mk = (fn: (g: THREE.Group) => void) => { const g = new THREE.Group(); fn(g); g.visible = false; return g; };
   const felt = (c: string) => new THREE.MeshPhysicalMaterial({ color: c, roughness: .8, sheen: .6, sheenColor: new THREE.Color('#ffffff') });
   const plastic = (c: string, r = .35) => new THREE.MeshPhysicalMaterial({ color: c, roughness: r, clearcoat: .5 });
@@ -520,6 +520,7 @@ function buildProps(M: Mats) {
 
 /* ---------------- renderer ---------------- */
 export function createPal(canvas: HTMLCanvasElement, opts: { blink?: boolean } = {}) {
+  clayPatch();
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, premultipliedAlpha: true });
   renderer.setPixelRatio(Math.min(2, devicePixelRatio || 1));
   renderer.outputColorSpace = THREE.SRGBColorSpace;

@@ -2,7 +2,7 @@
 // "Outside of work" photos with a tiny pixel Amber perched on the top-right frame.
 // Drag her into a photo (Gorogoa-style: the frame opens up, a silhouette shows where she fits,
 // she snaps into the picture) and she plays with what's in it.
-// The figure is a live 3D model: src/scripts/pal3d.ts (three.js)
+// The figure is a live 3D model: src/scripts/pal-glb.ts (three.js + the Meshy GLB in public/assets/about/amelia.glb)
 import '@fontsource/caveat/500.css';
 
 interface Hobby { key: string; label: string; src: string }
@@ -20,7 +20,7 @@ const { hobbies } = Astro.props;
           <div class="perch" data-perch>
             <div class="hint" data-hint aria-hidden="true">
               <p>Drag me to the photos!</p>
-              <svg class="curl" viewBox="0 0 60 40"><path d="M8 11 C11 18 16 24 23 27 C32 31 42 28 40 21 C38 15 29.5 18 31 25 C33 35 46 37 57 31" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M50 30.2 L57 31 L53.9 37.3" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <svg class="curl" viewBox="0 0 60 40"><path d="M6 8 C16 30 36 37 55 28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M47.5 27.7 L55 28 L50.5 34" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
             <button type="button" class="pal" data-pal data-pose="sit" aria-label="Mini Amber. Drag her into a photo, or press Enter to send her into the next one.">
               <img class="pal3d poster" src="/assets/about/mini-amber.webp" alt="" aria-hidden="true" /><canvas class="pal3d" aria-hidden="true"></canvas>
@@ -46,7 +46,7 @@ const { hobbies } = Astro.props;
   // the 3D engine (~140 KB gzipped) never blocks the page: it's fetched once the browser is idle after load,
   // or sooner if the photos scroll near; it's only started when they do
   let p3d = null;
-  const load3d = () => (p3d ||= import('../scripts/pal3d'));
+  const load3d = () => (p3d ||= import('../scripts/pal-glb'));
   addEventListener('load', () => (window.requestIdleCallback || setTimeout)(() => load3d(), { timeout: 4000 }), { once: true });
   const io3d = new IntersectionObserver(async (ents) => {
     if (!ents.some((e) => e.isIntersecting)) return;
@@ -54,10 +54,12 @@ const { hobbies } = Astro.props;
     let real;
     try { const { createPal } = await load3d(); real = createPal(svg); }
     catch { return; }                       // no WebGL: she stays as the still picture
-    svg.style.visibility = 'visible';
     real.snap(pal.dataset.pose || 'sit');
     queue.forEach(([k, a]) => real[k]?.(...a));
-    P3 = real; pal.querySelector('.poster')?.remove();   // drop the still picture for good (it would trail behind her while dragged)
+    P3 = real;
+    await (real.ready?.() ?? Promise.resolve());   // keep the still picture until the model is on screen
+    svg.style.visibility = 'visible';
+    pal.querySelector('.poster')?.remove();   // drop the still picture for good (it would trail behind her while dragged)
   }, { rootMargin: '600px 0px' });
   io3d.observe(root);
   const AR = 100 / 160;   // figure width / height
@@ -90,11 +92,11 @@ const { hobbies } = Astro.props;
   /* ---------- the scenes: where she stands in each photo (x, feet y, height as fractions) ---------- */
   // sized to what's in each photo: as tall as the dancers / the dog, small enough for the chair, etc.
   const SCENES = {
-    matcha:   { at: [0.14, 0.935], h: 0.34, start: 'stand', play: matcha },
+    matcha:   { at: [0.85, 0.945], h: 0.4, start: 'stand', play: matcha },   // on the table, in front of the second cup
     climb:    { at: [0.38, 0.84], h: 0.25, start: 'climb_a', play: climb },
-    dance:    { at: [0.13, 0.835], h: 0.315, start: 'stand', play: dance },
+    dance:    { at: [0.6, 0.815], h: 0.33, start: 'stand', play: dance },
     festival: { at: [0.36, 0.995], h: 0.27, start: 'stand', yaw: 180, play: festival },
-    comedy:   { at: [0.86, 0.965], h: 0.22, start: 'sit_laugh', yaw: -150, play: comedy },
+    comedy:   { at: [0.875, 0.986], h: 0.34, start: 'sit_laugh', yaw: -80, play: comedy },   // side-on in the right-hand chair, facing the stage
     dog:      { at: [0.86, 0.925], h: 0.65, start: 'stand', yaw: -25, play: dog },
     reading:  { at: [0.5, 0.46], h: 0.42, rot: 25, start: 'lie_read', play: reading },   // lying along the sloping torn strip, planted foot on the tear
     movies:   { at: [0.27, 0.995], h: 0.46, start: 'stand', play: movies },
@@ -136,7 +138,7 @@ const { hobbies } = Astro.props;
     return [layer.lastElementChild, W, H];
   }
   // where her mouth is, as fractions of the photo
-  const mouth = (s) => [s.at[0], s.at[1] - s.h * (1.332 / 1.65)];
+  const mouth = (s) => [s.at[0], s.at[1] - s.h * (1.203 / 1.65)];
 
   /* ---------- scenes ---------- */
   async function matcha(id, layer, s) {
@@ -145,30 +147,42 @@ const { hobbies } = Astro.props;
     await hop(8); await wait(400, id);
     // 2. both hands bring a straw to her mouth; it grows over the rim into the cup
     pose('sip2');
+    await wait(450, id);   // let her settle into the pose, then aim the straw at her lips
     const [o, W, H] = overlaySvg(layer);
-    const [mx, my] = mouth(s);
+    let [mx, my] = mouth(s);
+    const mp = P3.mouthPoint?.();
+    if (mp) {
+      const c = svg.getBoundingClientRect(), l = layer.getBoundingClientRect();
+      mx = (c.left + mp[0] * c.width - l.left) / l.width; my = (c.top + mp[1] * c.height - l.top) / l.height;
+    }
     const P = (x, y) => `${(x * W).toFixed(1)},${(y * H).toFixed(1)}`;
-    const top = 0.405, sx = mx + 0.045;
-    const d = `M${P(mx + 0.006, my + 0.006)} L${P(sx - 0.015, my + 0.006)} Q${P(sx, my + 0.006)} ${P(sx, my - 0.01)} L${P(sx, top + 0.04)} Q${P(sx, top)} ${P(sx + 0.04, top)} L${P(0.385, top)} Q${P(0.43, top)} ${P(0.43, top + 0.035)} L${P(0.43, 0.66)}`;
-    const sw = Math.max(4, W * 0.022);
-    // a round-looking straw: soft shadow, white tube with pink stripes, a highlight line and a darker edge
+    // from her lips: out to the side, up, over in one smooth arc and down into the cup
+    // into the front cup, right of the pouring stream; the straw leaves her mouth on the side facing the cup
+    const cx = 0.61, k = Math.sign(cx - mx) || 1, top = 0.4, sx = mx + k * 0.05, r = 0.035;
+    const d = `M${P(mx, my)} L${P(sx - k * r, my)} Q${P(sx, my)} ${P(sx, my - r)} L${P(sx, top + r)} Q${P(sx, top)} ${P(sx + k * r, top)} L${P(cx - k * r, top)} Q${P(cx, top)} ${P(cx, top + r)} L${P(cx, 0.68)}`;
+    const LIQ = 0.548;   // the matcha surface in the front cup: the straw dips under it here
+    const sw = Math.max(3, W * 0.017);
+    // a clear plastic straw: soft shadow, glassy body with fine edges and a highlight, matcha visible inside it
     o.innerHTML = `
-      <defs><mask id="straw-m" maskUnits="userSpaceOnUse"><path d="${d}" fill="none" stroke="#fff" stroke-width="${sw * 2.4}" stroke-linecap="round" class="grow"/></mask></defs>
-      <clipPath id="straw-c" clipPathUnits="userSpaceOnUse"><path clip-rule="evenodd" d="M0,0 H${W} V${H} H0 Z M${(0.25 * W).toFixed(1)},${(0.515 * H).toFixed(1)} H${W} V${H} H${(0.25 * W).toFixed(1)} Z"/></clipPath>
+      <defs>
+        <mask id="straw-m" maskUnits="userSpaceOnUse"><path d="${d}" fill="none" stroke="#fff" stroke-width="${sw * 2.4}" stroke-linecap="round" class="grow"/></mask>
+        <mask id="straw-e" maskUnits="userSpaceOnUse"><path d="${d}" fill="none" stroke="#fff" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="#000" stroke-width="${sw - 1.6}" stroke-linecap="round" stroke-linejoin="round"/></mask>
+        <filter id="straw-s" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="${(sw * .35).toFixed(2)}"/></filter>
+      </defs>
+      <clipPath id="straw-c" clipPathUnits="userSpaceOnUse"><path clip-rule="evenodd" d="M0,0 H${W} V${H} H0 Z M${(0.25 * W).toFixed(1)},${(LIQ * H).toFixed(1)} H${(0.75 * W).toFixed(1)} V${H} H${(0.25 * W).toFixed(1)} Z"/></clipPath>
       <g clip-path="url(#straw-c)"><g mask="url(#straw-m)">
-        <path d="${d}" fill="none" stroke="rgb(40 20 10 / .28)" stroke-width="${sw + 2.5}" stroke-linecap="round" stroke-linejoin="round" transform="translate(1.5 2)"/>
-        <path d="${d}" fill="none" stroke="#e2d6cf" stroke-width="${sw + 1.2}" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="${d}" fill="none" stroke="#fffdfb" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="${d}" fill="none" stroke="#7cb342" stroke-width="${sw * 0.55}" stroke-linecap="round" stroke-linejoin="round" class="tea" opacity=".9"/>
-        <path d="${d}" fill="none" stroke="#ee8fae" stroke-width="${sw}" stroke-dasharray="${sw * .7} ${sw * 1.3}" stroke-linejoin="round" opacity=".85"/>
-        <path d="${d}" fill="none" stroke="#fff" stroke-opacity=".75" stroke-width="${sw * .22}" stroke-linecap="round" stroke-linejoin="round" transform="translate(-${sw * .22} -${sw * .22})"/>
+        <path d="${d}" fill="none" stroke="rgb(30 40 20 / .22)" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" transform="translate(${sw * .4} ${sw * .6})" filter="url(#straw-s)"/>
+        <path d="${d}" fill="none" stroke="rgb(240 248 240 / .42)" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="${d}" fill="none" stroke="#9cc45e" stroke-width="${sw - 2}" stroke-linecap="round" stroke-linejoin="round" class="tea"/>
+        <path d="${d}" fill="none" stroke="rgb(70 95 70 / .55)" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" mask="url(#straw-e)"/>
+        <path d="${d}" fill="none" stroke="#fff" stroke-opacity=".85" stroke-width="${Math.max(1, sw * .2).toFixed(2)}" stroke-linecap="round" stroke-linejoin="round" transform="translate(-${(sw * .2).toFixed(2)} -${(sw * .2).toFixed(2)})"/>
       </g></g>`;
     const grow = o.querySelector('.grow'), tea = o.querySelector('.tea');
     const L = grow.getTotalLength();
     grow.style.strokeDasharray = tea.style.strokeDasharray = `${L} ${L}`;
     await grow.animate([{ strokeDashoffset: L }, { strokeDashoffset: 0 }], { duration: 1000, easing: 'cubic-bezier(.4,0,.2,1)', fill: 'forwards' }).finished;
     live(id);
-    float(layer, 'plop', 0.43, 0.515, 0.09, { rise: .01, ms: 600 });   // plop
+    float(layer, 'plop', cx, LIQ, 0.09, { rise: .01, ms: 600 });   // plop
     await wait(250, id);
     // 3. sip: green tea climbs the straw from the cup to her mouth, both hands on the straw
     tea.animate([{ strokeDashoffset: -L }, { strokeDashoffset: 0 }], { duration: 1500, easing: 'ease-in', fill: 'forwards' });
@@ -207,13 +221,12 @@ const { hobbies } = Astro.props;
   }
 
   async function festival(id, layer, s) {
-    // back to us, facing the stage, jumping up and down
-    for (let i = 0; i < 10; i++) {
-      pose(i % 2 ? 'cheer' : 'held');
-      if (i % 3 === 0) float(layer, i % 2 ? 'note' : 'note2', 0.5 + (i % 3 - 1) * .1, 0.6, 0.05, { color: '#ffffff', drift: (i % 2 ? -.05 : .05), rise: .1 });
-      await hop(12, 380); live(id);
+    // back to us, facing the stage, swaying to the music (the model's own Happy_Sway_Standing animation)
+    pose('sway');
+    for (let i = 0; i < 8; i++) {
+      if (i % 2 === 0) float(layer, i % 4 ? 'note' : 'note2', 0.5 + (i % 3 - 1) * .1, 0.6, 0.05, { color: '#ffffff', drift: (i % 4 ? -.05 : .05), rise: .1 });
+      await wait(520, id);
     }
-    pose('cheer'); await wait(500, id);
   }
 
   async function comedy(id, layer, s) {
@@ -224,8 +237,8 @@ const { hobbies } = Astro.props;
     spot.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 600, fill: 'forwards' });
     await wait(500, id);
     for (let i = 0; i < 12; i++) {
-      pose(i % 2 ? 'sit_laugh2' : 'sit_laugh');
-      hop(i % 3 === 0 ? 6 : 3, 260); await wait(280, id);
+      pose(i % 2 ? 'sit_laugh2' : 'sit_laugh');   // stays seated: just her laugh (head and shoulders), no hops
+      await wait(320, id);
     }
     pose('sit_laugh'); await wait(600, id);
   }
@@ -414,7 +427,7 @@ const { hobbies } = Astro.props;
 </script>
 
 <style>
-  .hobbies { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; }
+  .hobbies { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; overflow-x: clip; }   /* her canvas overhang must never widen the page */
   .hobby { margin: 0; }
   .frame { position: relative; transition: transform 400ms var(--ease-out); }
   .frame > img { display: block; width: 100%; aspect-ratio: 264 / 396; object-fit: cover; border-radius: 16px; background: var(--img-bg); border: 6px solid #fff; box-shadow: 0 2px 6px rgb(12 12 14 / .06), 0 8px 24px rgb(12 12 14 / .07); transition: box-shadow var(--dur-2), filter 300ms; }
@@ -432,8 +445,8 @@ const { hobbies } = Astro.props;
 
   /* perch on the top-right frame: feet dangle over the edge */
   /* frame edge meets her thighs, so the legs dangle over the front */
-  .perch { position: absolute; right: 8%; top: 0; z-index: 3; height: clamp(100px, 8.6vw, 124px); aspect-ratio: 100 / 160; translate: 0 -51.5%; }
-  .hint { position: absolute; right: 100%; margin-right: 14px; bottom: 50%; pointer-events: none; color: #2b6af2; transition: opacity 300ms, translate 300ms var(--ease-out); }
+  .perch { position: absolute; right: 8%; top: 0; z-index: 3; height: clamp(240px, 23vw, 340px); aspect-ratio: 100 / 160; translate: 0 -51.5%; }
+  .hint { position: absolute; right: 100%; margin-right: -22%; bottom: 57%; pointer-events: none; color: #2b6af2; transition: opacity 300ms, translate 300ms var(--ease-out); }
   .hint p {
     position: absolute; right: 0; bottom: 44px; margin: 0; white-space: nowrap;   /* the ! sits right above the arrow tip */
     font-family: 'Caveat', cursive; font-weight: 500; font-size: clamp(19px, 1.7vw, 24px); line-height: 1; rotate: -6deg;
@@ -469,7 +482,7 @@ const { hobbies } = Astro.props;
   @media (max-width: 1199px) { .hobbies { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
   @media (max-width: 809px) {
     .hobbies { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
-    .perch { height: 88px; }
+    .perch { height: 220px; }
   }
   @media (prefers-reduced-motion: reduce) { .frame { transition: none; } }
 </style>
