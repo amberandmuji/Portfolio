@@ -93,12 +93,12 @@ const { hobbies } = Astro.props;
   // sized to what's in each photo: as tall as the dancers / the dog, small enough for the chair, etc.
   const SCENES = {
     matcha:   { at: [0.85, 0.945], h: 0.4, start: 'stand', play: matcha },   // on the table, in front of the second cup
-    climb:    { at: [0.38, 0.84], h: 0.25, start: 'climb_a', play: climb },
+    climb:    { at: [0.38, 0.84], h: 0.25, ground: false, start: 'climb_a', play: climb },
     dance:    { at: [0.6, 0.815], h: 0.33, start: 'stand', play: dance },
     festival: { at: [0.36, 0.995], h: 0.27, start: 'stand', yaw: 180, play: festival },
     comedy:   { at: [0.875, 0.986], h: 0.34, start: 'sit_laugh', yaw: -80, play: comedy },   // side-on in the right-hand chair, facing the stage
     dog:      { at: [0.86, 0.925], h: 0.65, start: 'stand', yaw: -25, play: dog },
-    reading:  { at: [0.5, 0.46], h: 0.42, rot: 25, start: 'lie_read', play: reading },   // lying along the sloping torn strip, planted foot on the tear
+    reading:  { at: [0.5, 0.46], h: 0.42, rot: 25, ground: false, start: 'lie_read', play: reading },   // lying along the sloping torn strip, planted foot on the tear
     movies:   { at: [0.27, 0.995], h: 0.46, start: 'stand', play: movies },
   };
 
@@ -387,7 +387,7 @@ const { hobbies } = Astro.props;
     // to the new one, so the hand-over never jumps (frame zoom, rotation, rounding all differ slightly)
     const before = pal.getBoundingClientRect();
     pal.removeAttribute('style'); pal.className = 'pal in-scene';
-    layer.append(pal); place(s.at[0], s.at[1], s.h); P3.ground(true);
+    layer.append(pal); place(s.at[0], s.at[1], s.h); P3.ground(s.ground !== false);
     const after = pal.getBoundingClientRect();
     if (s.rot) pal.style.rotate = s.rot + 'deg';
     home = { fig, layer, scene: s };
@@ -407,7 +407,7 @@ const { hobbies } = Astro.props;
     const s = SCENES[fig.dataset.scene], layer = layerOf(fig);
     clearScene(fig); fig.classList.add('playing');
     P3.dropAll();
-    place(s.at[0], s.at[1], s.h, s.rot); pose(s.start); P3.yaw(s.yaw || 0); P3.ground(true);
+    place(s.at[0], s.at[1], s.h, s.rot); pose(s.start); P3.yaw(s.yaw || 0); P3.ground(s.ground !== false);
     try { await s.play(id, layer, s); }
     catch (err) { if (err !== CANCEL) throw err; return; }
     if (id === run) fig.classList.remove('playing');
