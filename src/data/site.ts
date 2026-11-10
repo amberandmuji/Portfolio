@@ -74,7 +74,7 @@ export const playground: Card[] = [
     href: 'https://amberandmuji.github.io/Turn-the-page/',
     title: 'Turn the Page',
     tags: ['Claude Code'],
-    desc: 'Read eBooks on a big monitor from across the room and turn pages with a wave of your hand through the laptop camera. Works with PDFs and Kindle, all on-device.',
+    desc: 'Read eBooks on a big monitor at your desk and turn pages with a wave of your hand, no reaching for the mouse or keyboard. Uses the laptop camera, works with PDFs and Kindle, and stays on-device.',
     kinds: ['Gesture control', 'eBook reader'],
     ratio: '16 / 9',
     media: '/assets/playground/turn-the-page.mp4', poster: '/assets/playground/turn-the-page-poster.webp',
