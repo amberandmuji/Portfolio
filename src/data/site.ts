@@ -71,6 +71,16 @@ export const playground: Card[] = [
     cta: 'View case study',
   },
   {
+    href: 'https://amberandmuji.github.io/Turn-the-page/',
+    title: 'Turn the Page',
+    tags: ['Claude Code'],
+    desc: 'Read eBooks on a big monitor from across the room and turn pages with a wave of your hand through the laptop camera. Works with PDFs and Kindle, all on-device.',
+    kinds: ['Gesture control', 'eBook reader'],
+    ratio: '16 / 9',
+    media: '/assets/playground/turn-the-page.mp4', poster: '/assets/playground/turn-the-page-poster.webp',
+    external: true,
+  },
+  {
     href: 'https://amberandmuji.github.io/portfolio-apps/starside-campfire/',
     title: 'Starside Campfire',
     tags: ['Claude Code'],
